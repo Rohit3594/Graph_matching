@@ -3,6 +3,8 @@ import numpy as np
 from visbrain.objects import SourceObj, ConnectObj, ColorbarObj
 import tools.graph_processing as gp
 
+CBAR_STATE = dict(cbtxtsz=30, txtsz=30., width=.1, cbtxtsh=3.,
+                  rect=(-.3, -2., 1., 4.), txtcolor='k', border=False)
 
 def get_visb_sc_shape(visb_sc):
     """
@@ -14,7 +16,29 @@ def get_visb_sc_shape(visb_sc):
     return k[-1]
 
 
-def graph_edges_to_connect(graph, edge_attribute=None, nodes_mask=None):
+def graph_nodes_to_sources(graph_no_dummy, nodes_coords, node_color_attribute=None, nodes_mask=None):
+    if nodes_mask is None:
+        nodes_mask = np.ones((nodes_coords.shape[0],), dtype=np.bool)
+    s_obj = SourceObj('nodes', nodes_coords[nodes_mask], color='red',
+                        edge_color='black', symbol='disc', edge_width=2.,
+                        radius_min=30., radius_max=30., alpha=.9)
+
+    """Color the sources according to data
+    """
+    data = gp.graph_nodes_attribute(graph_no_dummy, node_color_attribute)
+    if len(data) > 0:
+        s_obj.color_sources(data=data[nodes_mask], cmap='jet')
+        # Get the colorbar of the source object
+        cb_obj = ColorbarObj(s_obj, cblabel='node attribute : '+node_color_attribute, **CBAR_STATE)
+    else:
+        s_obj = SourceObj('nodes', nodes_coords[nodes_mask], color='red',
+                        edge_color='black', symbol='disc', edge_width=2.,
+                        radius_min=20., radius_max=30., alpha=.4)
+        cb_obj = None
+    return s_obj, cb_obj
+
+
+def graph_edges_to_connect(graph, nodes_coords, edge_attribute=None, nodes_mask=None):
 
     if edge_attribute is None:
          attr_mat= nx.adjacency_matrix(graph)
@@ -23,52 +47,30 @@ def graph_edges_to_connect(graph, edge_attribute=None, nodes_mask=None):
         attr_mat = nx.attr_matrix(graph, edge_attr=edge_attribute)
         conn_mat = attr_mat[0]
     if nodes_mask is not None:
-        print(nodes_mask.shape)
         conn_mat = np.delete(conn_mat, np.where(nodes_mask==False)[0], 0)
         conn_mat = np.delete(conn_mat, np.where(nodes_mask==False)[0], 1)
-        print(conn_mat.shape)
     connect = np.ma.masked_array(np.array(conn_mat), False)
-    #connect.mask[np.tril_indices_from(connect.mask)] = True
-    return connect
-
-
-def show_graph(graph, mesh, nodes_color='data', edge_attribute=None, mask_slice_coord=None):
-
-    graph_no_dummy = gp.remove_dummy_nodes(graph)
-    # manage nodes
-    s_coords = gp.graph_nodes_to_coords(graph_no_dummy, 'ico100_7_vertex_index', mesh)
-    if mask_slice_coord is not None:
-        nodes_mask = s_coords[:, 2]>mask_slice_coord
-        s_coords = s_coords[nodes_mask, :]
+    if nodes_mask is not None:
+        c_obj = ConnectObj('edges', nodes_coords[nodes_mask], connect, select=connect>0, cmap='viridis')
     else:
-        nodes_mask=None
-    connect = graph_edges_to_connect(graph_no_dummy, edge_attribute, nodes_mask)
+        c_obj = ConnectObj('edges', nodes_coords, connect, select=connect>0, cmap='viridis')
 
-
-    if nodes_color=='data':
-        data = gp.graph_nodes_attribute(graph_no_dummy, 'depth')
-        s_obj = SourceObj('S_left', s_coords, data=data[nodes_mask], color='red',
-                            edge_color='black', symbol='disc', edge_width=2.,
-                            radius_min=20., radius_max=30., alpha=.4)
-
-
-        """Color the sources according to data
-        """
-        s_obj.color_sources(data=data, cmap='plasma')
-    else:
-        s_obj = SourceObj('S_left', s_coords, color=nodes_color,
-                        edge_color='black', symbol='disc', edge_width=2.,
-                        radius_min=20., radius_max=30., alpha=.4)
-
-    # manage edges
-
-    #A = nx.adjacency_matrix(graph)
-    c_obj = ConnectObj('C_left', s_coords, connect, select=connect>0)
-    # c_obj = ConnectObj('C_left', s_coords, connect, color_by='strength',
+    # c_obj = ConnectObj('edges', s_coords, connect, color_by='strength',
     #                      cmap='viridis', vmin=0., vmax=.1,
     #                      under='gray', over='red')
 
-    return s_obj, c_obj
+    return c_obj
+
+
+def show_graph(graph_no_dummy, nodes_coords, node_color_attribute=None, edge_color_attribute=None, nodes_mask=None):
+
+    # manage nodes
+    s_obj, nodes_cb_obj = graph_nodes_to_sources(graph_no_dummy, nodes_coords, node_color_attribute, nodes_mask)
+
+    # manage edges
+    c_obj = graph_edges_to_connect(graph_no_dummy, nodes_coords, edge_color_attribute, nodes_mask)
+
+    return s_obj, c_obj, nodes_cb_obj
 
 
 def visbrain_plot(mesh, tex=None, caption=None, cblabel=None, visb_sc=None,
@@ -97,9 +99,7 @@ def visbrain_plot(mesh, tex=None, caption=None, cblabel=None, visb_sc=None,
     if tex is not None:
         b_obj.add_activation(data=tex, cmap=cmap,
                              clim=(np.min(tex), np.max(tex)))
-        CBAR_STATE = dict(cbtxtsz=20, txtsz=20., width=.1, cbtxtsh=3.,
-                          rect=(-.3, -2., 1., 4.), cblabel=cblabel)
-        cbar = ColorbarObj(b_obj, **CBAR_STATE)
+        cbar = ColorbarObj(b_obj, cblabel=cblabel, **CBAR_STATE)
         visb_sc.add_to_subplot(cbar, row=visb_sc_shape[0] - 1,
                                col=visb_sc_shape[1] + 1, width_max=200)
     return visb_sc
