@@ -99,9 +99,9 @@ def visbrain_plot(mesh, tex=None, caption=None, cblabel=None, visb_sc=None,
     if tex is not None:
         b_obj.add_activation(data=tex, cmap=cmap,
                              clim=(np.min(tex), np.max(tex)))
-        cbar = ColorbarObj(b_obj, cblabel=cblabel, **CBAR_STATE)
-        visb_sc.add_to_subplot(cbar, row=visb_sc_shape[0] - 1,
-                               col=visb_sc_shape[1] + 1, width_max=200)
+        # cbar = ColorbarObj(b_obj, cblabel=cblabel, **CBAR_STATE)
+        # visb_sc.add_to_subplot(cbar, row=visb_sc_shape[0] - 1,
+        #                        col=visb_sc_shape[1] + 1, width_max=200)
     return visb_sc
 
 

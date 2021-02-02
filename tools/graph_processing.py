@@ -30,9 +30,21 @@ def graph_nodes_attribute(graph, attribute):
     :param graph: networkx graph object
     :param attribute: string, node attribute to be extracted
     :return: a numpy array where i'th element corresponds to the i'th node in the graph
-    if 'attribute' is not a valid node attribute in graph, then the returned arry is empty
+    if 'attribute' is not a valid node attribute in graph, then the returned array is empty
     """
     att = list(nx.get_node_attributes(graph, attribute).values())
+    return np.array(att)
+
+
+def graph_edges_attribute(graph, attribute):
+    """
+    get the 'attribute' edge attribute from 'graph' as a numpy array
+    :param graph: networkx graph object
+    :param attribute: string, node attribute to be extracted
+    :return: a numpy array where i'th element corresponds to the i'th edge in the graph
+    if 'attribute' is not a valid attribute in graph, then the returned array is empty
+    """
+    att = list(nx.get_edge_attributes(graph, attribute).values())
     return np.array(att)
 
 
@@ -42,7 +54,7 @@ def remove_dummy_nodes(graph):
         graph.remove_nodes_from(np.where(np.array(is_dummy) == True)[0])
 
 
-def get_geodesic_distance_sphere(coord_a, coord_b, radius):
+def compute_geodesic_distance_sphere(coord_a, coord_b, radius):
     '''
     Return the geodesic distance of two 3D vectors on a sphere
     '''
@@ -60,7 +72,7 @@ def add_geodesic_distance_on_edges(graph):
 
     # Fill the dictionnary with the geodesic_distance
     for edge in graph.edges:
-        geodesic_distance = get_geodesic_distance_sphere(graph.nodes[edge[0]]["sphere_3dcoords"],
+        geodesic_distance = compute_geodesic_distance_sphere(graph.nodes[edge[0]]["sphere_3dcoords"],
                                                          graph.nodes[edge[1]]["sphere_3dcoords"],
                                                          radius=100)
 
