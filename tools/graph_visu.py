@@ -62,6 +62,17 @@ def graph_edges_to_connect(graph, nodes_coords, edge_attribute=None, nodes_mask=
     return c_obj
 
 
+def graph_edges_select(graph, nodes_coords, edge_attribute, attribute_threshold):
+
+    attr_mat = nx.attr_matrix(graph, edge_attr=edge_attribute)
+    conn_mat = attr_mat[0]
+
+    connect = np.ma.masked_array(np.array(conn_mat), False)
+    c_obj = ConnectObj('edges', nodes_coords, connect, select=connect>attribute_threshold, cmap='viridis')
+
+    return c_obj
+
+
 def show_graph(graph_no_dummy, nodes_coords, node_color_attribute=None, edge_color_attribute=None, nodes_mask=None):
 
     # manage nodes
