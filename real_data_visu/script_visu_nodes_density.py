@@ -4,13 +4,16 @@ import tools.graph_processing as gp
 
 
 if __name__ == "__main__":
-    path_to_graphs = '/mnt/data/work/python_sandBox/Graph_matching/data/OASIS_full_batch'
+
+    path_to_graphs = '../data/OASIS_full_batch/'
+    #path_to_graphs = '../data/simu_graph/' #simulated graphs
+
     list_graphs = gp.load_graphs_in_list(path_to_graphs)
     for graph in list_graphs:
         gp.remove_dummy_nodes(graph)
 
     # using an average mesh as template
-    template_mesh = '/mnt/data/work/python_sandBox/Graph_matching/data/template_mesh/lh.OASIS_testGrp_average_inflated.gii'
+    template_mesh = '../data/template_mesh/lh.OASIS_testGrp_average_inflated.gii'
     mesh = gv.reg_mesh(sio.load_mesh(template_mesh))
 
 

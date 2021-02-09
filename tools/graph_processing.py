@@ -8,7 +8,12 @@ def load_graphs_in_list(path):
     """
     Return a list of graph loaded from the path
     """
+
+    #simu_folders =['noise_10,outliers_0','noise_10,outliers_10','noise_50,outliers_0','noise_50,outliers_10'] #temporary solution
+
     path_to_graphs_folder = os.path.join(path, "modified_graphs")
+    #path_to_graphs_folder = os.path.join(path, simu_folders[0]+'/0/graphs' ) # for simulated graph
+
     list_graphs = []
     for i_graph in range(0, len(os.listdir(path_to_graphs_folder))):
         path_graph = os.path.join(path_to_graphs_folder, "graph_"+str(i_graph)+".gpickle")
