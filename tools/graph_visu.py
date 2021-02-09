@@ -2,9 +2,34 @@ import networkx as nx
 import numpy as np
 from visbrain.objects import SourceObj, ConnectObj, ColorbarObj
 import tools.graph_processing as gp
+import slam.differential_geometry as sdg
 
 CBAR_STATE = dict(cbtxtsz=30, txtsz=30., width=.1, cbtxtsh=3.,
                   rect=(-.3, -2., 1., 4.), txtcolor='k', border=False)
+
+
+def nodes_density_map(list_graphs, mesh, nb_iter=10, dt=0.5):
+    """
+    Return the smoothed texture of all non labeled points
+    """
+
+    mesh_size = mesh.vertices.shape[0]
+
+    # initialise texture
+    non_smoothed_texture = np.zeros(mesh_size)
+
+    for graph in list_graphs:
+        for node in graph.nodes:
+            non_smoothed_texture[graph.nodes[node]["ico100_7_vertex_index"]] += 1
+
+    # smooth the texture
+    smoothed_texture = sdg.laplacian_texture_smoothing(mesh,
+                                                       non_smoothed_texture,
+                                                       nb_iter,
+                                                       dt)
+
+    return smoothed_texture
+
 
 def get_visb_sc_shape(visb_sc):
     """
