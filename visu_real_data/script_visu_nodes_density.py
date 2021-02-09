@@ -5,7 +5,7 @@ import tools.graph_processing as gp
 
 if __name__ == "__main__":
 
-    path_to_graphs = '../data/OASIS_full_batch/'
+    path_to_graphs = '../data/OASIS_full_batch/modified_graphs'
     #path_to_graphs = '../data/simu_graph/' #simulated graphs
 
     list_graphs = gp.load_graphs_in_list(path_to_graphs)

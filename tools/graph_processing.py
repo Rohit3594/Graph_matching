@@ -4,14 +4,51 @@ import networkx as nx
 import pickle
 
 
-def load_graphs_in_list(path):
+def list_to_dict(list_in):
+    """
+    converter used for pitsgraph to networkx conversion
+    :param array:
+    :return:
+    """
+    D = {}
+    for i, l_i in enumerate(list_in):
+        D[i] = l_i
+    return D
+
+
+def sphere_nearest_neighbor_interpolation(graph, sphere_mesh, coord_attribute='coord'):
+    """
+    For each node in the graph,
+    find the closest vertex in the sphere mesh from the 'coord' attribute of each node
+    :param graph:
+    :param sphere_mesh:
+    :return:
+    """
+
+    nodes_coords = graph_nodes_attribute(graph, coord_attribute)
+    vertex_number1 = sphere_mesh.vertices.shape[0]
+
+    #print('vert_template.shape', vert_template.shape[0])
+    #print('vert_pits.shape', vert_pits.shape[0])
+    nn = np.zeros(nodes_coords.shape[0], dtype=np.int64)
+    for ind, v in enumerate(nodes_coords):
+        #print(v)
+        nn_tmp = np.argmin(np.sum(np.square(np.tile(v, (vertex_number1, 1)) - sphere_mesh.vertices), 1))
+        nn[ind] = nn_tmp
+    #print(nodes_coords.shape)
+    #print(len(nn))
+    nx.set_node_attributes(graph, list_to_dict(nn), 'ico100_7_vertex_index')
+    #return graph
+
+
+def load_graphs_in_list(path_to_graphs_folder):
     """
     Return a list of graph loaded from the path
     """
 
     #simu_folders =['noise_10,outliers_0','noise_10,outliers_10','noise_50,outliers_0','noise_50,outliers_10'] #temporary solution
 
-    path_to_graphs_folder = os.path.join(path, "modified_graphs")
+    #path_to_graphs_folder = os.path.join(path, "modified_graphs")
     #path_to_graphs_folder = os.path.join(path, simu_folders[0]+'/0/graphs' ) # for simulated graph
 
     list_graphs = []

@@ -11,13 +11,7 @@ import slam.topology as stop
 import slam.generate_parametric_surfaces as sgps
 import trimesh
 import os
-
-
-def geodesic_distance_sphere(coord_a, coord_b, radius):
-    ''' Return the geodesic distance of two 3D vectors on a sphere
-    '''
-    return radius * np.arccos(np.clip(np.dot(coord_a, coord_b) / np.power(radius,2),-1,1))
-
+import tools.graph_processing as gp
 
 def generate_reference_graph(nb_vertices, radius):
     
@@ -51,7 +45,7 @@ def generate_reference_graph(nb_vertices, radius):
         # We calculate the geodesic distance
         end_a = graph.nodes()[edge[0]]["coord"]
         end_b = graph.nodes()[edge[1]]["coord"]
-        geodesic_dist = geodesic_distance_sphere(end_a, end_b, radius)
+        geodesic_dist = gp.geodesic_distance_sphere(end_a, end_b, radius)
 
         # add the information in the dictionnary
         edge_attribute_dict[edge] = {"geodesic_distance": geodesic_dist, "id":id_counter}
@@ -101,7 +95,7 @@ def generate_noisy_graph(original_graph, nb_vertices, sigma_noise_nodes = 1, sig
         coordinate_a, coordinate_b = noisy_graph.nodes[end_a_corresponding]["coord"], noisy_graph.nodes[end_b_corresponding]["coord"]
 
         # calculate noisy geodesic distance
-        noisy_geodesic_dist = geodesic_distance_sphere(coordinate_a, coordinate_b, radius)
+        noisy_geodesic_dist = gp.geodesic_distance_sphere(coordinate_a, coordinate_b, radius)
 
         # Add the new edge to the graph
         noisy_graph.add_edge(end_a_corresponding, end_b_corresponding, weight = 1.0, geodesic_distance = noisy_geodesic_dist)
@@ -118,7 +112,7 @@ def get_nearest_neighbors(original_coordinates, list_neighbors, radius, nb_to_ta
     '''
     
     # We create the list of distances and sort it
-    distances = [(i, geodesic_distance_sphere(original_coordinates, current_coordinates, radius)) for i, current_coordinates in list_neighbors]
+    distances = [(i, gp.geodesic_distance_sphere(original_coordinates, current_coordinates, radius)) for i, current_coordinates in list_neighbors]
     distances.sort(key = lambda x: x[1])
     
     return distances[:nb_to_take]

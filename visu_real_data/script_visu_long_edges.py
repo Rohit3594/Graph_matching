@@ -11,7 +11,7 @@ import tools.graph_processing as gp
 if __name__ == "__main__":
     file_template_mesh = '../data/template_mesh/lh.OASIS_testGrp_average_inflated.gii'
     file_sphere_mesh = '../data/template_mesh/ico100_7.gii'
-    path_to_graphs = '../data/OASIS_full_batch'
+    path_to_graphs = '../data/OASIS_full_batch/modified_graphs'
     list_graphs = gp.load_graphs_in_list(path_to_graphs)
     geo_length_threshold = 80
 
