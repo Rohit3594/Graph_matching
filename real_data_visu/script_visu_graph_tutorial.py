@@ -1,10 +1,14 @@
+import sys
+sys.path.extend(['/home/rohit/PhD_Work/GM_my_version/Graph_matching'])
 import slam.io as sio
 import networkx as nx
 import tools.graph_visu as gv
 import tools.graph_processing as gp
 
 
+
 if __name__ == "__main__":
+
     file_template_mesh = '../data/template_mesh/lh.OASIS_testGrp_average_inflated.gii'
     file_mesh = '../data/example_individual_OASIS_0061/rh.white.gii'
     file_basins = '../data/example_individual_OASIS_0061/alpha0.03_an0_dn20_r1.5_R_area50FilteredTexture.gii'
