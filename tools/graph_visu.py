@@ -110,7 +110,7 @@ def show_graph(graph_no_dummy, nodes_coords, node_color_attribute=None, edge_col
 
 
 def visbrain_plot(mesh, tex=None, caption=None, cblabel=None, visb_sc=None,
-                  cmap='jet'):
+                  cmap='jet',clim=None):
     """
     Visualize a trimesh object using visbrain core plotting tool
     :param mesh: trimesh object
@@ -133,8 +133,13 @@ def visbrain_plot(mesh, tex=None, caption=None, cblabel=None, visb_sc=None,
                                col=visb_sc_shape[1], title=caption)
 
     if tex is not None:
+
+        if clim is not None:
+            b_obj.add_activation(data=tex, cmap=cmap,clim=clim)
+
         b_obj.add_activation(data=tex, cmap=cmap,
                              clim=(np.min(tex), np.max(tex)))
+
         # cbar = ColorbarObj(b_obj, cblabel=cblabel, **CBAR_STATE)
         # visb_sc.add_to_subplot(cbar, row=visb_sc_shape[0] - 1,
         #                        col=visb_sc_shape[1] + 1, width_max=200)
