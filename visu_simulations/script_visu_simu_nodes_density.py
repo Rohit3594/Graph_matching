@@ -29,7 +29,7 @@ if __name__ == "__main__":
                             tex=density_map,
                             caption='density map',
                             cmap="jet",
-                            clim=(-50,50)) #clim = cmap range, default = (min(data), max(data))
+                            clim=(-10,3)) #clim = cmap range, default = (min(data), max(data))
 
 
     visb_sc.preview()

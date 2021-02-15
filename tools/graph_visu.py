@@ -137,7 +137,8 @@ def visbrain_plot(mesh, tex=None, caption=None, cblabel=None, visb_sc=None,
         if clim is not None:
             b_obj.add_activation(data=tex, cmap=cmap,clim=clim)
 
-        b_obj.add_activation(data=tex, cmap=cmap,
+        else:
+            b_obj.add_activation(data=tex, cmap=cmap,
                              clim=(np.min(tex), np.max(tex)))
 
         # cbar = ColorbarObj(b_obj, cblabel=cblabel, **CBAR_STATE)
