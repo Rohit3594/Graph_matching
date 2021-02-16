@@ -357,9 +357,9 @@ if __name__ == '__main__':
     # #path_to_write = '/hpc/meca/users/auzias/ISBI2020_graph_matching/simu/generation_multi'
     nb_runs = 1
     nb_graphs = 130
-    nb_vertices = 85
-    min_noise = 100
-    max_noise = 140
+    nb_vertices = 89
+    min_noise = 0
+    max_noise = 100
     step_noise = 10
     min_outliers = 0
     max_outliers = 5

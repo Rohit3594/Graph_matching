@@ -9,7 +9,7 @@ if __name__ == "__main__":
     file_template_mesh = '../data/template_mesh/lh.OASIS_testGrp_average_inflated.gii'
     file_sphere_mesh = '../data/template_mesh/ico100_7.gii'
     simus_run = 0
-    path_to_graphs = '../data/simu_graph/noise_50,outliers_0/'+str(simus_run)+'/graphs'
+    path_to_graphs = '../data/simu_graph/noise_70,outliers_0/'+str(simus_run)+'/graphs'
     list_graphs = gp.load_graphs_in_list(path_to_graphs)
     # path_ref_graph = '../data/simu_graph/noise_0,outliers_0/'+str(simus_run)+'/ground_truth.gpickle'
     # graph_ref = nx.read_gpickle(path_ref_graph)
@@ -28,8 +28,7 @@ if __name__ == "__main__":
     visb_sc = gv.visbrain_plot(mesh=mesh,
                             tex=density_map,
                             caption='density map',
-                            cmap="jet",
-                            clim=(-10,3)) #clim = cmap range, default = (min(data), max(data))
+                            cmap="jet")
 
 
     visb_sc.preview()
