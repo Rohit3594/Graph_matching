@@ -22,6 +22,9 @@ def nodes_density_map(list_graphs, mesh, nb_iter=10, dt=0.5):
         for node in graph.nodes:
             non_smoothed_texture[graph.nodes[node]["ico100_7_vertex_index"]] += 1
 
+    # normalization with respect to the number of graphs
+    non_smoothed_texture = non_smoothed_texture/len(list_graphs)
+
     # smooth the texture
     smoothed_texture = sdg.laplacian_texture_smoothing(mesh,
                                                        non_smoothed_texture,
