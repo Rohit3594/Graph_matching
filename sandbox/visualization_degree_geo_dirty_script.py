@@ -8,7 +8,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import networkx as nx
 import sys
-sys.path.extend(['/home/rohit/PhD_Work/GM_my_version/Graph_matching'])
+#sys.path.extend(['/home/rohit/PhD_Work/GM_my_version/Graph_matching'])
 import slam.io as sio
 import networkx as nx
 import tools.graph_visu as gv
@@ -18,7 +18,7 @@ import random
 import plotly.express as px
 import plotly.figure_factory as ff
 
-path_1 = "/home/rohit/PhD_Work/GM_my_version/Graph_matching/data/OASIS_full_batch/modified_graphs/"
+path_1 = "../data/OASIS_full_batch/modified_graphs/"
 
 
 #generate random color codes for plotting
