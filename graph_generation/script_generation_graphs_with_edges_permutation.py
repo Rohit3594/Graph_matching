@@ -79,65 +79,40 @@ def generate_sphere_random_sampling(vertex_number=100, radius=1.0):
     return coords
 
 
-def generate_noisy_graph(original_graph, nb_vertices,nb_outliers, sigma_noise_nodes=1, sigma_noise_edges=1, radius=100):
+def generate_noisy_graph(original_graph, nb_vertices, nb_outliers, sigma_noise_nodes=1, sigma_noise_edges=1,
+                         radius=100):
     # Perturbate the coordinates
-    # noisy_coord = [points+np.random.multivariate_normal(np.zeros(3), np.eye(3) * sigma_noise_nodes)
-    # 	for points in list(nx.get_node_attributes(original_graph,'coord').values())]
 
-    ground_truth_permutation = np.arange(nb_vertices)
-    # create a new graph
-    noisy_graph = nx.Graph()
-    # add the nodes (not very clean but it works fine and run in no time)
-    for node_to_add in range(len(ground_truth_permutation)):
-        for original_node, current_node in enumerate(ground_truth_permutation):
-            if current_node == node_to_add:
-                # noisy_coordinate = original_graph.nodes[original_node]["coord"] + \
-                # 	np.random.multivariate_normal(np.zeros(3), np.eye(3) * sigma_noise_nodes)
+    noisy_coord = []
+    key = []
+    value = []
 
-                # Sampling from Von Mises - Fisher distribution
-                original_coord = original_graph.nodes[original_node]["coord"]
-                mean_original = original_coord / np.linalg.norm(original_coord)  # normalize to mean unit vector
-                noisy_coordinate = Sphere().sample(1, distribution='vMF', mu=mean_original,
-                                                   kappa=sigma_noise_nodes).sample[0]
+    for index in range(nb_vertices):
+        # Sampling from Von Mises - Fisher distribution
+        original_coord = original_graph.nodes[index]["coord"]
+        mean_original = original_coord / np.linalg.norm(original_coord)  # convert to mean vector
+        noisy_coordinate = Sphere().sample(1, distribution='vMF', mu=mean_original,
+                                           kappa=sigma_noise_nodes).sample[0]
 
-                noisy_coordinate  = noisy_coordinate * np.linalg.norm(original_coord)
-                noisy_graph.add_node(node_to_add, coord=noisy_coordinate)
-
-    noisy_coord = list(nx.get_node_attributes(noisy_graph, 'coord').values())
-
-    print("len noisy coord : ", len(noisy_coord))
+        noisy_coordinate = noisy_coordinate * np.linalg.norm(original_coord)
+        # print(noisy_coordinate)
+        noisy_coord.append(noisy_coordinate)
 
     # Add Outliers
+    sphere_random_sampling = []
     if nb_outliers > 0:
-        print("nb_outliers: ",nb_outliers)
+        print("nb_outliers: ", nb_outliers)
         sphere_random_sampling = generate_sphere_random_sampling(vertex_number=nb_outliers, radius=radius)
         # merge pertubated and outlier coordinates to add edges 
         all_coord = noisy_coord + list(sphere_random_sampling)
     else:
         all_coord = noisy_coord
 
-    print("nb_outliers: ",nb_outliers)
 
-        
+    noisy_graph = nx.Graph()
 
     compute_noisy_edges = tri_from_hull(all_coord)  # take all peturbated coord and comp conv hull.
     adja = stop.edges_to_adjacency_matrix(compute_noisy_edges)  # compute the new adjacency mat.
-
-    # Extracting the ground-truth correspondence
-    ground_truth_permutation = []
-    for ar1 in compute_noisy_edges.vertices.view(np.ndarray):
-        index = 0
-        for ar2 in noisy_coord:
-            if np.mean(ar1) == np.mean(ar2):
-                ground_truth_permutation.append(index)
-                index += 1
-                break
-            else:
-                index += 1
-                continue
-
-    print("Total Ground truth nodes: ", len(ground_truth_permutation))
-    print("Total number of nodes : ", len(compute_noisy_edges.vertices))
 
     noisy_graph = nx.from_numpy_matrix(adja.todense())
 
@@ -164,7 +139,46 @@ def generate_noisy_graph(original_graph, nb_vertices,nb_outliers, sigma_noise_no
     # add the edge attributes to the graph
     nx.set_edge_attributes(noisy_graph, edge_attribute_dict)
 
-    return np.array(ground_truth_permutation), noisy_graph
+    # Extracting the ground-truth correspondence
+
+    ground_truth_permutation = []
+
+    for ar1 in noisy_coord:
+        for i in range(len(noisy_graph.nodes)):
+
+            if np.mean(ar1) == np.mean(noisy_graph.nodes[i]['coord']):    
+                if i >=nb_vertices:
+                    key.append(i)
+                ground_truth_permutation.append(i)
+                break
+
+    print("len ground_truth_permutation: ", len(ground_truth_permutation))
+    print("len noisy_coord : ", len(noisy_coord))
+
+    for outlier in sphere_random_sampling:
+        for i in range(len(noisy_graph.nodes)):
+            if np.mean(noisy_graph.nodes[i]['coord']) == np.mean(outlier):
+                if i<nb_vertices:
+                    value.append(i)
+
+    if nb_outliers > 0:
+        index = 0
+        for j in range(len(ground_truth_permutation)):
+            if ground_truth_permutation[j] == key[index]:
+                ground_truth_permutation[j] = value[index]
+                index+=1
+                if index == len(key):
+                    break
+
+    key = key + value
+    value = value + key
+
+    mapping = dict(zip(key,value))
+    print("mapping :",mapping)
+
+    print("number of nodes in graphs: ", len(noisy_graph.nodes))
+
+    return ground_truth_permutation, noisy_graph
 
 
 def get_nearest_neighbors(original_coordinates, list_neighbors, radius, nb_to_take=10):
@@ -237,7 +251,8 @@ def generate_graph_family(nb_graphs, nb_vertices, radius, nb_outliers, ref_graph
 
     # We generate the n noisy graphs
     for c_graph in range(nb_graphs):
-        ground_truth, noisy_graph = generate_noisy_graph(reference_graph, nb_vertices,nb_outliers, noise_node, noise_edge)
+        ground_truth, noisy_graph = generate_noisy_graph(reference_graph, nb_vertices, nb_outliers, noise_node,
+                                                         noise_edge)
 
         # Add outliers
         # add_outliers(noisy_graph, nb_outliers, nb_neighbors_to_consider, radius)
@@ -320,11 +335,11 @@ if __name__ == '__main__':
     path_to_write = '../data/simu_graph'
 
     nb_runs = 1
-    nb_graphs = 134
-    nb_vertices = 72  # 72 based on Kaltenmark, MEDIA, 2020
-    min_noise = 900
-    max_noise = 1100
-    step_noise = 100
+    nb_graphs = 4
+    nb_vertices = 20  # 72 based on Kaltenmark, MEDIA, 2020
+    min_noise = 200
+    max_noise = 1800
+    step_noise = 800
     min_outliers = 0
     max_outliers = 20
     step_outliers = 4
