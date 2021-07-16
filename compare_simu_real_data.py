@@ -37,7 +37,7 @@ if __name__ == "__main__":
     fig_c = tp.error_plot(x=x, y=y, y_lower=y_lower, y_upper=y_upper, line_label='degree real data', color='rgb(20, 20, 200)')
 
     #simulated graphs
-    path_to_graphs = 'data/simu_graph/simu_graph_rohit/0/noise_1000,outliers_0/graphs/'
+    path_to_graphs = 'data/simu_graph/0/noise_800,outliers_16/graphs/'
         # Get the meshes
     list_graphs = gp.load_graphs_in_list(path_to_graphs)
     degree_list = list()
@@ -73,7 +73,7 @@ if __name__ == "__main__":
 
     fig.update_layout(
         yaxis_title='proportion',
-        title='distribution of degree',
+        title='noise_800,outliers_16',
         hovermode="x"
     )
     #fig.show(renderer="browser")

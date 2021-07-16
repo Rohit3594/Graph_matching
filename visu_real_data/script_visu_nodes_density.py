@@ -1,3 +1,6 @@
+import sys
+sys.path.append("/home/rohit/PhD_Work/GM_my_version/Graph_matching/")
+
 import slam.io as sio
 import tools.graph_visu as gv
 import tools.graph_processing as gp

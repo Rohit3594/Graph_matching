@@ -1,0 +1,12 @@
+target.config.bUnaryEnable = 0;%bUnaryEnable=1 use point-wise unary similarity, otherwise not
+target.config.bEdgeEnable = 1;%bEdgeEnable=1 use edge-wise 2nd-order similarity, otherwise not
+target.config.fileKey = '';% obsolete in demo code
+% target.config.bSaveHist = 0;% obsolete in demo code
+target.config.bSaveRandom = 0;% not to save the random graphs. it is used when reproducing the exact same results
+target.config.bCreateRandom = 1;% if set to 0, will read the random graphs from files
+target.config.affinityFGM = 0;% used for factorized graph matching, not used in this demo
+target.config.affinityBiDir = 1;% used for mOpt
+target.config.boostSampleRate = 1.1;%在search anchor graph的时候的采样比例 这里设置为大于1就是全采样
+
+% target.config.calAnchCorrFlag = 0;%no use
+target.config.bPermute = 1;% set the ground truth by identity matrix, other choices are not used in demo
