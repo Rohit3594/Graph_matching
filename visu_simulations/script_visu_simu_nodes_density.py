@@ -1,6 +1,5 @@
 import sys
 sys.path.append("/home/rohit/PhD_Work/GM_my_version/Graph_matching/")
-
 import os
 import networkx as nx
 import numpy as np
@@ -8,14 +7,16 @@ import matplotlib.pyplot as plt
 import tools.graph_visu as gv
 import tools.graph_processing as gp
 import slam.io as sio
+import slam.plot as splt
 
 if __name__ == "__main__":
     file_template_mesh = '../data/template_mesh/lh.OASIS_testGrp_average_inflated.gii'
     file_sphere_mesh = '../data/template_mesh/ico100_7.gii'
-    #simus_run = 0
+    simus_run = 0
     #path_to_graphs = '../data/simu_graph/noise_70,outliers_0/'+str(simus_run)+'/graphs'
-    path_to_graphs = '../data/simu_graph/0/noise_1000,outliers_0/graphs/'
+    path_to_graphs = '../data/simu_graph/ten_thous/'+str(simus_run)+'/noise_1200,outliers_16/graphs'
     list_graphs = gp.load_graphs_in_list(path_to_graphs)
+
     # path_ref_graph = '../data/simu_graph/noise_0,outliers_0/'+str(simus_run)+'/ground_truth.gpickle'
     # graph_ref = nx.read_gpickle(path_ref_graph)
     # list_graphs.append(graph_ref)
@@ -35,20 +36,17 @@ if __name__ == "__main__":
     plt.hist(density_map, bins=50)
     plt.show()
 
-    visb_sc = gv.visbrain_plot(mesh=mesh,
+    visb_sc = splt.visbrain_plot(mesh=mesh,
                             tex=density_map,
-                            caption='density map',
-                            cmap="jet",
-                            clim=(0, 0.03)) #clim = cmap range, default = (min(data), max(data))
+                            caption='Template mesh',
+                            cblabel='density') #clim = cmap range, default = (min(data), max(data))
 
 
-
+    
+    visb_sc = splt.visbrain_plot(mesh=sphere_mesh,
+                            tex=density_map,
+                            caption='Sphere mesh',
+                             cblabel='density', visb_sc=visb_sc)
+    
+    
     visb_sc.preview()
-    #
-    # visb_sc2 = gv.visbrain_plot(mesh=sphere_mesh,
-    #                         tex=density_map,
-    #                         caption='density map',
-    #                         cmap="jet")
-    #
-    #
-    # visb_sc2.preview()

@@ -8,7 +8,7 @@ if __name__ == "__main__":
     file_template_mesh = '../data/template_mesh/lh.OASIS_testGrp_average_inflated.gii'
     file_sphere_mesh = '../data/template_mesh/ico100_7.gii'
     simus_run = 0
-    path_to_graphs = '../data/simu_graph/'+str(simus_run)+'/noise_10,outliers_0/graphs'
+    path_to_graphs = '../data/simu_graph/ten_thous/'+str(simus_run)+'/noise_1200,outliers_16/graphs'
     list_graphs = gp.load_graphs_in_list(path_to_graphs)
 
     print(len(list_graphs))

@@ -280,18 +280,18 @@ def generate_graph_family(nb_sample_graphs, nb_graphs, nb_vertices, radius, nb_o
     for graphs,gt in zip(list_noisy_graphs,list_ground_truth):
         z = mean_edge_len(graphs)
     
-        if min(z) > 2.0:
+        if min(z) > 4.0:
             selected_graphs.append(graphs) # select the noisy graph.
             selected_ground_truth.append(gt) # and its corresponding ground-truth.
             min_geo.append(min(z))
 
 
     sorted_zipped_lists = zip(min_geo, selected_graphs)
-    sorted_zipped_lists = sorted(sorted_zipped_lists)
+    sorted_zipped_lists = sorted(sorted_zipped_lists,reverse = True)
     sorted_graphs = [element for _, element in sorted_zipped_lists]
 
     sorted_corr_gt = zip(min_geo, selected_ground_truth) # sort corresponding ground-truth
-    sorted_corr_gt = sorted(sorted_corr_gt)
+    sorted_corr_gt = sorted(sorted_corr_gt,reverse = True)
     sorted_ground_truth = [element for _, element in sorted_corr_gt]
 
 
@@ -388,7 +388,7 @@ if __name__ == '__main__':
     path_to_write = '/home/rohit/PhD_Work/GM_my_version/Graph_matching/data/simu_graph/ten_thous/'
 
     nb_runs = 1
-    nb_sample_graphs = 5000 #  # of graphs to generate before selecting the NN graphs with highest geodesic distance.
+    nb_sample_graphs = 10000 #  # of graphs to generate before selecting the NN graphs with highest geodesic distance.
     nb_graphs = 134 # nb of graphs to generate
     nb_vertices = 72  #72 based on Kaltenmark, MEDIA, 2020
     min_noise = 1200

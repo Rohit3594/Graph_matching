@@ -1,22 +1,28 @@
 import sys
 sys.path.append("/home/rohit/PhD_Work/GM_my_version/Graph_matching/")
-
 import slam.io as sio
 import tools.graph_visu as gv
 import tools.graph_processing as gp
 import matplotlib.pyplot as plt
 import numpy as np
+import slam.plot as splt
 
 if __name__ == "__main__":
 
     path_to_graphs = '../data/OASIS_full_batch/modified_graphs'
     #path_to_graphs = '../data/simu_graph/' #simulated graphs
 
+    file_sphere_mesh = '../data/template_mesh/ico100_7.gii'
+    sphere_mesh = sio.load_mesh(file_sphere_mesh)
+
+
     list_graphs = gp.load_graphs_in_list(path_to_graphs)
     graphs_nodes_number = list()
     for graph in list_graphs:
         gp.remove_dummy_nodes(graph)
         graphs_nodes_number.append(len(graph.nodes))
+        gp.sphere_nearest_neighbor_interpolation(graph, sphere_mesh)
+
     print('nodes numbers : ')
     print('mean=', np.mean(graphs_nodes_number))
     print('std=', np.std(graphs_nodes_number))
@@ -33,15 +39,29 @@ if __name__ == "__main__":
     plt.hist(density_map, bins=50)
     plt.show()
 
-    visb_sc = gv.visbrain_plot(mesh=mesh,
-                            tex=density_map,
-                            caption='density map',
-                            cmap="jet",
-                            clim=(0, 0.03))
+    # visb_sc = gv.visbrain_plot(mesh=mesh,
+    #                         tex=density_map,
+    #                         caption='density map',
+    #                         cmap="jet",
+    #                         #clim=(0, 0.03),
+    #                         cblabel='mean curvature')
 
+    visb_sc = splt.visbrain_plot(mesh=mesh, tex=density_map,
+                             caption='Template mesh',
+                             cblabel='density')
+
+    #visb_sc.preview()
+
+    # visb_sc2 = gv.visbrain_plot(mesh=sphere_mesh,
+    #                         tex=density_map,
+    #                         caption='density map',
+    #                         cmap="jet")
+
+    visb_sc = splt.visbrain_plot(mesh=sphere_mesh, tex=density_map,
+                             caption='Sphere mesh',
+                             cblabel='density', visb_sc=visb_sc)
 
     visb_sc.preview()
-
 
 
 

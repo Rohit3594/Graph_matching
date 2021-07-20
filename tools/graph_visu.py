@@ -3,6 +3,7 @@ import numpy as np
 from visbrain.objects import SourceObj, ConnectObj, ColorbarObj
 import tools.graph_processing as gp
 import slam.differential_geometry as sdg
+import slam.plot as splt
 
 CBAR_STATE = dict(cbtxtsz=30, txtsz=30., width=.1, cbtxtsh=3.,
                   rect=(-.3, -2., 1., 4.), txtcolor='k', border=False)
@@ -83,9 +84,9 @@ def graph_edges_to_connect(graph, nodes_coords, edge_attribute=None, nodes_mask=
     else:
         c_obj = ConnectObj('edges', nodes_coords, connect, select=connect>0, cmap='viridis')
 
-    # c_obj = ConnectObj('edges', s_coords, connect, color_by='strength',
-    #                      cmap='viridis', vmin=0., vmax=.1,
-    #                      under='gray', over='red')
+    c_obj = ConnectObj('edges', s_coords, connect, color_by='strength',
+                         cmap='viridis', vmin=0., vmax=.1,
+                         under='gray', over='red')
 
     return c_obj
 
