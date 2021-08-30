@@ -48,7 +48,8 @@ if __name__ == "__main__":
 
     visb_sc = splt.visbrain_plot(mesh=mesh, tex=density_map,
                              caption='Template mesh',
-                             cblabel='density')
+                             cblabel='density',
+                             cmap = 'jet')
 
     #visb_sc.preview()
 
@@ -59,7 +60,7 @@ if __name__ == "__main__":
 
     visb_sc = splt.visbrain_plot(mesh=sphere_mesh, tex=density_map,
                              caption='Sphere mesh',
-                             cblabel='density', visb_sc=visb_sc)
+                             cblabel='density',cmap ='jet', visb_sc=visb_sc)
 
     visb_sc.preview()
 

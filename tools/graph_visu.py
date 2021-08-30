@@ -27,12 +27,12 @@ def nodes_density_map(list_graphs, mesh, nb_iter=10, dt=0.5):
     non_smoothed_texture = non_smoothed_texture/len(list_graphs)
 
     # smooth the texture
-    smoothed_texture = sdg.laplacian_texture_smoothing(mesh,
-                                                       non_smoothed_texture,
-                                                       nb_iter,
-                                                       dt)
+    # smoothed_texture = sdg.laplacian_texture_smoothing(mesh,
+    #                                                    non_smoothed_texture,
+    #                                                    nb_iter,
+    #                                                    dt)
 
-    return smoothed_texture
+    return non_smoothed_texture
 
 
 def get_visb_sc_shape(visb_sc):
@@ -48,8 +48,8 @@ def get_visb_sc_shape(visb_sc):
 def graph_nodes_to_sources(graph_no_dummy, nodes_coords, node_color_attribute=None, nodes_mask=None):
     if nodes_mask is None:
         nodes_mask = np.ones((nodes_coords.shape[0],), dtype=np.bool)
-    s_obj = SourceObj('nodes', nodes_coords[nodes_mask], color='red',
-                        edge_color='black', symbol='disc', edge_width=2.,
+    s_obj = SourceObj('nodes', nodes_coords[nodes_mask], color='black',
+                        edge_color='black', symbol='clobber', edge_width=2.,
                         radius_min=30., radius_max=30., alpha=.9)
 
     """Color the sources according to data
@@ -60,9 +60,9 @@ def graph_nodes_to_sources(graph_no_dummy, nodes_coords, node_color_attribute=No
         # Get the colorbar of the source object
         cb_obj = ColorbarObj(s_obj, cblabel='node attribute : '+node_color_attribute, **CBAR_STATE)
     else:
-        s_obj = SourceObj('nodes', nodes_coords[nodes_mask], color='red',
-                        edge_color='black', symbol='disc', edge_width=2.,
-                        radius_min=20., radius_max=30., alpha=.4)
+        s_obj = SourceObj('nodes', nodes_coords[nodes_mask], color='black',
+                        edge_color='black', symbol='clobber', edge_width=2.,
+                        radius_min=15., radius_max=30., alpha=.4)
         cb_obj = None
     return s_obj, cb_obj
 
@@ -84,7 +84,7 @@ def graph_edges_to_connect(graph, nodes_coords, edge_attribute=None, nodes_mask=
     else:
         c_obj = ConnectObj('edges', nodes_coords, connect, select=connect>0, cmap='viridis')
 
-    c_obj = ConnectObj('edges', s_coords, connect, color_by='strength',
+    c_obj = ConnectObj('edges', nodes_coords, connect, color_by='strength',
                          cmap='viridis', vmin=0., vmax=.1,
                          under='gray', over='red')
 

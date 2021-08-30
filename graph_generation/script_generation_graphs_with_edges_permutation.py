@@ -13,6 +13,7 @@ import os
 import tools.graph_processing as gp
 from sphere import *
 from tqdm.auto import tqdm,trange
+import random
 
 
 
@@ -62,6 +63,13 @@ def tri_from_hull(vertices):
 	"""
     mesh = trimesh.Trimesh(vertices=vertices, process=False)
     return mesh.convex_hull
+
+
+def edge_len_threshold(graph,thr): # Adds a percentage of edges 
+    
+    edge_to_add = random.sample(list(graph.edges),round(len(graph.edges)*thr))
+
+    return edge_to_add
 
 
 def generate_sphere_random_sampling(vertex_number=100, radius=1.0):
@@ -163,7 +171,8 @@ def generate_noisy_graph(original_graph, nb_vertices, nb_outliers, sigma_noise_n
                 if i<nb_vertices:
                     value.append(i)
 
-    if nb_outliers > 0:
+
+    if nb_outliers > 0 and len(key)!=0:
         index = 0
         for j in range(len(ground_truth_permutation)):
             if ground_truth_permutation[j] == key[index]:
@@ -172,13 +181,21 @@ def generate_noisy_graph(original_graph, nb_vertices, nb_outliers, sigma_noise_n
                 if index == len(key):
                     break
 
-    key = key + value
-    value = value + key
+        key = key + value
+        value = value + key
 
-    mapping = dict(zip(key,value))
-    #print("mapping :",mapping)
+        mapping = dict(zip(key,value))
+        #print("mapping :",mapping)
+        #print("number of nodes in graphs: ", len(noisy_graph.nodes))
+        noisy_graph = nx.relabel_nodes(noisy_graph, mapping)
 
-    #print("number of nodes in graphs: ", len(noisy_graph.nodes))
+
+    # Remove 10% of random edges
+    edge_to_remove = edge_len_threshold(noisy_graph, 0.10)
+    noisy_graph.remove_edges_from(edge_to_remove)
+
+    noisy_graph.remove_edges_from(nx.selfloop_edges(noisy_graph))
+
 
     return ground_truth_permutation, noisy_graph
 
@@ -259,9 +276,14 @@ def generate_graph_family(nb_sample_graphs, nb_graphs, nb_vertices, radius, nb_o
         # Add outliers
         # add_outliers(noisy_graph, nb_outliers, nb_neighbors_to_consider, radius)
 
+        if nx.is_connected(noisy_graph) == False:
+            continue
+
+        if nx.is_connected(noisy_graph) == False:
+            print("Found disconnected components..!!")
+
         # Add id to edge
         add_integer_id_to_edges(noisy_graph)
-
 
         # Save the graph
         list_noisy_graphs.append(noisy_graph)
@@ -275,24 +297,24 @@ def generate_graph_family(nb_sample_graphs, nb_graphs, nb_vertices, radius, nb_o
     selected_graphs = []
     selected_ground_truth = []
 
-    print("Selecting graphs with min geodesic distance.....")
-
     for graphs,gt in zip(list_noisy_graphs,list_ground_truth):
         z = mean_edge_len(graphs)
     
-        if min(z) > 4.0:
+        if min(z) > 7.0:
             selected_graphs.append(graphs) # select the noisy graph.
             selected_ground_truth.append(gt) # and its corresponding ground-truth.
             min_geo.append(min(z))
 
 
-    sorted_zipped_lists = zip(min_geo, selected_graphs)
+    sorted_zipped_lists = zip(min_geo, selected_graphs, selected_ground_truth)
     sorted_zipped_lists = sorted(sorted_zipped_lists,reverse = True)
-    sorted_graphs = [element for _, element in sorted_zipped_lists]
 
-    sorted_corr_gt = zip(min_geo, selected_ground_truth) # sort corresponding ground-truth
-    sorted_corr_gt = sorted(sorted_corr_gt,reverse = True)
-    sorted_ground_truth = [element for _, element in sorted_corr_gt]
+    sorted_graphs = []
+    sorted_ground_truth = []
+
+    for l,m,n in sorted_zipped_lists:
+        sorted_graphs.append(m)
+        sorted_ground_truth.append(n)
 
 
     print("Verifying len of sorted_graphs,sorted_ground_truth,min_geo(should be equal):",len(sorted_graphs),len(sorted_ground_truth),len(min_geo))
@@ -304,10 +326,10 @@ def generate_graph_family(nb_sample_graphs, nb_graphs, nb_vertices, radius, nb_o
 
 
     # Save the ground truth permutation
-    for ground_truth in sorted_ground_truth[:nb_graphs]:
-        count = 0
+    count = 0
+    for ground_truth in sorted_ground_truth[:nb_graphs]: # Select the nb_graphs with largest min-geo distance
         ground_truth_perm_to_ref[count, :] = ground_truth
-        count +=1  
+        count +=1 
 
 
     # We generate the ground_truth permutation between graphs
@@ -384,22 +406,24 @@ def generate_n_graph_family_and_save(path_to_write, nb_runs, nb_ref_graph, nb_sa
                 np.save(os.path.join(path_parameters_folder, "ground_truth"), ground_truth_perm)
 
 
-if __name__ == '__main__':
-    path_to_write = '/home/rohit/PhD_Work/GM_my_version/Graph_matching/data/simu_graph/ten_thous/'
 
-    nb_runs = 1
-    nb_sample_graphs = 10000 #  # of graphs to generate before selecting the NN graphs with highest geodesic distance.
-    nb_graphs = 134 # nb of graphs to generate
-    nb_vertices = 72  #72 based on Kaltenmark, MEDIA, 2020
-    min_noise = 1200
-    max_noise = 1400
-    step_noise = 200
-    min_outliers = 16
-    max_outliers = 20
-    step_outliers = 4
+if __name__ == '__main__':
+    path_to_write = '/home/rohit/PhD_Work/GM_my_version/Graph_matching/data/simu_graph/0/test/'
+
+    nb_runs = 3
+    nb_sample_graphs = 2000 #  # of graphs to generate before selecting the NN graphs with highest geodesic distance.
+    nb_graphs = 20 # nb of graphs to generate
+    nb_vertices = 20  #72 based on Kaltenmark, MEDIA, 2020
+    min_noise = 200
+    max_noise = 1600
+    step_noise = 600
+    min_outliers = 0
+    max_outliers = 32
+    step_outliers = 8
     save_reference = 1
-    nb_ref_graph = 10000
+    nb_ref_graph = 1000
     radius = 100
+
 
     list_noise = np.arange(min_noise, max_noise, step_noise)
     list_outliers = np.array(list(range(min_outliers, max_outliers, step_outliers)))

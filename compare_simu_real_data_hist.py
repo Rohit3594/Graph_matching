@@ -23,7 +23,7 @@ if __name__ == "__main__":
         graph.remove_edges_from(nx.selfloop_edges(graph))
         degree_list.append(list(dict(nx.degree(graph)).values()))
     # compute the histos
-    bins = np.arange(0, max_degree_value,    max_degree_value/nb_bins)
+    bins = np.arange(0, max_degree_value, max_degree_value/nb_bins)
 
     degree_histo = list()
     for i_d, dist in enumerate(degree_list):
