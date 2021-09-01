@@ -84,9 +84,9 @@ def graph_edges_to_connect(graph, nodes_coords, edge_attribute=None, nodes_mask=
     else:
         c_obj = ConnectObj('edges', nodes_coords, connect, select=connect>0, cmap='viridis')
 
-    c_obj = ConnectObj('edges', nodes_coords, connect, color_by='strength',
-                         cmap='viridis', vmin=0., vmax=.1,
-                         under='gray', over='red')
+    # c_obj = ConnectObj('edges', nodes_coords, connect, color_by='strength',
+    #                      cmap='viridis', vmin=0., vmax=.1,
+    #                      under='gray', over='red')
 
     return c_obj
 
