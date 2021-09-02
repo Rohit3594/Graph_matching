@@ -1,5 +1,5 @@
 import sys
-sys.path.extend(['/home/rohit/PhD_Work/GM_my_version/Graph_matching'])
+sys.path.extend(['/home/rohit/PhD_data/Graph_matching'])
 import tools.graph_visu as gv
 import tools.graph_processing as gp
 import slam.io as sio
@@ -8,7 +8,7 @@ if __name__ == "__main__":
     file_template_mesh = '../data/template_mesh/lh.OASIS_testGrp_average_inflated.gii'
     file_sphere_mesh = '../data/template_mesh/ico100_7.gii'
     simus_run = 0
-    path_to_graphs = '../data/simu_graph/'+str(simus_run)+'/old/noise_1200,outliers_0/graphs'
+    path_to_graphs = '../data/simu_graph/0/test/0/noise_800,outliers_0/graphs'
     list_graphs = gp.load_graphs_in_list(path_to_graphs)
 
     print(len(list_graphs))
