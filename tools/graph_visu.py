@@ -49,19 +49,21 @@ def graph_nodes_to_sources(graph_no_dummy, nodes_coords, node_color_attribute=No
     if nodes_mask is None:
         nodes_mask = np.ones((nodes_coords.shape[0],), dtype=np.bool)
     s_obj = SourceObj('nodes', nodes_coords[nodes_mask], color='black',
-                        edge_color='black', symbol='clobber', edge_width=2.,
+                        edge_color='black', symbol='o', edge_width=2.,
                         radius_min=30., radius_max=30., alpha=.9)
 
     """Color the sources according to data
     """
     data = gp.graph_nodes_attribute(graph_no_dummy, node_color_attribute)
+    
     if len(data) > 0:
         s_obj.color_sources(data=data[nodes_mask], cmap='jet')
         # Get the colorbar of the source object
         cb_obj = ColorbarObj(s_obj, cblabel='node attribute : '+node_color_attribute, **CBAR_STATE)
+
     else:
         s_obj = SourceObj('nodes', nodes_coords[nodes_mask], color='black',
-                        edge_color='black', symbol='clobber', edge_width=2.,
+                        edge_color='black', symbol='o', edge_width=2.,
                         radius_min=15., radius_max=30., alpha=.4)
         cb_obj = None
     return s_obj, cb_obj
