@@ -1,0 +1,33 @@
+testType,bGraphMatch,unaryFeat,edgeFeat,inCntType,database,category,testCnt,iter#,total node#,outlier#,complete,density,deform,graph#,alg#,scale,edgeWeight,initConstWeight,consStep,constWeightMax,iterImmune
+formal,1,0,1,all,synthetic,deform,5,6,5,0,1.00,0.90,0.15,8,11,0.05,1.00,0.20,1.10,1.00,2
+
+test01
+,,rrwm,,,,cao*,,,,cao,,,,cao-c*,,,,cao-c,,,,cao-uc*,,,,cao-uc,,,,cao-pc*,,,,cao-pc,,,,mOpt,,,,mSync,,,,
+grh#, itr#, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time
+ 04,  06, 0.467, 1.012, 0.525, 0.033, 0.467, 1.031, 0.675, 0.052, 0.467, 0.987, 1.000, 0.053, 0.467, 1.031, 0.675, 0.040, 0.467, 0.987, 1.000, 0.042, 0.467, 1.031, 0.675, 0.041, 0.467, 0.987, 1.000, 0.043, 0.467, 1.031, 0.675, 0.042, 0.467, 0.987, 1.000, 0.043, 0.367, 0.947, 1.000, 0.055, 0.367, 0.965, 1.000, 0.043
+ 08,  06, 0.529, 1.036, 0.507, 0.153, 0.579, 1.062, 0.539, 0.348, 0.643, 0.973, 1.000, 0.393, 0.714, 1.043, 0.628, 0.340, 0.786, 0.984, 1.000, 0.343, 0.586, 1.061, 0.550, 0.256, 0.643, 0.973, 1.000, 0.259, 0.579, 1.062, 0.539, 0.206, 0.643, 0.973, 1.000, 0.209, 0.721, 0.978, 1.000, 0.185, 0.721, 0.978, 1.000, 0.171
+test02
+,,rrwm,,,,cao*,,,,cao,,,,cao-c*,,,,cao-c,,,,cao-uc*,,,,cao-uc,,,,cao-pc*,,,,cao-pc,,,,mOpt,,,,mSync,,,,
+grh#, itr#, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time
+ 04,  06, 0.333, 1.005, 0.650, 0.013, 0.333, 1.008, 0.775, 0.020, 0.300, 0.959, 1.000, 0.021, 0.333, 1.008, 0.775, 0.028, 0.300, 0.959, 1.000, 0.029, 0.333, 1.008, 0.775, 0.018, 0.300, 0.959, 1.000, 0.020, 0.333, 1.008, 0.775, 0.021, 0.300, 0.959, 1.000, 0.022, 0.267, 0.967, 1.000, 0.021, 0.267, 0.967, 1.000, 0.014
+ 08,  06, 0.579, 1.016, 0.593, 0.060, 0.664, 1.052, 0.684, 0.126, 0.807, 0.999, 1.000, 0.129, 0.807, 1.043, 0.794, 0.188, 0.900, 1.006, 1.000, 0.190, 0.664, 1.052, 0.684, 0.121, 0.807, 0.999, 1.000, 0.123, 0.664, 1.052, 0.684, 0.126, 0.807, 0.999, 1.000, 0.129, 0.543, 0.955, 1.000, 0.076, 0.636, 0.926, 1.000, 0.063
+test03
+,,rrwm,,,,cao*,,,,cao,,,,cao-c*,,,,cao-c,,,,cao-uc*,,,,cao-uc,,,,cao-pc*,,,,cao-pc,,,,mOpt,,,,mSync,,,,
+grh#, itr#, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time
+ 04,  06, 0.633, 0.990, 0.825, 0.010, 0.533, 1.004, 0.825, 0.019, 0.533, 0.983, 1.000, 0.021, 0.533, 1.004, 0.825, 0.016, 0.533, 0.983, 1.000, 0.018, 0.533, 1.004, 0.825, 0.021, 0.533, 0.983, 1.000, 0.025, 0.533, 1.004, 0.825, 0.015, 0.533, 0.983, 1.000, 0.017, 0.600, 0.990, 1.000, 0.017, 0.533, 0.983, 1.000, 0.012
+ 08,  06, 0.671, 1.026, 0.644, 0.047, 0.729, 1.055, 0.681, 0.107, 0.900, 1.019, 1.000, 0.109, 0.886, 1.027, 0.968, 0.216, 0.900, 1.019, 1.000, 0.218, 0.743, 1.053, 0.697, 0.133, 0.900, 1.019, 1.000, 0.136, 0.729, 1.055, 0.681, 0.107, 0.900, 1.019, 1.000, 0.109, 0.700, 0.972, 1.000, 0.078, 0.900, 1.019, 1.000, 0.049
+test04
+,,rrwm,,,,cao*,,,,cao,,,,cao-c*,,,,cao-c,,,,cao-uc*,,,,cao-uc,,,,cao-pc*,,,,cao-pc,,,,mOpt,,,,mSync,,,,
+grh#, itr#, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time
+ 04,  06, 0.200, 1.014, 0.550, 0.012, 0.300, 1.027, 0.800, 0.017, 0.167, 1.018, 1.000, 0.018, 0.300, 1.027, 0.800, 0.024, 0.167, 1.018, 1.000, 0.024, 0.300, 1.027, 0.800, 0.022, 0.167, 1.018, 1.000, 0.023, 0.300, 1.027, 0.800, 0.017, 0.167, 1.018, 1.000, 0.018, 0.300, 1.056, 1.000, 0.023, 0.233, 0.905, 1.000, 0.013
+ 08,  06, 0.314, 1.026, 0.446, 0.054, 0.471, 1.077, 0.649, 0.124, 0.393, 1.057, 1.000, 0.132, 0.393, 1.057, 1.000, 0.163, 0.393, 1.057, 1.000, 0.165, 0.450, 1.076, 0.721, 0.132, 0.393, 1.057, 1.000, 0.134, 0.400, 1.071, 0.786, 0.124, 0.393, 1.057, 1.000, 0.126, 0.393, 1.037, 1.000, 0.077, 0.293, 0.904, 1.000, 0.057
+test05
+,,rrwm,,,,cao*,,,,cao,,,,cao-c*,,,,cao-c,,,,cao-uc*,,,,cao-uc,,,,cao-pc*,,,,cao-pc,,,,mOpt,,,,mSync,,,,
+grh#, itr#, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time
+ 04,  06, 0.533, 1.104, 0.725, 0.016, 0.533, 1.104, 0.725, 0.019, 0.467, 1.034, 1.000, 0.020, 0.533, 1.104, 0.725, 0.018, 0.467, 1.034, 1.000, 0.019, 0.533, 1.104, 0.725, 0.027, 0.467, 1.034, 1.000, 0.028, 0.533, 1.104, 0.725, 0.018, 0.467, 1.034, 1.000, 0.019, 0.333, 1.056, 1.000, 0.022, 0.467, 1.034, 1.000, 0.016
+ 08,  06, 0.514, 1.032, 0.534, 0.073, 0.650, 1.060, 0.644, 0.120, 0.607, 0.957, 1.000, 0.122, 0.686, 1.053, 0.708, 0.243, 0.571, 0.907, 1.000, 0.256, 0.657, 1.059, 0.649, 0.153, 0.607, 0.957, 1.000, 0.162, 0.650, 1.060, 0.644, 0.135, 0.607, 0.957, 1.000, 0.138, 0.479, 0.963, 1.000, 0.088, 0.486, 0.903, 1.000, 0.107
+overall mean
+,,rrwm,,,,cao*,,,,cao,,,,cao-c*,,,,cao-c,,,,cao-uc*,,,,cao-uc,,,,cao-pc*,,,,cao-pc,,,,mOpt,,,,mSync,,,,
+grh#, itr#, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time, acc,  score, consis, time
+ 04,  06, 0.433, 1.025, 0.655, 0.017, 0.433, 1.035, 0.760, 0.025, 0.387, 0.996, 1.000, 0.027, 0.433, 1.035, 0.760, 0.025, 0.387, 0.996, 1.000, 0.026, 0.433, 1.035, 0.760, 0.026, 0.387, 0.996, 1.000, 0.028, 0.433, 1.035, 0.760, 0.023, 0.387, 0.996, 1.000, 0.024, 0.373, 1.003, 1.000, 0.028, 0.373, 0.971, 1.000, 0.020
+ 08,  06, 0.521, 1.027, 0.545, 0.077, 0.619, 1.061, 0.639, 0.165, 0.670, 1.001, 1.000, 0.177, 0.697, 1.045, 0.819, 0.230, 0.710, 0.994, 1.000, 0.234, 0.620, 1.060, 0.660, 0.159, 0.670, 1.001, 1.000, 0.163, 0.604, 1.060, 0.667, 0.140, 0.670, 1.001, 1.000, 0.142, 0.567, 0.981, 1.000, 0.101, 0.607, 0.946, 1.000, 0.089

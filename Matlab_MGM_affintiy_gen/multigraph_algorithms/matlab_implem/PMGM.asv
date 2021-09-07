@@ -1,0 +1,36 @@
+% permutation sync for graph matching
+% see more details in the NIP13 paper:
+% Pachauri et al. Solving the multi-way matching problem by permutation synchronization, NIPS 2013
+function [X] = PMGM(rawMat,nodeCnt,graphCnt)
+n = nodeCnt;
+% N = graphCnt;
+N = max([nodeCnt,graphCnt]);% for PMGM, graphCnt must be larger than nodeCnt
+cutoffeig_num = n;
+
+[u,~,~] = svd(rawMat);%[U,S,V] = SVD(X) X = U*S*V'
+cu = u(:,1:cutoffeig_num);%对U取前cutoffeig_num个特征向量
+
+B={};%有N个 这里因为X是对称阵，特征值分解和SVD分解等价，U=V'是X的特征向量，所以下面都直接拿U来搞（参见paper 公式12）
+% 所以下面的方法都是基于rawMat是对称阵，但不要求是离散的
+for i = 1:n:N*n%将每个left-singular vectors切割成N份：n*N x cutoffeig_num -> n x cutoffeig_num
+    B{(i+(n-1))/n} = cu(i:(i+n)-1,:);%n x cutoffeig_num
+end
+% Recovered permutation
+recPM=cell(N,1);
+recDiscMat = zeros(nodeCnt*graphCnt,nodeCnt*graphCnt);
+I = eye(n);
+for i = 1:N
+    tmp =  B{i}*B{1}';%拿第一个B{1}作为reference,见论文算法框Pi1的计算方式
+    [tmpU,~,tmpV]=svd(tmp);
+    recPM{i} = tmpU*tmpV';%closest orthogonal matrix to tmp
+% % % % % % % % % % % % % % % % % % % d
+    [c,~] = munkres(-recPM{i}');
+    recPM{i} = I(:,c);
+% % % % % % % % % % % % % % % % % % % 
+end
+for i = 1:N
+    for j = i+1:N
+        recDiscMat((i-1)*n+1:i*n,(j-1)*n+1:j*n) = recPM{i}*recPM{j}';       
+    end
+end
+X = recDiscMat + recDiscMat' + eye(nodeCnt*graphCnt);
