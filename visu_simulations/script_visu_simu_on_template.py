@@ -1,5 +1,5 @@
 import sys
-sys.path.extend(['/home/rohit/PhD_data/Graph_matching'])
+sys.path.extend(['/home/rohit/PhD_Work/GM_my_version/Graph_matching'])
 import tools.graph_visu as gv
 import tools.graph_processing as gp
 import slam.io as sio
@@ -8,7 +8,8 @@ if __name__ == "__main__":
     file_template_mesh = '../data/template_mesh/lh.OASIS_testGrp_average_inflated.gii'
     file_sphere_mesh = '../data/template_mesh/ico100_7.gii'
     simus_run = 0
-    path_to_graphs = '../data/simu_graph/0/test/0/noise_800,outliers_0/graphs'
+    
+    path_to_graphs = '../data/simu_graph/'+str(simus_run)+'/test/0/noise_200,outliers_0/graphs'
     list_graphs = gp.load_graphs_in_list(path_to_graphs)
 
     print(len(list_graphs))
@@ -19,8 +20,9 @@ if __name__ == "__main__":
     gp.remove_dummy_nodes(graph)
     gp.sphere_nearest_neighbor_interpolation(graph, sphere_mesh)
     nodes_coords = gp.graph_nodes_to_coords(graph, 'ico100_7_vertex_index', sphere_mesh)
+
     vb_sc = gv.visbrain_plot(sphere_mesh, caption='Visu of simulated graph on template mesh')
-    s_obj, c_obj, node_cb_obj = gv.show_graph(graph, nodes_coords)
+    s_obj, c_obj, node_cb_obj = gv.show_graph(graph, nodes_coords,node_color_attribute="coords")
     vb_sc.add_to_subplot(c_obj)
     vb_sc.add_to_subplot(s_obj)
 

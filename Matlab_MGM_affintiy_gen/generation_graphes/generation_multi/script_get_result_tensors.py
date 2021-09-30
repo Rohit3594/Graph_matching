@@ -172,6 +172,10 @@ def get_result_tensor_for_given_algorithm(path_to_folder, param_correspondence_d
             # load the algorithm result
             if name_of_result_file.find("X_pairwise") != -1:
                 algorithm_res = sio.loadmat(os.path.join(path_run_folder,name_of_result_file+".mat"))["full_assignment_mat"]
+
+            elif name_of_result_file.find("Hippi") != -1:
+                algorithm_res = np.load(os.path.join(path_run_folder,name_of_result_file))
+
             else:
                 algorithm_res = sio.loadmat(os.path.join(path_run_folder,name_of_result_file+".mat"))["X"]
             
@@ -186,15 +190,15 @@ def get_result_tensor_for_given_algorithm(path_to_folder, param_correspondence_d
             result_tensor[param_1_integer, param_2_integer, run_i] = accuracy
 
             # Add the time to the tensor
-            if name_of_result_file.find("X_pairwise") == -1:
-                if sub_folder_name == "":
-                    time = sio.loadmat(os.path.join(path_run_folder,"time"+name_of_sub_file[1:]+".mat"))["t"]
-                    time_tensor[param_1_integer, param_2_integer, run_i] = time
-                else:
-                    time = sio.loadmat(os.path.join(path_run_folder,sub_folder_name,"time"+name_of_sub_file[1:]+".mat"))["t"]
-                    time_tensor[param_1_integer, param_2_integer, run_i] = time
-                    
-    return (result_tensor, time_tensor)
+            # if name_of_result_file.find("X_pairwise") == -1:
+            #     if sub_folder_name == "":
+            #         time = sio.loadmat(os.path.join(path_run_folder,"time"+name_of_sub_file[1:]+".mat"))["t"]
+            #         time_tensor[param_1_integer, param_2_integer, run_i] = time
+            #     else:
+            #         time = sio.loadmat(os.path.join(path_run_folder,sub_folder_name,"time"+name_of_sub_file[1:]+".mat"))["t"]
+            #         time_tensor[param_1_integer, param_2_integer, run_i] = time
+            #print(result_tensor)
+    return result_tensor
 
 
 
@@ -279,12 +283,14 @@ def get_and_write_all_results(path_to_read, path_to_write, method, use_subgraphs
 
         # If we are looking at the situation using every graph available
         if not use_subgraphs:
+
             # compute the result of all the given algorithms
             # Create the final dict to be saved
             dict_to_be_saved = {"parameter_correspondence" : dict_parameters_correspondence,
-                                #"KerGM": get_result_tensor_for_given_algorithm(path_to_read, dict_parameters_correspondence, "X_pairwise_kergm", False, ),
-                                #"mSync": get_result_tensor_for_given_algorithm(path_to_read, dict_parameters_correspondence, "X_mSync"+suffix, False, use_precision=use_precision, use_F1=use_F1),
+                                "KerGM": get_result_tensor_for_given_algorithm(path_to_read, dict_parameters_correspondence, "X_pairwise_kergm", False, use_precision=use_precision, use_F1=use_F1),
+                                "mSync": get_result_tensor_for_given_algorithm(path_to_read, dict_parameters_correspondence, "X_mSync"+suffix, False, use_precision=use_precision, use_F1=use_F1),
                                 "mALS": get_result_tensor_for_given_algorithm(path_to_read, dict_parameters_correspondence, "X_mALS"+suffix, False, use_precision=use_precision, use_F1=use_F1),
+                                "Hippi": get_result_tensor_for_given_algorithm(path_to_read, dict_parameters_correspondence, "Hippi_res_mat.npy", False, use_precision=use_precision, use_F1=use_F1),
                                 #"mOpt": get_result_tensor_for_given_algorithm(path_to_read, dict_parameters_correspondence, "X_mOpt"+suffix, False),
                                 #"cao":  get_result_tensor_for_given_algorithm(path_to_read, dict_parameters_correspondence, "X_cao"+suffix, False),
                                 #"cao_o":  get_result_tensor_for_given_algorithm(path_to_read, dict_parameters_correspondence, "X_cao_o"+suffix, False),
@@ -301,20 +307,20 @@ def get_and_write_all_results(path_to_read, path_to_write, method, use_subgraphs
                                 #"cao_cst":  get_result_tensor_for_given_algorithm(path_to_read, dict_parameters_correspondence, "X_cao_cst"+suffix, False),
                                 #"cao_cst_o":  get_result_tensor_for_given_algorithm(path_to_read, dict_parameters_correspondence, "X_cao_cst_o"+suffix, False, use_precision=use_precision, use_F1=use_F1),
                                 #"cao_cst_s_o":  get_result_tensor_for_given_algorithm(path_to_read, dict_parameters_correspondence, "X_cao_cst_s_o"+suffix, False),
-                                "ipf": get_result_tensor_for_given_algorithm(path_to_read, dict_parameters_correspondence, "X_pairwise_ipf"+suffix, False, use_precision=use_precision, use_F1=use_F1),
-                                "smac": get_result_tensor_for_given_algorithm(path_to_read, dict_parameters_correspondence, "X_pairwise_smac"+suffix, False, use_precision=use_precision, use_F1=use_F1),
-                                "rrwm": get_result_tensor_for_given_algorithm(path_to_read, dict_parameters_correspondence, "X_pairwise_rrwm"+suffix, False, use_precision=use_precision, use_F1=use_F1),
+                                #"ipf": get_result_tensor_for_given_algorithm(path_to_read, dict_parameters_correspondence, "X_pairwise_ipf"+suffix, False, use_precision=use_precision, use_F1=use_F1),
+                                #"smac": get_result_tensor_for_given_algorithm(path_to_read, dict_parameters_correspondence, "X_pairwise_smac"+suffix, False, use_precision=use_precision, use_F1=use_F1),
+                                #"rrwm": get_result_tensor_for_given_algorithm(path_to_read, dict_parameters_correspondence, "X_pairwise_rrwm"+suffix, False, use_precision=use_precision, use_F1=use_F1),
                                 #"KerGM_2": get_result_tensor_for_given_algorithm(path_to_read, dict_parameters_correspondence, "X_pairwise_kergm_2"+suffix, False, use_precision=use_precision, use_F1=use_F1),
                                 
             }
 
             # add the initial method
-            if method == "KerGM":
-                dict_to_be_saved["KerGM"] = get_result_tensor_for_given_algorithm(path_to_read, dict_parameters_correspondence, "X_pairwise_kergm", False, use_precision=use_precision, use_F1=use_F1)
-            elif method == "good_guess":
-                dict_to_be_saved["good_guess"] = get_result_tensor_for_given_algorithm(path_to_read, dict_parameters_correspondence, "X_pairwise_goodguess", False, use_precision=use_precision)
-            else:
-                print("not an authorized pairwise method, something is wrong")
+            # if method == "KerGM":
+            #     dict_to_be_saved["KerGM"] = get_result_tensor_for_given_algorithm(path_to_read, dict_parameters_correspondence, "X_pairwise_kergm", False, use_precision=use_precision, use_F1=use_F1)
+            # elif method == "good_guess":
+            #     dict_to_be_saved["good_guess"] = get_result_tensor_for_given_algorithm(path_to_read, dict_parameters_correspondence, "X_pairwise_goodguess", False, use_precision=use_precision)
+            # else:
+            #     print("not an authorized pairwise method, something is wrong")
 
                 
         # If we want to get the results with different numbers of graph used
@@ -382,10 +388,17 @@ def get_and_write_all_results(path_to_read, path_to_write, method, use_subgraphs
                                        
     
 
+    
+
     # Save the dict in the given directory
-    pickle_out = open(path_to_write,"wb")
-    pickle.dump(dict_to_be_saved, pickle_out)
-    pickle_out.close()
+    # pickle_out = open(path_to_write,"wb")
+    # pickle.dump(dict_to_be_saved, pickle_out)
+    # pickle_out.close()
+    print(dict_to_be_saved)
+    conversion_to_list = [dict_to_be_saved]
+    pickle.dump(conversion_to_list, open(path_to_write, "wb"))
+    np.save(path_to_write[:path_to_write.find('.')],conversion_to_list)
+    
     
 
 
@@ -395,19 +408,19 @@ if __name__ == "__main__":
 
     # We parse the argument from command line
     parser = argparse.ArgumentParser(description="Generate the result tensors from the algorithms that have ben ran on the simulated graphs")
-    parser.add_argument("path_to_read", help="path where the folders contains the graphs and the algorithms results")
-    parser.add_argument("path_to_write", help="path where to write the results")
-    parser.add_argument("--method_pairwise", help="The method used to generate the original full pairwise matrix (KerGM or good_guess)", default="KerGM")
+    #parser.add_argument("path_to_read", help="path where the folders contains the graphs and the algorithms results")
+    #parser.add_argument("path_to_write", help="path where to write the results")
+    #parser.add_argument("--method_pairwise", help="The method used to generate the original full pairwise matrix (KerGM or good_guess)", default="KerGM")
     parser.add_argument("--use_subgraphs", help="Whether or not the result of multigraph matching have been calculating using different numbers of graphs", default=0, type=int)
     parser.add_argument("--use_precision", help="Whether or not the loss measure used is the recall or the precision. Only important for partial matching algorithms", default=0, type=int)
-    parser.add_argument("--use_F1", help="Whether or not the loss measure used is the F1 or not. Only important for partial matching algorithms or cases with no outliers", default=0, type=int)
+    parser.add_argument("--use_F1", help="Whether or not the loss measure used is the F1 or not. Only important for partial matching algorithms or cases with no outliers", default=1, type=int)
     args = parser.parse_args()
 
     
-    path_to_read = args.path_to_read
-    path_to_write = args.path_to_write
-    method_pairwise = args.method_pairwise
-    use_subgraphs = args.use_subgraphs
+    path_to_read = "/home/rohit/PhD_Work/GM_my_version/Graph_matching/data/simu_graph/Results_from_frioul/test_for_multi_1/"
+    path_to_write = "/home/rohit/PhD_Work/GM_my_version/Graph_matching/data/simu_graph/Results_from_frioul/Results_F1.pickle"
+    method_pairwise = "KerGM"
+    use_subgraphs = False
     use_precision = args.use_precision
     use_F1 = args.use_F1
 

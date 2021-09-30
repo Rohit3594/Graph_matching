@@ -238,7 +238,6 @@ def get_in_between_perm_matrix(perm_mat_1, perm_mat_2):
 	Given two permutation from noisy graphs to a reference graph,
 	Return the permutation matrix to go from one graph to the other
 	"""
-
     result_perm = np.zeros((perm_mat_1.shape[0],), dtype=int)
 
     for node_reference, node_noisy_1 in enumerate(perm_mat_1):
@@ -257,7 +256,6 @@ def generate_graph_family(nb_sample_graphs, nb_graphs, nb_vertices, radius, nb_o
 	Generate n noisy graphs from a reference graph alongside the 
 	ground truth permutation matrices.
 	"""
-
     # Generate the reference graph
     reference_graph = ref_graph
 
@@ -408,20 +406,20 @@ def generate_n_graph_family_and_save(path_to_write, nb_runs, nb_ref_graph, nb_sa
 
 
 if __name__ == '__main__':
-    path_to_write = '/home/rohit/PhD_Work/GM_my_version/Graph_matching/data/simu_graph/0/test/'
+    path_to_write = '/home/rohit/PhD_Work/GM_my_version/Graph_matching/data/simu_graph/final_new_simu/other_9_trials/'
 
-    nb_runs = 3
-    nb_sample_graphs = 2000 #  # of graphs to generate before selecting the NN graphs with highest geodesic distance.
-    nb_graphs = 20 # nb of graphs to generate
-    nb_vertices = 20  #72 based on Kaltenmark, MEDIA, 2020
+    nb_runs = 1
+    nb_sample_graphs = 5000 #  # of graphs to generate before selecting the NN graphs with highest geodesic distance.
+    nb_graphs = 134 # nb of graphs to generate
+    nb_vertices = 72  #72 based on Kaltenmark, MEDIA, 2020
     min_noise = 200
     max_noise = 1600
     step_noise = 600
     min_outliers = 0
-    max_outliers = 32
-    step_outliers = 8
+    max_outliers = 24
+    step_outliers = 6
     save_reference = 1
-    nb_ref_graph = 1000
+    nb_ref_graph = 5000
     radius = 100
 
 

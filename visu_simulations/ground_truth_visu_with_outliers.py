@@ -1,5 +1,5 @@
 import sys
-sys.path.extend(['/home/rohit/PhD_data/Graph_matching'])
+sys.path.append("/home/rohit/PhD_Work/GM_my_version/Graph_matching/")
 import tools.graph_visu as gv
 import tools.graph_processing as gp
 import slam.io as sio
