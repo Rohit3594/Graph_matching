@@ -9,6 +9,13 @@ CBAR_STATE = dict(cbtxtsz=30, txtsz=30., width=.1, cbtxtsh=3.,
                   rect=(-.3, -2., 1., 4.), txtcolor='k', border=False)
 
 
+def graph_nodes_coords_to_sources(graph_no_dummy):
+    nodes_coords = gp.graph_nodes_attribute(graph_no_dummy, 'sphere_3dcoords')
+    s_obj = SourceObj('nodes', nodes_coords, color='black',
+                        radius_min=15., radius_max=15., alpha=.9)
+    return s_obj
+
+
 def nodes_density_map(list_graphs, mesh, nb_iter=10, dt=0.5):
     """
     Return the smoothed texture of all non labeled points
@@ -45,7 +52,7 @@ def get_visb_sc_shape(visb_sc):
     return k[-1]
 
 
-def graph_nodes_to_sources(graph_no_dummy, nodes_coords, node_color_attribute=None, nodes_mask=None):
+def graph_nodes_to_sources(graph_no_dummy, nodes_coords, node_color_attribute=None, nodes_mask=None, c_map=None):
     if nodes_mask is None:
         nodes_mask = np.ones((nodes_coords.shape[0],), dtype=np.bool)
     s_obj = SourceObj('nodes', nodes_coords[nodes_mask], color='black',
@@ -57,7 +64,9 @@ def graph_nodes_to_sources(graph_no_dummy, nodes_coords, node_color_attribute=No
     data = gp.graph_nodes_attribute(graph_no_dummy, node_color_attribute)
     
     if len(data) > 0:
-        s_obj.color_sources(data=data[nodes_mask], cmap='jet')
+        if c_map is None:
+            c_map = 'jet'
+        s_obj.color_sources(data=data[nodes_mask], cmap=c_map)
         # Get the colorbar of the source object
         cb_obj = ColorbarObj(s_obj, cblabel='node attribute : '+node_color_attribute, **CBAR_STATE)
 
