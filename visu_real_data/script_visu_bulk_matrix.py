@@ -101,6 +101,7 @@ if __name__ == "__main__":
     #match_no_dummy_mSync = 100*np.sum(x_mSync[:, not_dummy_vect],1)/ nb_graphs
     #match_dummy_mSync = 100*np.sum(x_mSync[:, is_dummy_vect],1)/ nb_graphs
     nb_bins=50
+    dens = False
     # fig1, ax = plt.subplots(1,2)
     # ax[1].hist(match_dummy_mSync, density=True, bins=nb_bins)  # density=False would make counts
     # ax[1].set_ylabel('Frequency')
@@ -112,19 +113,19 @@ if __name__ == "__main__":
     # ax[1].set_xlabel('Data')
     # ax[1].set_title(' dummy match for mALS')
     fig1, ax = plt.subplots(1, 4, sharey=True)
-    ax[0].hist(match_no_dummy_kerGM, density=True, bins=nb_bins)  # density=False would make counts
+    ax[0].hist(match_no_dummy_kerGM, density=dens, bins=nb_bins)  # density=False would make counts
     ax[0].set_ylabel('Frequency')
     ax[0].set_xlabel('Data')
     ax[0].set_title('no dummy match for kerGM')
-    ax[1].hist(match_no_dummy_Hippi, density=True, bins=nb_bins)  # density=False would make counts
+    ax[1].hist(match_no_dummy_Hippi, density=dens, bins=nb_bins)  # density=False would make counts
     ax[1].set_ylabel('Frequency')
     ax[1].set_xlabel('Data')
     ax[1].set_title('no dummy match for Hippi')
-    ax[2].hist(match_no_dummy_mALS, density=True, bins=nb_bins)  # density=False would make counts
+    ax[2].hist(match_no_dummy_mALS, density=dens, bins=nb_bins)  # density=False would make counts
     ax[2].set_ylabel('Frequency')
     ax[2].set_xlabel('Data')
     ax[2].set_title('no dummy match formALS')
-    ax[3].hist(match_no_dummy_mSync, density=True, bins=nb_bins)  # density=False would make counts
+    ax[3].hist(match_no_dummy_mSync, density=dens, bins=nb_bins)  # density=False would make counts
     ax[3].set_ylabel('Frequency')
     ax[3].set_xlabel('Data')
     ax[3].set_title('no dummy match for mSync')
@@ -149,7 +150,8 @@ if __name__ == "__main__":
 
         data_mask = gp.remove_dummy_nodes(g)
 
-
+        print(np.min(data_match_no_dummy_mSync[data_mask]))
+        print(np.max(data_match_no_dummy_mSync[data_mask]))
         s_obj, cb_obj = show_graph_nodes(g, mesh, data=data_match_no_dummy_mSync[data_mask], clim=clim)
         vb_sc.add_to_subplot(s_obj)
 
