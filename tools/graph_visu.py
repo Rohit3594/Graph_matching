@@ -52,7 +52,12 @@ def get_visb_sc_shape(visb_sc):
     return k[-1]
 
 
-def graph_nodes_to_sources(graph_no_dummy, nodes_coords, node_color_attribute=None, nodes_mask=None, c_map=None):
+def graph_nodes_to_sources(graph_no_dummy, nodes_coords, node_data=None, nodes_mask=None, c_map=None):
+    # dilate a bit the coords to make the circles correspoding to sources more visible
+    transl_bary = np.mean(nodes_coords)
+    nodes_coords = 1.01*(nodes_coords-transl_bary)+transl_bary
+
+    # apply the mask if provided
     if nodes_mask is None:
         nodes_mask = np.ones((nodes_coords.shape[0],), dtype=np.bool)
     s_obj = SourceObj('nodes', nodes_coords[nodes_mask], color='black',
@@ -61,14 +66,13 @@ def graph_nodes_to_sources(graph_no_dummy, nodes_coords, node_color_attribute=No
 
     """Color the sources according to data
     """
-    data = gp.graph_nodes_attribute(graph_no_dummy, node_color_attribute)
     
-    if len(data) > 0:
+    if node_data is not None:
         if c_map is None:
             c_map = 'jet'
-        s_obj.color_sources(data=data[nodes_mask], cmap=c_map)
+        s_obj.color_sources(data=node_data[nodes_mask], cmap=c_map)
         # Get the colorbar of the source object
-        cb_obj = ColorbarObj(s_obj, cblabel='node attribute : '+node_color_attribute, **CBAR_STATE)
+        cb_obj = ColorbarObj(s_obj, **CBAR_STATE)
 
     else:
         s_obj = SourceObj('nodes', nodes_coords[nodes_mask], color='black',
@@ -116,7 +120,11 @@ def graph_edges_select(graph, nodes_coords, edge_attribute, attribute_threshold)
 def show_graph(graph_no_dummy, nodes_coords, node_color_attribute=None, edge_color_attribute=None, nodes_mask=None):
 
     # manage nodes
-    s_obj, nodes_cb_obj = graph_nodes_to_sources(graph_no_dummy, nodes_coords, node_color_attribute, nodes_mask)
+    if node_color_attribute is not None:
+        node_data = gp.graph_nodes_attribute(graph_no_dummy, node_color_attribute)
+    else:
+        node_data = None
+    s_obj, nodes_cb_obj = graph_nodes_to_sources(graph_no_dummy, nodes_coords, node_data, nodes_mask)
 
     # manage edges
     c_obj = graph_edges_to_connect(graph_no_dummy, nodes_coords, edge_color_attribute, nodes_mask)

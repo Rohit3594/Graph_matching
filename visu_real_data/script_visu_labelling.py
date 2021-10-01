@@ -38,11 +38,12 @@ if __name__ == "__main__":
     # vb_sc.add_to_subplot(s_obj)
     # vb_sc.preview()
 
-    for ind_g, g in enumerate(list_graphs):
+    for ind_g, g in enumerate(list_graphs[:1]):
         gp.remove_dummy_nodes(g)
         label_nodes_according_to_coord(g, mesh, coord_dim=1)
         nodes_coords = gp.graph_nodes_to_coords(g, 'ico100_7_vertex_index', mesh)
-        s_obj, nodes_cb_obj = gv.graph_nodes_to_sources(g, nodes_coords, node_color_attribute="label_color", nodes_mask=None, c_map='nipy_spectral')#'rainbow')
+        node_data = gp.graph_nodes_attribute(g, "label_color")
+        s_obj, nodes_cb_obj = gv.graph_nodes_to_sources(g, nodes_coords, node_data=node_data, nodes_mask=None, c_map='nipy_spectral')#'rainbow')
         vb_sc.add_to_subplot(s_obj)
 
     vb_sc.preview()
