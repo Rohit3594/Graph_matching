@@ -54,6 +54,10 @@ if __name__ == "__main__":
     template_mesh = '/home/rohit/PhD_Work/GM_my_version/Graph_matching/data/template_mesh/lh.OASIS_testGrp_average_inflated.gii'
     path_to_graphs = '/home/rohit/PhD_Work/GM_my_version/Graph_matching/data/OASIS_full_batch/modified_graphs'
 
+    Hippi_path = '/home/rohit/PhD_Work/GM_my_version/RESULT_FRIOUL_HIPPI/Hippi_res_real_mat.npy'
+
+
+
     path_to_match_mat = "/home/rohit/PhD_Work/GM_my_version/Graph_matching/data/OASIS_full_batch"
 
     list_graphs = gp.load_graphs_in_list(path_to_graphs)
@@ -61,10 +65,12 @@ if __name__ == "__main__":
     x_mSync = sco.loadmat(os.path.join(path_to_match_mat,"X_mSync.mat"))["X"]
     x_mALS = sco.loadmat(os.path.join(path_to_match_mat,"X_mALS.mat"))["X"]
     x_cao = sco.loadmat(os.path.join(path_to_match_mat,"X_cao_cst_o.mat"))["X"]
+    Hippi = np.load(Hippi_path)
+    x_Kergm = sco.loadmat(os.path.join(path_to_match_mat,"X_pairwise_kergm.mat"))["full_assignment_mat"]
 
 
     clim=(0, 1)
-    matching_matrix = x_mSync
+    matching_matrix = Hippi
     nb_graphs = 134
 
     is_dummy = []
@@ -73,6 +79,9 @@ if __name__ == "__main__":
         is_dummy.append(list(nx.get_node_attributes(sing_graph,"is_dummy").values()))
     
     is_dummy_vect = [val for sublist in is_dummy for val in sublist]
+
+    print("len is_dummy_vect",len(is_dummy_vect))
+    print("shape matching mat",matching_matrix.shape)
 
     # # Get the mesh
     mesh = sio.load_mesh(template_mesh)
@@ -94,10 +103,10 @@ if __name__ == "__main__":
 
         his_data = list(nx.get_node_attributes(g,'label_color').values())
 
-        plt.hist(his_data, density=False, bins=30) # density=False would make counts
+        plt.hist(his_data, density=False, bins=50) # density=False would make counts
         plt.ylabel('Frequency')
         plt.xlabel('Data')
-        plt.title('For 1 graph: number of nodes matched across graphs by mSync')
+        plt.title('For 1 graph: number of nodes matched across graphs by Hippi')
         plt.show()
 
 
