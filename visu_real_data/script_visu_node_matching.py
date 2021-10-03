@@ -87,11 +87,12 @@ if __name__ == "__main__":
     mesh = sio.load_mesh(template_mesh)
     vb_sc = gv.visbrain_plot(mesh)
 
-    for i in range(2):
+    for i in range(nb_graphs):
         match_label_per_graph={}
     
         g = p.load(open("../data/OASIS_full_batch/modified_graphs/graph_"+str(i)+".gpickle","rb"))
         nb_nodes = len(g.nodes)
+        gp.remove_dummy_nodes(g)
         scope = range(i * nb_nodes, (i + 1) * nb_nodes)
         for node_indx,ind in enumerate(scope):
             match_indexes = np.where(matching_matrix[ind,:]==1)[0]

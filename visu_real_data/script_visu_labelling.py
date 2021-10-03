@@ -1,5 +1,5 @@
 import sys
-#sys.path.extend(['/home/rohit/PhD_Work/GM_my_version/Graph_matching'])
+sys.path.extend(['/home/rohit/PhD_Work/GM_my_version/Graph_matching'])
 import slam.io as sio
 import tools.graph_visu as gv
 import tools.graph_processing as gp
@@ -19,20 +19,63 @@ def label_nodes_according_to_coord(graph_no_dummy, template_mesh, coord_dim=1):
         nodes_attributes[node] = {"label_color": one_nodes_coords_scaled[ind]}
 
     nx.set_node_attributes(graph_no_dummy, nodes_attributes)
+    return one_nodes_coords_scaled
 
 if __name__ == "__main__":
     #template_mesh = '/mnt/data/work/python_sandBox/Graph_matching/data/template_mesh/ico100_7.gii'
     template_mesh = '../data/template_mesh/lh.OASIS_testGrp_average_inflated.gii'
     path_to_graphs = '../data/OASIS_full_batch/modified_graphs'
 
-    path_to_match_mat = "../data/OASIS_full_batch/X_mALS.mat"
+    path_to_match_mat = "../data/OASIS_full_batch/X_mSync.mat"
 
     list_graphs = gp.load_graphs_in_list(path_to_graphs)
 
-    x_mSync = sco.loadmat(path_to_match_mat)['X']
+    X = sco.loadmat(path_to_match_mat)['X']
 
-    matching_matrix = x_mSync
+    matching_matrix = X
     nb_graphs = 134
+
+    mesh = sio.load_mesh(template_mesh)
+    vb_sc = gv.visbrain_plot(mesh)
+
+    largest_ind=24
+    g_l=p.load(open("../data/OASIS_full_batch/modified_graphs/graph_"+str(largest_ind)+".gpickle","rb"))
+    color_label = label_nodes_according_to_coord(g_l, mesh, coord_dim=1)
+
+
+    default_value = 0.05
+    nb_nodes = len(g_l.nodes)
+    row_scope = range(largest_ind * nb_nodes, (largest_ind + 1) * nb_nodes)
+
+    for i in range(nb_graphs):
+
+        g = p.load(open("../data/OASIS_full_batch/modified_graphs/graph_"+str(i)+".gpickle","rb"))
+        col_scope = range(i * nb_nodes, (i + 1) * nb_nodes)
+
+        perm_X = np.array(matching_matrix[np.ix_(row_scope, col_scope)], dtype=int)
+        transfered_labels = np.ones(101)*default_value
+        nb_nodes = len(g.nodes)
+        col_scope = range(i * nb_nodes, (i + 1) * nb_nodes)
+
+        for node_indx,ind in enumerate(row_scope):
+            match_index = np.where(perm_X[node_indx,:]==1)[0]
+
+            if len(match_index)>0:
+                transfered_labels[match_index[0]] = color_label[match_index[0]]
+
+        data_mask = gp.remove_dummy_nodes(g)
+        nodes_coords = gp.graph_nodes_to_coords(g, 'ico100_7_vertex_index', mesh)
+        s_obj, nodes_cb_obj = gv.graph_nodes_to_sources(g, nodes_coords, node_data=transfered_labels[data_mask], nodes_mask=None, c_map='nipy_spectral')
+        vb_sc.add_to_subplot(s_obj)
+
+
+
+        # for l in range(len(g_l)):
+        #     index = np.where()
+        #     transfered_labels[index]=color_label[l]
+
+
+
 
     # is_dummy = []
     # for i in range(nb_graphs):
