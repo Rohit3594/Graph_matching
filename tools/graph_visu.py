@@ -57,6 +57,8 @@ def graph_nodes_to_sources(graph_no_dummy, nodes_coords, node_data=None, nodes_m
     transl_bary = np.mean(nodes_coords)
     nodes_coords = 1.01*(nodes_coords-transl_bary)+transl_bary
 
+
+
     # apply the mask if provided
     if nodes_mask is None:
         nodes_mask = np.ones((nodes_coords.shape[0],), dtype=np.bool)
@@ -65,8 +67,7 @@ def graph_nodes_to_sources(graph_no_dummy, nodes_coords, node_data=None, nodes_m
                         radius_min=30., radius_max=30., alpha=.9)
 
     """Color the sources according to data
-    """
-    
+    """    
     if node_data is not None:
         if c_map is None:
             c_map = 'jet'
