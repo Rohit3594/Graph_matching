@@ -7,6 +7,7 @@ import numpy as np
 import networkx as nx
 import scipy.io as sco
 import pickle as p
+import copy
 
 def label_nodes_according_to_coord(graph_no_dummy, template_mesh, coord_dim=1):
     nodes_coords = gp.graph_nodes_to_coords(graph_no_dummy, 'ico100_7_vertex_index', template_mesh)
@@ -38,8 +39,8 @@ if __name__ == "__main__":
     path_to_kerGM = "../data/OASIS_full_batch/X_pairwise_kergm.mat"
     #path_to_match_mat = "/home/rohit/PhD_Work/GM_my_version/RESULT_FRIOUL_HIPPI/Hippi_res_real_mat.npy"
 
+    list_graphs_cp = gp.load_graphs_in_list(path_to_graphs)
     list_graphs = gp.load_graphs_in_list(path_to_graphs)
-
     algorithms = []
 
     X_mALS = sco.loadmat(path_to_mALS)['X']
@@ -56,7 +57,7 @@ if __name__ == "__main__":
     mesh = sio.load_mesh(template_mesh)
 
     largest_ind=24
-    g_l=p.load(open("../data/OASIS_full_batch/modified_graphs/graph_"+str(largest_ind)+".gpickle","rb"))
+    g_l=list_graphs[largest_ind]#p.load(open("../data/OASIS_full_batch/modified_graphs/graph_"+str(largest_ind)+".gpickle","rb"))
     color_label_ordered = label_nodes_according_to_coord(g_l, mesh, coord_dim=1)
     r_perm=p.load(open("/mnt/data/work/python_sandBox/Graph_matching/data/r_perm.gpickle","rb"))
     color_label = color_label_ordered[r_perm]
@@ -71,8 +72,8 @@ if __name__ == "__main__":
         nb_unmatched = 0
         for i in range(nb_graphs):
 
-            #g = list_graphs[i]
-            g=p.load(open("../data/OASIS_full_batch/modified_graphs/graph_"+str(i)+".gpickle","rb"))
+            g = copy.deepcopy(list_graphs[i])
+            #g=p.load(open("../data/OASIS_full_batch/modified_graphs/graph_"+str(i)+".gpickle","rb"))
             col_scope = range(i * nb_nodes, (i + 1) * nb_nodes)
 
             perm_X = np.array(matching_matrix[np.ix_(row_scope, col_scope)], dtype=int) #Iterate through each Perm Matrix X fixing the largest graph
