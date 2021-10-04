@@ -67,10 +67,7 @@ def graph_nodes_to_sources(graph_no_dummy, nodes_coords, node_data=None, nodes_m
                         radius_min=30., radius_max=30., alpha=.9)
 
     """Color the sources according to data
-    """
-
-    print("shape node mask:",nodes_mask.shape)
-    
+    """    
     if node_data is not None:
         if c_map is None:
             c_map = 'jet'

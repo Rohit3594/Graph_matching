@@ -80,6 +80,10 @@ if __name__ == "__main__":
 
 
     for matching_matrix in X:
+
+        print(matching_matrix.shape)
+        last_index = 0
+
         nb_unmatched = 0
         for i in range(nb_graphs):
 
@@ -91,13 +95,22 @@ if __name__ == "__main__":
             g.remove_nodes_from(list(nodes_to_remove[0]))
             nb_nodes = len(g.nodes)
 
-            print(i)
+            print(len(g.nodes))
 
-            col_scope = range(i * nb_nodes, (i + 1) * nb_nodes)
+            if i == 0:
+                col_scope = range(i * nb_nodes, (i + 1) * nb_nodes)
+                prev_nb_nodes = nb_nodes
+                perm_X = np.array(matching_matrix[np.ix_(row_scope, col_scope)], dtype=int) #Iterate through each Perm Matrix X fixing the largest graph
+                transfered_labels = np.ones(nb_nodes)*default_value
+                last_index+=nb_nodes 
+            else:
+                col_scope = range(last_index, last_index+nb_nodes)
+                last_index += nb_nodes
+                perm_X = np.array(matching_matrix[np.ix_(row_scope, col_scope)], dtype=int) #Iterate through each Perm Matrix X fixing the largest graph
+                transfered_labels = np.ones(nb_nodes)*default_value
 
-            perm_X = np.array(matching_matrix[np.ix_(row_scope, col_scope)], dtype=int) #Iterate through each Perm Matrix X fixing the largest graph
-            print("Perm_X:",perm_X.shape)
-            transfered_labels = np.ones(nb_nodes)*default_value
+
+            print(col_scope)
 
             #nb_nodes = len(g.nodes)
             #col_scope = range(i * nb_nodes, (i + 1) * nb_nodes)
