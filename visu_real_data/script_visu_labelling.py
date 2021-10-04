@@ -89,8 +89,6 @@ if __name__ == "__main__":
                     transfered_labels[match_index[0]] = color_label[node_indx]
             nb_unmatched += np.sum(transfered_labels==default_value)
             data_mask = gp.remove_dummy_nodes(g)
-            print(data_mask)
-            print(typr(data_mask))
             nodes_coords = gp.graph_nodes_to_coords(g, 'ico100_7_vertex_index', reg_mesh)
             s_obj, nodes_cb_obj = gv.graph_nodes_to_sources(g, nodes_coords, node_data=transfered_labels[data_mask], nodes_mask=None, c_map='nipy_spectral')
             vb_sc.add_to_subplot(s_obj)

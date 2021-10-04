@@ -54,6 +54,75 @@ def get_clusters_from_assignment(list_graphs, matching_matrix, largest_ind, mesh
     return transfered_labels
 
 
+def get_clusters_from_assignment_hippi(list_graphs, matching_matrix, largest_ind, mesh, labelling_attribute_name):
+    nb_graphs = len(list_graphs)
+    g_l = list_graphs[largest_ind]
+    color_label_ordered = label_nodes_according_to_coord(g_l, mesh, coord_dim=1)
+    r_perm = p.load(open("/mnt/data/work/python_sandBox/Graph_matching/data/r_perm.gpickle","rb"))
+    color_label = color_label_ordered[r_perm]
+    gp.add_nodes_attribute(g_l, color_label, labelling_attribute_name)
+    default_value = -0.1#0.05
+    nb_nodes = len(g_l.nodes)
+
+    for j in range(len(list_graphs)):
+
+        grph = list_graphs[j]
+        nodes_to_remove = gp.remove_dummy_nodes(grph)
+        nodes_to_remove = np.where(np.array(nodes_to_remove)==False)
+
+        grph.remove_nodes_from(list(nodes_to_remove[0]))
+        nb_nodes = len(grph.nodes)
+        row_scope = range(j * nb_nodes, (j + 1) * nb_nodes)
+
+        print(len(grph.nodes))
+
+        if len(grph.nodes)==101:
+            break
+
+
+    print(matching_matrix.shape)
+    last_index = 0
+
+    nb_unmatched = 0
+    for i in range(nb_graphs):
+
+        #g = list_graphs[i]
+        #g=p.load(open("../data/OASIS_full_batch/modified_graphs/graph_"+str(i)+".gpickle","rb"))
+        g = list_graphs[i]
+        nodes_to_remove = gp.remove_dummy_nodes(g)
+        nodes_to_remove = np.where(np.array(nodes_to_remove)==False)
+        g.remove_nodes_from(list(nodes_to_remove[0]))
+        nb_nodes = len(g.nodes)
+
+        print(len(g.nodes))
+
+        if i == 0:
+            col_scope = range(i * nb_nodes, (i + 1) * nb_nodes)
+            prev_nb_nodes = nb_nodes
+            perm_X = np.array(matching_matrix[np.ix_(row_scope, col_scope)], dtype=int) #Iterate through each Perm Matrix X fixing the largest graph
+            transfered_labels = np.ones(nb_nodes)*default_value
+            last_index+=nb_nodes
+        else:
+            col_scope = range(last_index, last_index+nb_nodes)
+            last_index += nb_nodes
+            perm_X = np.array(matching_matrix[np.ix_(row_scope, col_scope)], dtype=int) #Iterate through each Perm Matrix X fixing the largest graph
+            transfered_labels = np.ones(nb_nodes)*default_value
+
+
+        print(col_scope)
+
+        #nb_nodes = len(g.nodes)
+        #col_scope = range(i * nb_nodes, (i + 1) * nb_nodes)
+
+        for node_indx,ind in enumerate(row_scope):
+            match_index = np.where(perm_X[node_indx,:]==1)[0]
+
+            if len(match_index)>0:
+                transfered_labels[match_index[0]] = color_label[node_indx]
+        gp.add_nodes_attribute(g, transfered_labels, labelling_attribute_name)
+    return transfered_labels
+
+
 def create_clusters_lists(list_graphs, label_attribute="label_dbscan"):
     """
     Given a list of graphs, return a list of list that represents the clusters.
@@ -241,11 +310,14 @@ if __name__ == "__main__":
     X_CAO = sco.loadmat(path_to_CAO)['X']
     X_kerGM = sco.loadmat(path_to_kerGM)["full_assignment_mat"]
 
+    path_to_match_mat = "../data/OASIS_full_batch/Hippi_res_real_mat.npy"
+    X_Hippi = np.load(path_to_match_mat)
+
     mesh = sio.load_mesh(template_mesh)
-    label_attribute = 'labelling_kerGM'
+    label_attribute = 'labelling_hippi'
     largest_ind=24
     print('get_clusters_from_assignment')
-    get_clusters_from_assignment(list_graphs, X_kerGM, largest_ind, mesh, label_attribute)
+    get_clusters_from_assignment_hippi(list_graphs, X_Hippi, largest_ind, mesh, label_attribute)
     print('create_clusters_lists')
     cluster_dict = create_clusters_lists(list_graphs, label_attribute=label_attribute)
     # Calculate the centroid
@@ -260,11 +332,11 @@ if __name__ == "__main__":
     #
     # else:
     print('get_all_silhouette_value')
-    #silhouette_dict = get_all_silhouette_value(list_graphs, cluster_dict)
-    # pickle_out = open(os.path.join(path_to_silhouette, label_attribute+'silhouette.gpickle'), "wb")
-    # p.dump(silhouette_dict, pickle_out)
-    pickle_out = open(os.path.join(path_to_silhouette, label_attribute+'silhouette.gpickle'), "rb")
-    silhouette_dict = p.load(pickle_out)
+    silhouette_dict = get_all_silhouette_value(list_graphs, cluster_dict)
+    pickle_out = open(os.path.join(path_to_silhouette, label_attribute+'_silhouette.gpickle'), "wb")
+    p.dump(silhouette_dict, pickle_out)
+    # pickle_out = open(os.path.join(path_to_silhouette, label_attribute+'silhouette.gpickle'), "rb")
+    # silhouette_dict = p.load(pickle_out)
     pickle_out.close()
     clust_silhouette = get_silhouette_per_cluster(silhouette_dict)
 
