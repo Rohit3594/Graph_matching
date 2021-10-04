@@ -1,5 +1,5 @@
 import sys
-sys.path.extend(['/home/rohit/PhD_Work/GM_my_version/Graph_matching'])
+#sys.path.extend(['/home/rohit/PhD_Work/GM_my_version/Graph_matching'])
 import slam.io as sio
 import tools.graph_visu as gv
 import tools.graph_processing as gp
@@ -35,6 +35,7 @@ if __name__ == "__main__":
     path_to_mALS = "../data/OASIS_full_batch/X_mALS.mat"
     path_to_mSync = "../data/OASIS_full_batch/X_mSync.mat"
     path_to_CAO = "../data/OASIS_full_batch/X_cao_cst_o.mat"
+    path_to_kerGM = "../data/OASIS_full_batch/X_pairwise_kergm.mat"
     #path_to_match_mat = "/home/rohit/PhD_Work/GM_my_version/RESULT_FRIOUL_HIPPI/Hippi_res_real_mat.npy"
 
     list_graphs = gp.load_graphs_in_list(path_to_graphs)
@@ -44,50 +45,53 @@ if __name__ == "__main__":
     X_mALS = sco.loadmat(path_to_mALS)['X']
     X_mSync = sco.loadmat(path_to_mSync)['X']
     X_CAO = sco.loadmat(path_to_CAO)['X']
+    x_kerGM = sco.loadmat(path_to_kerGM)["full_assignment_mat"]
 
-    X = [X_mALS,X_mSync,X_CAO]
+    X = [x_kerGM]#X_mALS,X_mSync]#,X_CAO]
 
     #X = np.load(path_to_match_mat)
 
     nb_graphs = 134
 
     mesh = sio.load_mesh(template_mesh)
-    vb_sc = gv.visbrain_plot(mesh)
 
     largest_ind=24
     g_l=p.load(open("../data/OASIS_full_batch/modified_graphs/graph_"+str(largest_ind)+".gpickle","rb"))
-    color_label = label_nodes_according_to_coord(g_l, mesh, coord_dim=1)
+    color_label_ordered = label_nodes_according_to_coord(g_l, mesh, coord_dim=1)
+    r_perm=p.load(open("/mnt/data/work/python_sandBox/Graph_matching/data/r_perm.gpickle","rb"))
+    color_label = color_label_ordered[r_perm]
+    reg_mesh = gv.reg_mesh(mesh)
+    vb_sc = gv.visbrain_plot(reg_mesh)
 
-
-    default_value = 0.05
+    default_value = -0.1#0.05
     nb_nodes = len(g_l.nodes)
     row_scope = range(largest_ind * nb_nodes, (largest_ind + 1) * nb_nodes)
 
     for matching_matrix in X:
-
+        nb_unmatched = 0
         for i in range(nb_graphs):
 
-            g = p.load(open("../data/OASIS_full_batch/modified_graphs/graph_"+str(i)+".gpickle","rb"))
+            #g = list_graphs[i]
+            g=p.load(open("../data/OASIS_full_batch/modified_graphs/graph_"+str(i)+".gpickle","rb"))
             col_scope = range(i * nb_nodes, (i + 1) * nb_nodes)
 
             perm_X = np.array(matching_matrix[np.ix_(row_scope, col_scope)], dtype=int) #Iterate through each Perm Matrix X fixing the largest graph
             transfered_labels = np.ones(101)*default_value
 
-            nb_nodes = len(g.nodes)
-            col_scope = range(i * nb_nodes, (i + 1) * nb_nodes)
-
+            #nb_nodes = len(g.nodes)
+            #col_scope = range(i * nb_nodes, (i + 1) * nb_nodes)
 
             for node_indx,ind in enumerate(row_scope):
                 match_index = np.where(perm_X[node_indx,:]==1)[0]
 
                 if len(match_index)>0:
                     transfered_labels[match_index[0]] = color_label[node_indx]
-
+            nb_unmatched += np.sum(transfered_labels==default_value)
             data_mask = gp.remove_dummy_nodes(g)
-            nodes_coords = gp.graph_nodes_to_coords(g, 'ico100_7_vertex_index', mesh)
+            nodes_coords = gp.graph_nodes_to_coords(g, 'ico100_7_vertex_index', reg_mesh)
             s_obj, nodes_cb_obj = gv.graph_nodes_to_sources(g, nodes_coords, node_data=transfered_labels[data_mask], nodes_mask=None, c_map='nipy_spectral')
             vb_sc.add_to_subplot(s_obj)
-
+        print('nb_unmatched',nb_unmatched)
         print("Preview")
         vb_sc.preview()
 
