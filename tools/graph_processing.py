@@ -66,6 +66,17 @@ def graph_nodes_to_coords(graph, index_attribute, mesh):
     return coords
 
 
+def add_nodes_attribute(graph, list_attribute, attribute_name):
+    """
+    Given a graph, add to each node the corresponding attribute
+    """
+
+    attribute_dict = {}
+    for node in graph.nodes:
+        attribute_dict[node] = {attribute_name:list_attribute[node]}
+    nx.set_node_attributes(graph, attribute_dict)
+
+
 def graph_nodes_attribute(graph, attribute):
     """
     get the 'attribute' node attribute from 'graph' as a numpy array

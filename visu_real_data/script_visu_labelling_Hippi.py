@@ -36,7 +36,7 @@ if __name__ == "__main__":
     # path_to_mSync = "../data/OASIS_full_batch/X_mSync.mat"
     # path_to_CAO = "../data/OASIS_full_batch/X_cao_cst_o.mat"
     # path_to_kerGM = "../data/OASIS_full_batch/X_pairwise_kergm.mat"
-    path_to_match_mat = "/home/rohit/PhD_Work/GM_my_version/RESULT_FRIOUL_HIPPI/Hippi_res_real_mat.npy"
+    path_to_match_mat = "../data/OASIS_full_batch/Hippi_res_real_mat.npy"
 
     list_graphs = gp.load_graphs_in_list(path_to_graphs)
 
@@ -53,7 +53,7 @@ if __name__ == "__main__":
     largest_ind=24
     g_l=p.load(open("../data/OASIS_full_batch/modified_graphs/graph_"+str(largest_ind)+".gpickle","rb"))
     color_label_ordered = label_nodes_according_to_coord(g_l, mesh, coord_dim=1)
-    r_perm=p.load(open("/home/rohit/PhD_Work/GM_my_version/Graph_matching/data/r_perm.gpickle","rb"))
+    r_perm=p.load(open("../data/r_perm.gpickle","rb"))
     color_label = color_label_ordered[r_perm]
     reg_mesh = gv.reg_mesh(mesh)
     vb_sc = gv.visbrain_plot(reg_mesh)
