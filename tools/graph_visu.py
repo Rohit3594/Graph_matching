@@ -11,8 +11,8 @@ CBAR_STATE = dict(cbtxtsz=30, txtsz=30., width=.1, cbtxtsh=3.,
 
 def graph_nodes_coords_to_sources(graph_no_dummy):
     nodes_coords = gp.graph_nodes_attribute(graph_no_dummy, 'sphere_3dcoords')
-    s_obj = SourceObj('nodes', nodes_coords, color='black',
-                        radius_min=15., radius_max=15., alpha=.9)
+    s_obj = SourceObj('nodes', nodes_coords, color='black', symbol='o',
+                        radius_min=15., radius_max=15., alpha=.7)
     return s_obj
 
 
@@ -64,7 +64,7 @@ def graph_nodes_to_sources(graph_no_dummy, nodes_coords, node_data=None, nodes_m
         nodes_mask = np.ones((nodes_coords.shape[0],), dtype=np.bool)
     s_obj = SourceObj('nodes', nodes_coords[nodes_mask], color='black',
                         edge_color='black', symbol='o', edge_width=2.,
-                        radius_min=30., radius_max=30., alpha=.9)
+                        radius_min=15., radius_max=15., alpha=.7)
 
     """Color the sources according to data
     """    

@@ -8,16 +8,7 @@ import scipy.io as sco
 import pickle as p
 import copy
 import matplotlib.pyplot as plt
-
-
-def get_silhouette_per_cluster(silhouette_dict):
-    nb_clusters = len(silhouette_dict)
-    silhouette_data = np.zeros(nb_clusters)
-
-    # Get the data
-    for cluster_i, cluster_key in enumerate(silhouette_dict):
-        silhouette_data[cluster_i] = np.mean(silhouette_dict[cluster_key])
-    return silhouette_data
+import tools.clusters_analysis as gca
 
 
 if __name__ == "__main__":
@@ -36,7 +27,7 @@ if __name__ == "__main__":
         pickle_out = open(os.path.join(path_to_silhouette, 'labelling_'+method+'_silhouette.gpickle'), "rb")
         silhouette_dict = p.load(pickle_out)
         pickle_out.close()
-        clust_silhouette = get_silhouette_per_cluster(silhouette_dict)
+        clust_silhouette = gca.get_silhouette_per_cluster(silhouette_dict)
         clust_silhouettes.append(clust_silhouette)
 
         ax[ind].hist(clust_silhouette, density=dens, bins=nb_bins)  # density=False would make counts
