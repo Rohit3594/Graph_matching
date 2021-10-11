@@ -236,11 +236,13 @@ def get_all_silhouette_value(list_graphs, cluster_dict):
 def get_silhouette_per_cluster(silhouette_dict):
     nb_clusters = len(silhouette_dict)
     silhouette_data = np.zeros(nb_clusters)
+    cluster_nb_nodes = np.zeros(nb_clusters)
 
     # Get the data
     for cluster_i, cluster_key in enumerate(silhouette_dict):
         silhouette_data[cluster_i] = np.mean(silhouette_dict[cluster_key])
-    return silhouette_data
+        cluster_nb_nodes[cluster_i] = len(silhouette_dict[cluster_key])
+    return silhouette_data, cluster_nb_nodes
 
 
 def get_silhouette_source_obj(centroid_dict, list_graphs, silhouette_data, mesh, c_map='jet', clim=None):
@@ -264,10 +266,10 @@ def get_silhouette_source_obj(centroid_dict, list_graphs, silhouette_data, mesh,
 
     # Create the source obj
     transl_bary = np.mean(silhouette_3Dpos)
-    nodes_coords = 1.03*(silhouette_3Dpos-transl_bary)+transl_bary
+    nodes_coords = 1.01*(silhouette_3Dpos-transl_bary)+transl_bary
     silhouette_text = [str(elem) for elem in silhouette_data]
     s_obj = SourceObj('nodes', nodes_coords, color='black',
-                        edge_color='black', symbol='+', edge_width=2.,
+                        edge_color='black', symbol='o', edge_width=2.,
                         radius_min=60., radius_max=60., alpha=.9)
     s_obj.color_sources(data=silhouette_data, cmap=c_map,clim=clim)
     # Get the colorbar of the source object

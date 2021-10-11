@@ -30,14 +30,14 @@ if __name__ == "__main__":
     X_CAO = sco.loadmat(path_to_CAO)['X']
     X_kerGM = sco.loadmat(path_to_kerGM)["full_assignment_mat"]
 
-    path_to_match_mat = "../data/OASIS_full_batch/Hippi_res_real_mat.npy"
-    X_Hippi = np.load(path_to_match_mat)
-
+    # path_to_match_mat = "../data/OASIS_full_batch/Hippi_res_real_mat.npy"
+    # X_Hippi = np.load(path_to_match_mat)
+    label_attribute = 'labelling_mALS'
     mesh = sio.load_mesh(template_mesh)
-    label_attribute = 'labelling_hippi'
     largest_ind=24
     print('get_clusters_from_assignment')
-    gca.get_clusters_from_assignment_hippi(list_graphs, X_Hippi, largest_ind, mesh, label_attribute)
+    #gca.get_clusters_from_assignment_hippi(list_graphs, X_Hippi, largest_ind, mesh, label_attribute)
+    gca.get_clusters_from_assignment(list_graphs, X_mALS, largest_ind, mesh, label_attribute)
     print('create_clusters_lists')
     cluster_dict = gca.create_clusters_lists(list_graphs, label_attribute=label_attribute)
     # Calculate the centroid
@@ -78,6 +78,7 @@ if __name__ == "__main__":
     # vb_sc.add_to_subplot(cb_obj, row=visb_sc_shape[0] - 1,
     #                           col=3, width_max=200)
     vb_sc.preview()
-
+    #vb_sc.screenshot(os.path.join(path_to_silhouette, label_attribute+'.png'))
     print(np.mean(clust_silhouette))
     print(np.std(clust_silhouette))
+    print(len(clust_silhouette))

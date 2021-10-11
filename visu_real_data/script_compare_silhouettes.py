@@ -24,10 +24,22 @@ if __name__ == "__main__":
 
     clust_silhouettes = list()
     for ind, method in enumerate(methods):
+        print('----------------------------')
+        print(method)
         pickle_out = open(os.path.join(path_to_silhouette, 'labelling_'+method+'_silhouette.gpickle'), "rb")
         silhouette_dict = p.load(pickle_out)
         pickle_out.close()
-        clust_silhouette = gca.get_silhouette_per_cluster(silhouette_dict)
+        clust_silhouette, clust_nb_nodes = gca.get_silhouette_per_cluster(silhouette_dict)
+        nb_nodes = np.sum(clust_nb_nodes)
+        clust_nb_nodes_perc = [100*v/nb_nodes for v in clust_nb_nodes]
+        print(np.mean(clust_silhouette))
+        print(np.std(clust_silhouette))
+        print(len(clust_silhouette))
+        print(silhouette_dict.keys())
+        print(clust_nb_nodes_perc)
+        if -0.1 in silhouette_dict.keys():
+            ind_c=list(silhouette_dict.keys()).index(-0.1)
+            print(clust_nb_nodes_perc[ind_c])
         clust_silhouettes.append(clust_silhouette)
 
         ax[ind].hist(clust_silhouette, density=dens, bins=nb_bins)  # density=False would make counts

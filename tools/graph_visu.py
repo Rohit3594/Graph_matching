@@ -52,7 +52,10 @@ def get_visb_sc_shape(visb_sc):
     return k[-1]
 
 
-def graph_nodes_to_sources(graph_no_dummy, nodes_coords, node_data=None, nodes_mask=None, c_map=None):
+def graph_nodes_to_sources(nodes_coords, node_data=None, nodes_size=None, nodes_mask=None, c_map=None):
+    if nodes_size is None:
+        nodes_size = 15.
+
     # dilate a bit the coords to make the circles correspoding to sources more visible
     transl_bary = np.mean(nodes_coords)
     nodes_coords = 1.01*(nodes_coords-transl_bary)+transl_bary
@@ -64,7 +67,7 @@ def graph_nodes_to_sources(graph_no_dummy, nodes_coords, node_data=None, nodes_m
         nodes_mask = np.ones((nodes_coords.shape[0],), dtype=np.bool)
     s_obj = SourceObj('nodes', nodes_coords[nodes_mask], color='black',
                         edge_color='black', symbol='o', edge_width=2.,
-                        radius_min=15., radius_max=15., alpha=.7)
+                        radius_min=nodes_size, radius_max=nodes_size, alpha=.7)
 
     """Color the sources according to data
     """    
@@ -78,7 +81,7 @@ def graph_nodes_to_sources(graph_no_dummy, nodes_coords, node_data=None, nodes_m
     else:
         s_obj = SourceObj('nodes', nodes_coords[nodes_mask], color='black',
                         edge_color='black', symbol='o', edge_width=2.,
-                        radius_min=15., radius_max=30., alpha=.4)
+                        radius_min=nodes_size, radius_max=nodes_size, alpha=.4)
         cb_obj = None
     return s_obj, cb_obj
 
@@ -118,14 +121,14 @@ def graph_edges_select(graph, nodes_coords, edge_attribute, attribute_threshold)
     return c_obj
 
 
-def show_graph(graph_no_dummy, nodes_coords, node_color_attribute=None, edge_color_attribute=None, nodes_mask=None):
+def show_graph(graph_no_dummy, nodes_coords, node_color_attribute=None, edge_color_attribute=None, nodes_size=None, nodes_mask=None, c_map=None):
 
     # manage nodes
     if node_color_attribute is not None:
         node_data = gp.graph_nodes_attribute(graph_no_dummy, node_color_attribute)
     else:
         node_data = None
-    s_obj, nodes_cb_obj = graph_nodes_to_sources(graph_no_dummy, nodes_coords, node_data, nodes_mask)
+    s_obj, nodes_cb_obj = graph_nodes_to_sources(nodes_coords, node_data=node_data, nodes_size=nodes_size, nodes_mask=nodes_mask, c_map=c_map)
 
     # manage edges
     c_obj = graph_edges_to_connect(graph_no_dummy, nodes_coords, edge_color_attribute, nodes_mask)
