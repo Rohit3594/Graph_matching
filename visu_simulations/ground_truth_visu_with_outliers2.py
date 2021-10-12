@@ -10,10 +10,10 @@ if __name__ == "__main__":
 	file_template_mesh = '../data/template_mesh/lh.OASIS_testGrp_average_inflated.gii'
 	file_sphere_mesh = '../data/template_mesh/ico100_7.gii'
 	simus_run = 0
-	path_to_graphs = '../data/simu_graph/0/test/0/noise_800,outliers_8/graphs'
+	path_to_graphs = '../data/simu_graph/0/test/0/noise_200,outliers_8/graphs'
 	list_graphs = gp.load_graphs_in_list(path_to_graphs)
 	outliers_label = -1
-	gt = np.load('../data/simu_graph/0/test/0/noise_800,outliers_8/ground_truth.npy')
+	gt = np.load('../data/simu_graph/0/test/0/noise_200,outliers_8/ground_truth.npy')
 
 	gt_01 = gt[0][1]
 	gt_02 = gt[0][2]
@@ -67,17 +67,18 @@ if __name__ == "__main__":
 	nx.set_node_attributes(g,dict_lab)
 
 	sphere_mesh = sio.load_mesh(file_sphere_mesh)
+	mesh = gv.reg_mesh(sio.load_mesh(file_template_mesh))
 
 	g_simus= [g, g1, g2, g3, g4]
 	sphere_mesh = sio.load_mesh(file_sphere_mesh)
 
-	vb_sc1 = gv.visbrain_plot(sphere_mesh, caption='Visu of simulated graph on template mesh')
-	for grr in g_simus:
-		gp.sphere_nearest_neighbor_interpolation(grr, sphere_mesh)
-		nodes_coords = gp.graph_nodes_to_coords(grr, 'ico100_7_vertex_index', sphere_mesh)
-		s_obj, c_obj, node_cb_obj = gv.show_graph(grr, nodes_coords,node_color_attribute='label_gt', nodes_size=30, c_map='nipy_spectral')
-		#vb_sc1.add_to_subplot(s_obj, row=visb_sc_shape[0] - 1, col=visb_sc_shape[1]- 1)
-		vb_sc1.add_to_subplot(s_obj)
+	vb_sc1 = gv.visbrain_plot(mesh, caption='Visu of simulated graph on template mesh')
+	# for grr in g_simus:
+	# 	gp.sphere_nearest_neighbor_interpolation(grr, sphere_mesh)
+	# 	nodes_coords = gp.graph_nodes_to_coords(grr, 'ico100_7_vertex_index', sphere_mesh)
+	# 	s_obj, c_obj, node_cb_obj = gv.show_graph(grr, nodes_coords,node_color_attribute='label_gt', nodes_size=30, c_map='nipy_spectral')
+	# 	#vb_sc1.add_to_subplot(s_obj, row=visb_sc_shape[0] - 1, col=visb_sc_shape[1]- 1)
+	# 	vb_sc1.add_to_subplot(s_obj)
 
 	# Stacking Graphs
 	concat_graphs = nx.disjoint_union(g,g1)
@@ -91,16 +92,16 @@ if __name__ == "__main__":
 
 	gp.sphere_nearest_neighbor_interpolation(concat_graphs, sphere_mesh)
 
-	nodes_coords = gp.graph_nodes_to_coords(concat_graphs, 'ico100_7_vertex_index', sphere_mesh)
+	nodes_coords = gp.graph_nodes_to_coords(concat_graphs, 'ico100_7_vertex_index', mesh)
 
 
-	s_obj, c_obj, node_cb_obj = gv.show_graph(concat_graphs, nodes_coords,node_color_attribute='label_gt', c_map='nipy_spectral')
+	s_obj, c_obj, node_cb_obj = gv.show_graph(concat_graphs, nodes_coords,node_color_attribute='label_gt', nodes_size=30, c_map='nipy_spectral')
 	visb_sc_shape = gv.get_visb_sc_shape(vb_sc1)
-	vb_sc1.add_to_subplot(s_obj, row=visb_sc_shape[0] - 1, col=visb_sc_shape[1]- 1)
-	#vb_sc1.add_to_subplot(s_obj)
+	#vb_sc1.add_to_subplot(s_obj, row=visb_sc_shape[0] - 1, col=visb_sc_shape[1]- 1)
+	vb_sc1.add_to_subplot(s_obj)
 
 	vb_sc1.preview()
-	mesh = gv.reg_mesh(sio.load_mesh(file_template_mesh))
+
 	mask_slice_coord = -15
 	vb_sc = None
 	for gr in g_simus:
