@@ -79,7 +79,7 @@ def graph_nodes_to_sources(nodes_coords, node_data=None, nodes_size=None, nodes_
         cb_obj = ColorbarObj(s_obj, **CBAR_STATE)
 
     else:
-        s_obj = SourceObj('nodes', nodes_coords[nodes_mask], color='black',
+        s_obj = SourceObj('nodes', nodes_coords[nodes_mask], color='purple',
                         edge_color='black', symbol='o', edge_width=2.,
                         radius_min=nodes_size, radius_max=nodes_size, alpha=.4)
         cb_obj = None
@@ -99,9 +99,9 @@ def graph_edges_to_connect(graph, nodes_coords, edge_attribute=None, nodes_mask=
         conn_mat = np.delete(conn_mat, np.where(nodes_mask==False)[0], 1)
     connect = np.ma.masked_array(np.array(conn_mat), False)
     if nodes_mask is not None:
-        c_obj = ConnectObj('edges', nodes_coords[nodes_mask], connect, select=connect>0, cmap='viridis')
+        c_obj = ConnectObj('edges', nodes_coords[nodes_mask], connect, select=connect>0, cmap='inferno')
     else:
-        c_obj = ConnectObj('edges', nodes_coords, connect, select=connect>0, cmap='viridis')
+        c_obj = ConnectObj('edges', nodes_coords, connect, select=connect>0, cmap='inferno')
 
     # c_obj = ConnectObj('edges', nodes_coords, connect, color_by='strength',
     #                      cmap='viridis', vmin=0., vmax=.1,

@@ -6,9 +6,9 @@ import tools.graph_processing as gp
 
 
 if __name__ == "__main__":
-    template_mesh = '/mnt/data/work/python_sandBox/Graph_matching/data/template_mesh/ico100_7.gii'
+    template_mesh = '../data/template_mesh/lh.OASIS_testGrp_average_inflated.gii'
     #                '/mnt/data/work/python_sandBox/template_mesh/lh.OASIS_testGrp_average_inflated.gii'
-    path_to_graphs = '/mnt/data/work/python_sandBox/stage_nathan/data/OASIS_full_batch/modified_graphs'
+    path_to_graphs = '/home/rohit/PhD_Work/GM_my_version/Graph_matching/data/OASIS_full_batch/modified_graphs'
 
     list_graphs = gp.load_graphs_in_list(path_to_graphs)
     for g in list_graphs:
