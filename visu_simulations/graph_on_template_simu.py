@@ -1,5 +1,5 @@
 import sys
-sys.path.append("/home/rohit/PhD_Work/GM_my_version/Graph_matching/")
+#sys.path.append("/home/rohit/PhD_Work/GM_my_version/Graph_matching/")
 import tools.graph_visu as gv
 import tools.graph_processing as gp
 import slam.io as sio
@@ -10,9 +10,12 @@ if __name__ == "__main__":
 	file_template_mesh = '../data/template_mesh/lh.OASIS_testGrp_average_inflated.gii'
 	file_sphere_mesh = '../data/template_mesh/ico100_7.gii'
 	simus_run = 0
-	path_to_simu_graphs = '/home/rohit/PhD_Work/GM_my_version/final_new_simu/0/noise_1400,outliers_0/graphs'
-	path_to_real_graphs = '/home/rohit/PhD_Work/GM_my_version/Graph_matching/data/OASIS_full_batch/modified_graphs'
+	#path_to_simu_graphs = '/home/rohit/PhD_Work/GM_my_version/final_new_simu/0/noise_1400,outliers_0/graphs'
+	#path_to_real_graphs = '/home/rohit/PhD_Work/GM_my_version/Graph_matching/data/OASIS_full_batch/modified_graphs'
 	#gt = np.load('../data/simu_graph/0/test/0/noise_1400,outliers_8/ground_truth.npy')
+	#path_to_simu_graphs = '../data/simu_graph/0/test/0/noise_1400,outliers_0/graphs'
+	path_to_simu_graphs = '../data/simu_graph/simu_graph_rohit/noise_200,outliers_0/graphs'
+	path_to_real_graphs = '../data/OASIS_full_batch/modified_graphs/'
 
 
 	list_graphs_simu = gp.load_graphs_in_list(path_to_simu_graphs)
@@ -24,14 +27,16 @@ if __name__ == "__main__":
 	vb_sc1 = gv.visbrain_plot(mesh, caption='Visu of simulated graph on template mesh')
 
 
-	#mask_slice_coord = -15
+	mask_slice_coord = -15
 	vb_sc = None
-	for gr in list_graphs_simu[15:18]:
+	inds_to_show = [0,2,9]
+	graphs_to_show=[list_graphs_simu[i] for i in inds_to_show]
+	for gr in graphs_to_show:#list_graphs_simu[6:12]:
 		gp.sphere_nearest_neighbor_interpolation(gr, sphere_mesh)
 		nodes_coords = gp.graph_nodes_to_coords(gr, 'ico100_7_vertex_index', mesh)
-		#nodes_mask = nodes_coords[:,2]>mask_slice_coord
+		nodes_mask = nodes_coords[:,2]>mask_slice_coord
 		vb_sc = gv.visbrain_plot(mesh, visb_sc=vb_sc)
-		s_obj, c_obj, node_cb_obj = gv.show_graph(gr, nodes_coords,node_color_attribute=None, nodes_size=30, c_map='nipy_spectral')
+		s_obj, c_obj, node_cb_obj = gv.show_graph(gr, nodes_coords,node_color_attribute=None, nodes_size=30, nodes_mask=nodes_mask, c_map='nipy_spectral')
 		# vb_sc.add_to_subplot(s_obj)
 		# vb_sc.add_to_subplot(c_obj)
 		visb_sc_shape = gv.get_visb_sc_shape(vb_sc)
