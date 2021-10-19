@@ -10,10 +10,10 @@ if __name__ == "__main__":
 	file_template_mesh = '../data/template_mesh/lh.OASIS_testGrp_average_inflated.gii'
 	file_sphere_mesh = '../data/template_mesh/ico100_7.gii'
 	simus_run = 0
-	path_to_graphs = '../data/simu_graph/0/test/0/noise_200,outliers_8/graphs'
+	path_to_graphs = '../data/simu_graph/0/test/0/noise_1400,outliers_8/graphs'
 	list_graphs = gp.load_graphs_in_list(path_to_graphs)
 	outliers_label = -1
-	gt = np.load('../data/simu_graph/0/test/0/noise_200,outliers_8/ground_truth.npy')
+	gt = np.load('../data/simu_graph/0/test/0/noise_1400,outliers_8/ground_truth.npy')
 
 	gt_01 = gt[0][1]
 	gt_02 = gt[0][2]
@@ -27,12 +27,24 @@ if __name__ == "__main__":
 	g4 = list_graphs[4]
 
 	dict_lab = {}
+	for n, node in enumerate(g.nodes):
+		if node >=20:
+			dict_lab[node] = {'label_gt':outliers_label}
+		else:
+			dict_lab[node] = {'label_gt':node}
+	nx.set_node_attributes(g,dict_lab)
+	print(nx.get_node_attributes(g,'label_gt'))
+
+
+	dict_lab = {}
 	for n, node in enumerate(g1.nodes):
 		if node >=20:
 			dict_lab[node] = {'label_gt':outliers_label}
 		else:
 			dict_lab[gt_01[node]] = {'label_gt':node}
 	nx.set_node_attributes(g1,dict_lab)
+	print(nx.get_node_attributes(g1,'label_gt'))
+
 
 	dict_lab = {}
 	for n, node in enumerate(g2.nodes):
@@ -41,6 +53,8 @@ if __name__ == "__main__":
 		else:
 			dict_lab[gt_02[node]] = {'label_gt':node}
 	nx.set_node_attributes(g2,dict_lab)
+	print(nx.get_node_attributes(g2,'label_gt'))
+
 
 	dict_lab = {}
 	for n, node in enumerate(g3.nodes):
@@ -49,27 +63,24 @@ if __name__ == "__main__":
 		else:
 			dict_lab[gt_03[node]] = {'label_gt':node}
 	nx.set_node_attributes(g3,dict_lab)
+	print(nx.get_node_attributes(g3,'label_gt'))
 
-	dict_lab = {}
-	for n, node in enumerate(g4.nodes):
-		if node >=20:
-			dict_lab[node] = {'label_gt':outliers_label}
-		else:
-			dict_lab[gt_04[node]] = {'label_gt':node}
-	nx.set_node_attributes(g4,dict_lab)
 
-	dict_lab = {}
-	for n, node in enumerate(g.nodes):
-		if node >=20:
-			dict_lab[node] = {'label_gt':outliers_label}
-		else:
-			dict_lab[node] = {'label_gt':node}
-	nx.set_node_attributes(g,dict_lab)
+	# dict_lab = {}
+	# for n, node in enumerate(g4.nodes):
+	# 	if node >=20:
+	# 		dict_lab[node] = {'label_gt':outliers_label}
+	# 	else:
+	# 		dict_lab[gt_04[node]] = {'label_gt':node}
+	# nx.set_node_attributes(g4,dict_lab)
+	# print(nx.get_node_attributes(g4,'label_gt'))
+
+
 
 	sphere_mesh = sio.load_mesh(file_sphere_mesh)
 	mesh = gv.reg_mesh(sio.load_mesh(file_template_mesh))
 
-	g_simus= [g, g1, g2, g3, g4]
+	g_simus= [g, g1, g2, g3]
 	sphere_mesh = sio.load_mesh(file_sphere_mesh)
 
 	vb_sc1 = gv.visbrain_plot(mesh, caption='Visu of simulated graph on template mesh')
@@ -82,15 +93,16 @@ if __name__ == "__main__":
 
 	# Stacking Graphs
 	concat_graphs = nx.disjoint_union(g,g1)
-	graph_stack = [g2,g3,g4]
+	graph_stack = [g2]
+
 
 	for graph in graph_stack:
-
 		concat_graphs = nx.disjoint_union(concat_graphs,graph)
 
 
-
 	gp.sphere_nearest_neighbor_interpolation(concat_graphs, sphere_mesh)
+
+	print(nx.get_node_attributes(concat_graphs,'label_gt'))
 
 	nodes_coords = gp.graph_nodes_to_coords(concat_graphs, 'ico100_7_vertex_index', mesh)
 
@@ -102,9 +114,12 @@ if __name__ == "__main__":
 
 	vb_sc1.preview()
 
+
+
 	mask_slice_coord = -15
 	vb_sc = None
 	for gr in g_simus:
+		gr = nx.relabel.convert_node_labels_to_integers(gr)
 		gp.sphere_nearest_neighbor_interpolation(gr, sphere_mesh)
 		nodes_coords = gp.graph_nodes_to_coords(gr, 'ico100_7_vertex_index', mesh)
 		nodes_mask = nodes_coords[:,2]>mask_slice_coord
