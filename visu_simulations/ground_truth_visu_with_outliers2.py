@@ -119,12 +119,16 @@ if __name__ == "__main__":
 	mask_slice_coord = -15
 	vb_sc = None
 	for gr in g_simus:
-		gr = nx.relabel.convert_node_labels_to_integers(gr)
-		gp.sphere_nearest_neighbor_interpolation(gr, sphere_mesh)
-		nodes_coords = gp.graph_nodes_to_coords(gr, 'ico100_7_vertex_index', mesh)
+		#gr = nx.relabel.convert_node_labels_to_integers(gr)
+		sorted_G = nx.Graph() 
+		sorted_G.add_nodes_from(sorted(gr.nodes(data=True)))  # Sort the nodes of the graph by key
+		sorted_G.add_edges_from(gr.edges(data=True))
+
+		gp.sphere_nearest_neighbor_interpolation(sorted_G, sphere_mesh)
+		nodes_coords = gp.graph_nodes_to_coords(sorted_G, 'ico100_7_vertex_index', mesh)
 		nodes_mask = nodes_coords[:,2]>mask_slice_coord
 		vb_sc = gv.visbrain_plot(mesh, visb_sc=vb_sc)
-		s_obj, c_obj, node_cb_obj = gv.show_graph(gr, nodes_coords,node_color_attribute='label_gt', nodes_size=30, nodes_mask=nodes_mask, c_map='nipy_spectral')
+		s_obj, c_obj, node_cb_obj = gv.show_graph(sorted_G, nodes_coords,node_color_attribute='label_gt', nodes_size=30, nodes_mask=nodes_mask, c_map='nipy_spectral')
 		# vb_sc.add_to_subplot(s_obj)
 		# vb_sc.add_to_subplot(c_obj)
 		visb_sc_shape = gv.get_visb_sc_shape(vb_sc)
