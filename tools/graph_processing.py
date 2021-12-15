@@ -60,6 +60,25 @@ def load_graphs_in_list(path_to_graphs_folder):
     return list_graphs
 
 
+def load_labelled_graphs_in_list(path_to_graphs_folder, hemi='lh'):
+    """
+    Return a list of graph loaded from the path
+    """
+    files = os.listdir(path_to_graphs_folder)
+    files_to_load = list()
+    for f in files:
+        if '.gpickle' in f:
+            if hemi in f:
+                files_to_load.append(f)
+    list_graphs = []
+    for file_graph in files_to_load:
+        path_graph = os.path.join(path_to_graphs_folder, file_graph)
+        graph = nx.read_gpickle(path_graph)
+        list_graphs.append(graph)
+
+    return list_graphs
+
+
 def graph_nodes_to_coords(graph, index_attribute, mesh):
     vert_indices = list(nx.get_node_attributes(graph, index_attribute).values())
     coords = np.array(mesh.vertices[vert_indices, :])
