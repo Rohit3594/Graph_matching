@@ -52,7 +52,7 @@ def get_visb_sc_shape(visb_sc):
     return k[-1]
 
 
-def graph_nodes_to_sources(nodes_coords, node_data=None, nodes_size=None, nodes_mask=None, c_map=None, symbol='disc'):
+def graph_nodes_to_sources(nodes_coords, node_data=None, nodes_size=None, nodes_mask=None, c_map=None, symbol='disc', vmin=None, vmax=None):
     if nodes_size is None:
         nodes_size = 15.
 
@@ -74,7 +74,12 @@ def graph_nodes_to_sources(nodes_coords, node_data=None, nodes_size=None, nodes_
     if node_data is not None:
         if c_map is None:
             c_map = 'jet'
-        s_obj.color_sources(data=node_data[nodes_mask], cmap=c_map)
+        if vmin is None:
+            vmin = np.min(node_data[nodes_mask])
+        if vmax is None:
+            vmax = np.max(node_data[nodes_mask])
+        print(vmin,vmax)
+        s_obj.color_sources(data=node_data[nodes_mask], cmap=c_map, vmin=vmin, vmax=vmax, clim=(vmin,vmax), under='gray', over='red')
         # Get the colorbar of the source object
         cb_obj = ColorbarObj(s_obj, **CBAR_STATE)
 
