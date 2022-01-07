@@ -22,7 +22,7 @@ def generate_reference_graph(nb_vertices, radius):
 
     sphere_random_sampling = tri_from_hull(sphere_random_sampling)  # Computing convex hull (adding edges)
 
-    adja = stop.edges_to_adjacency_matrix(sphere_random_sampling)
+    adja = stop.adjacency_matrix(sphere_random_sampling)
     graph = nx.from_numpy_matrix(adja.todense())
     # Create dictionnary that will hold the attributes of each node
     node_attribute_dict = {}
@@ -121,7 +121,7 @@ def generate_noisy_graph(original_graph, nb_vertices, nb_outliers, sigma_noise_n
     noisy_graph = nx.Graph()
 
     compute_noisy_edges = tri_from_hull(all_coord)  # take all peturbated coord and comp conv hull.
-    adja = stop.edges_to_adjacency_matrix(compute_noisy_edges)  # compute the new adjacency mat.
+    adja = stop.adjacency_matrix(compute_noisy_edges)  # compute the new adjacency mat.
 
     noisy_graph = nx.from_numpy_matrix(adja.todense())
 

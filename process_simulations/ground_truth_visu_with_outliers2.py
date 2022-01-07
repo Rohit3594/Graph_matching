@@ -10,10 +10,10 @@ if __name__ == "__main__":
 	file_template_mesh = '../data/template_mesh/lh.OASIS_testGrp_average_inflated.gii'
 	file_sphere_mesh = '../data/template_mesh/ico100_7.gii'
 	simus_run = 0
-	path_to_graphs = '../data/simu_graph/0/test/0/noise_1400,outliers_8/graphs'
+	path_to_graphs = '../data/simu_graph/varied_outliers/0/noise_900,outliers_10/graphs'
 	list_graphs = gp.load_graphs_in_list(path_to_graphs)
 	outliers_label = -1
-	gt = np.load('../data/simu_graph/0/test/0/noise_1400,outliers_8/ground_truth.npy')
+	gt = np.load('../data/simu_graph/varied_outliers/0/noise_900,outliers_10/ground_truth.npy')
 
 	gt_01 = gt[0][1]
 	gt_02 = gt[0][2]
@@ -28,7 +28,7 @@ if __name__ == "__main__":
 
 	dict_lab = {}
 	for n, node in enumerate(g.nodes):
-		if node >=20:
+		if node >=30:
 			dict_lab[node] = {'label_gt':outliers_label}
 		else:
 			dict_lab[node] = {'label_gt':node}
@@ -38,7 +38,7 @@ if __name__ == "__main__":
 
 	dict_lab = {}
 	for n, node in enumerate(g1.nodes):
-		if node >=20:
+		if node >=30:
 			dict_lab[node] = {'label_gt':outliers_label}
 		else:
 			dict_lab[gt_01[node]] = {'label_gt':node}
@@ -48,7 +48,7 @@ if __name__ == "__main__":
 
 	dict_lab = {}
 	for n, node in enumerate(g2.nodes):
-		if node >=20:
+		if node >=30:
 			dict_lab[node] = {'label_gt':outliers_label}
 		else:
 			dict_lab[gt_02[node]] = {'label_gt':node}
@@ -58,7 +58,7 @@ if __name__ == "__main__":
 
 	dict_lab = {}
 	for n, node in enumerate(g3.nodes):
-		if node >=20:
+		if node >=30:
 			dict_lab[node] = {'label_gt':outliers_label}
 		else:
 			dict_lab[gt_03[node]] = {'label_gt':node}

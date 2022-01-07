@@ -22,7 +22,7 @@ def generate_reference_graph(nb_vertices, radius):
 
     sphere_random_sampling = tri_from_hull(sphere_random_sampling)  # Computing convex hull (adding edges)
 
-    adja = stop.edges_to_adjacency_matrix(sphere_random_sampling)
+    adja = stop.adjacency_matrix(sphere_random_sampling)
     graph = nx.from_numpy_matrix(adja.todense())
     # Create dictionnary that will hold the attributes of each node
     node_attribute_dict = {}
@@ -88,7 +88,38 @@ def generate_sphere_random_sampling(vertex_number=100, radius=1.0):
     return coords
 
 
-def generate_noisy_graph(original_graph, nb_vertices, nb_outliers, sigma_noise_nodes=1, sigma_noise_edges=1,
+def generate_nb_outliers_and_nb_supress(nb_vertices):
+
+    """
+
+    Sample nb_outliers and nb_supress from a Normal dist
+    following the std of real data
+
+    """
+
+    mean_real_data = 88         # mean real data
+    std_real_data = 4           # std real data
+    
+    sig_A_B =  std_real_data/2  # sig_A = sig_B = sig/2
+
+    # mean_real_data = nb_vertices - mu_A + mu_B
+
+    mu_A = 4                                                       # mean for nb of nodes to supress
+    mu_B = (mean_real_data - nb_vertices) + mu_A                   # mean nb of outliers
+
+
+    nb_supress = np.random.randn(1) * sig_A_B + mu_A
+    nb_supress = np.round(nb_supress[0])                # Sample nb_outliers
+
+    nb_outliers = np.random.randn(1) * sig_A_B + mu_B
+    nb_outliers = np.round(nb_outliers[0])               # Sample nb_outliers
+
+
+    return int(nb_outliers),int(nb_supress)
+
+
+
+def generate_noisy_graph(original_graph, nb_vertices, sigma_noise_nodes=1, sigma_noise_edges=1,
                          radius=100):
     # Perturbate the coordinates
 
@@ -107,10 +138,23 @@ def generate_noisy_graph(original_graph, nb_vertices, nb_outliers, sigma_noise_n
         # print(noisy_coordinate)
         noisy_coord.append(noisy_coordinate)
 
+
+    nb_outliers, nb_supress = generate_nb_outliers_and_nb_supress(nb_vertices)  # Sample nb_outliers and nb_supress
+
+
+    #Supress Non-Outlier nodes
+    if nb_supress > 0:
+
+        for i in range(nb_supress):
+            pop_index = random.sample(range(len(noisy_coord)), 1)
+            noisy_coord.pop(pop_index[0])
+
+
     # Add Outliers
     sphere_random_sampling = []
     if nb_outliers > 0:
         #print("nb_outliers: ", nb_outliers)
+
         sphere_random_sampling = generate_sphere_random_sampling(vertex_number=nb_outliers, radius=radius)
         # merge pertubated and outlier coordinates to add edges 
         all_coord = noisy_coord + list(sphere_random_sampling)
@@ -121,7 +165,7 @@ def generate_noisy_graph(original_graph, nb_vertices, nb_outliers, sigma_noise_n
     noisy_graph = nx.Graph()
 
     compute_noisy_edges = tri_from_hull(all_coord)  # take all peturbated coord and comp conv hull.
-    adja = stop.edges_to_adjacency_matrix(compute_noisy_edges)  # compute the new adjacency mat.
+    adja = stop.adjacency_matrix(compute_noisy_edges)  # compute the new adjacency mat.
 
     noisy_graph = nx.from_numpy_matrix(adja.todense())
 
@@ -163,6 +207,8 @@ def generate_noisy_graph(original_graph, nb_vertices, nb_outliers, sigma_noise_n
 
     #print("len ground_truth_permutation: ", len(ground_truth_permutation))
     #print("len noisy_coord : ", len(noisy_coord))
+
+
 
     for outlier in sphere_random_sampling:
         for i in range(len(noisy_graph.nodes)):
@@ -232,6 +278,7 @@ def mean_edge_len(G):
     return all_geo
 
 
+
 def get_in_between_perm_matrix(perm_mat_1, perm_mat_2):
     """
 	Given two permutation from noisy graphs to a reference graph,
@@ -267,7 +314,7 @@ def generate_graph_family(nb_sample_graphs, nb_graphs, nb_vertices, radius, nb_o
 
     for c_graph in tqdm(range(nb_sample_graphs)):
 
-        ground_truth, noisy_graph = generate_noisy_graph(reference_graph, nb_vertices, nb_outliers, noise_node,
+        ground_truth, noisy_graph = generate_noisy_graph(reference_graph, nb_vertices, noise_node,
                                                          noise_edge)
 
         # Add outliers
@@ -322,10 +369,11 @@ def generate_graph_family(nb_sample_graphs, nb_graphs, nb_vertices, radius, nb_o
     ground_truth_perm = np.zeros((nb_graphs, nb_graphs, nb_vertices), dtype=int)
 
 
-    # Save the ground truth permutation
+
+    # Save the ground_truth permutation
     count = 0
     for ground_truth in sorted_ground_truth[:nb_graphs]: # Select the nb_graphs with largest min-geo distance
-        ground_truth_perm_to_ref[count, :] = ground_truth
+        ground_truth_perm_to_ref[count, :len(ground_truth)] = ground_truth
         count +=1 
 
 
@@ -340,7 +388,7 @@ def generate_graph_family(nb_sample_graphs, nb_graphs, nb_vertices, radius, nb_o
 
 
 def generate_n_graph_family_and_save(path_to_write, nb_runs, nb_ref_graph, nb_sample_graphs,nb_graphs, nb_vertices,
-                                     radius, list_noise, list_outliers, nb_neighbors_to_consider=10, save_reference=0):
+                                     radius, list_noise, max_outliers, nb_neighbors_to_consider=10, save_reference=0):
     ''' Generate n family of graphs for each couple (noise, outliers). The graphs are saved
 		in a folder structure at the point path_to_write
 	'''
@@ -378,52 +426,57 @@ def generate_n_graph_family_and_save(path_to_write, nb_runs, nb_ref_graph, nb_sa
             nx.write_gpickle(reference_graph_max, os.path.join(trial_path, "reference_" + str(i_graph) + ".gpickle"))
 
         for noise in list_noise:
-            for outliers in list_outliers:
+            #for outliers in list_outliers:
 
-                folder_name = "noise_" + str(noise) + ",outliers_" + str(outliers)
-                path_parameters_folder = os.path.join(trial_path, folder_name)
+            folder_name = "noise_" + str(noise) + ",outliers_" + str(max_outliers)
+            path_parameters_folder = os.path.join(trial_path, folder_name)
 
-                if not os.path.isdir(path_parameters_folder):
-                    os.mkdir(path_parameters_folder)
-                    os.mkdir(os.path.join(path_parameters_folder, "graphs"))
+            if not os.path.isdir(path_parameters_folder):
+                os.mkdir(path_parameters_folder)
+                os.mkdir(os.path.join(path_parameters_folder, "graphs"))
 
-                list_graphs,ground_truth_perm  = generate_graph_family(nb_sample_graphs= nb_sample_graphs,nb_graphs=nb_graphs,
-                                                                       nb_vertices=nb_vertices,
-                                                                       radius=radius,
-                                                                       nb_outliers=outliers,
-                                                                       ref_graph=reference_graph_max,
-                                                                       noise_node=noise,
-                                                                       noise_edge=noise,
-                                                                       nb_neighbors_to_consider=nb_neighbors_to_consider)
+            list_graphs,ground_truth_perm  = generate_graph_family(nb_sample_graphs= nb_sample_graphs,nb_graphs=nb_graphs,
+                                                                   nb_vertices=nb_vertices,
+                                                                   radius=radius,
+                                                                   nb_outliers=max_outliers,
+                                                                   ref_graph=reference_graph_max,
+                                                                   noise_node=noise,
+                                                                   noise_edge=noise,
+                                                                   nb_neighbors_to_consider=nb_neighbors_to_consider)
 
-                for i_family, graph_family in enumerate(list_graphs):
-                    nx.write_gpickle(graph_family, os.path.join(path_parameters_folder, "graphs",
-                                                                "graph_" + str(i_family) + ".gpickle"))
+            for i_family, graph_family in enumerate(list_graphs):
 
-                np.save(os.path.join(path_parameters_folder, "ground_truth"), ground_truth_perm)
+                sorted_graph = nx.Graph()
+                sorted_graph.add_nodes_from(sorted(graph_family.nodes(data=True)))  # Sort the nodes of the graph by key
+                sorted_graph.add_edges_from(graph_family.edges(data=True))
+
+                nx.write_gpickle(sorted_graph, os.path.join(path_parameters_folder, "graphs",
+                                                            "graph_" + str(i_family) + ".gpickle"))
+
+            np.save(os.path.join(path_parameters_folder, "ground_truth"), ground_truth_perm)
 
 
 
 if __name__ == '__main__':
-    path_to_write = '/home/rohit/PhD_Work/GM_my_version/Graph_matching/data/simu_graph/final_new_simu/other_9_trials/'
+    path_to_write = '/home/rohit/PhD_Work/GM_my_version/Graph_matching/data/simu_graph/varied_outliers/'
 
     nb_runs = 1
-    nb_sample_graphs = 5000 #  # of graphs to generate before selecting the NN graphs with highest geodesic distance.
-    nb_graphs = 134 # nb of graphs to generate
-    nb_vertices = 72  #72 based on Kaltenmark, MEDIA, 2020
-    min_noise = 200
-    max_noise = 1600
-    step_noise = 600
-    min_outliers = 0
-    max_outliers = 24
-    step_outliers = 6
+    nb_sample_graphs = 1000 #  # of graphs to generate before selecting the NN graphs with highest geodesic distance.
+    nb_graphs = 20 # nb of graphs to generate
+    nb_vertices = 30  #72 based on Kaltenmark, MEDIA, 2020
+    min_noise = 100
+    max_noise = 1000
+    step_noise = 200
+    #min_outliers = 0
+    max_outliers = 10
+    step_outliers = 5
     save_reference = 1
-    nb_ref_graph = 5000
+    nb_ref_graph = 1000
     radius = 100
 
 
     list_noise = np.arange(min_noise, max_noise, step_noise)
-    list_outliers = np.array(list(range(min_outliers, max_outliers, step_outliers)))
+    #list_outliers = np.array(list(range(min_outliers, max_outliers, step_outliers)))
     nb_neighbors_to_consider_outliers = 10
 
     # call the generation procedure
@@ -435,6 +488,7 @@ if __name__ == '__main__':
                                      nb_vertices=nb_vertices,
                                      radius=radius,
                                      list_noise=list_noise,
-                                     list_outliers=list_outliers,
+                                     max_outliers=max_outliers,
                                      nb_neighbors_to_consider=nb_neighbors_to_consider_outliers,
                                      save_reference=save_reference)
+

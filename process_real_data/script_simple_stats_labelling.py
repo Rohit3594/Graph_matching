@@ -1,5 +1,5 @@
 import sys
-#sys.path.extend(['/home/rohit/PhD_Work/GM_my_version/Graph_matching'])
+sys.path.extend(['/home/rohit/PhD_Work/GM_my_version/Graph_matching'])
 import os
 import slam.io as sio
 import tools.graph_visu as gv
@@ -13,8 +13,8 @@ import copy
 
 
 if __name__ == "__main__":
-    template_mesh = '/mnt/data/work/python_sandBox/Graph_matching/data/template_mesh/lh.OASIS_testGrp_average_inflated.gii'
-    path_to_graphs = '/mnt/data/work/python_sandBox/Graph_matching/data/OASIS_labelled_pits_graphs'
+    template_mesh = '../data/template_mesh/lh.OASIS_testGrp_average_inflated.gii'
+    path_to_graphs = '../data/OASIS_labelled_pits_graphs'
 
     list_graphs = gp.load_labelled_graphs_in_list(path_to_graphs, hemi='lh')
     all_labels_neuroimage = list()
