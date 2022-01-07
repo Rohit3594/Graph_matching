@@ -22,14 +22,38 @@ if __name__ == "__main__":
     mesh = sio.load_mesh(template_mesh)
     reg_mesh = gv.reg_mesh(mesh)
     vb_sc = gv.visbrain_plot(reg_mesh)
-
+    vmin=0
+    vmax=329#vmax=92
     for g in list_graphs:
         nodes_coords = gp.graph_nodes_to_coords(g, 'ico100_7_vertex_index', reg_mesh)
         #labels = nx.get_node_attributes(g, 'label_media').values()
         labels = nx.get_node_attributes(g, 'label_neuroimage').values()
-        color_label = np.array([l/100 for l in labels])
-        #print(color_label)
-        s_obj, nodes_cb_obj = gv.graph_nodes_to_sources(nodes_coords, node_data=color_label, nodes_mask=None, c_map='nipy_spectral')
+        color_label = np.array([l for l in labels])
+        s_obj, nodes_cb_obj = gv.graph_nodes_to_sources(nodes_coords, node_data=color_label, nodes_mask=None, c_map='nipy_spectral',  vmin=vmin, vmax=vmax)
         vb_sc.add_to_subplot(s_obj)
 
     vb_sc.preview()
+
+
+
+
+
+
+    vb_sc2 = gv.visbrain_plot(reg_mesh)
+
+    label_to_plot = 60
+    for ind,g in enumerate(list_graphs):
+
+        nodes_coords = gp.graph_nodes_to_coords(g, 'ico100_7_vertex_index', reg_mesh)
+        labels = nx.get_node_attributes(g, 'label_media').values()
+        #labels = nx.get_node_attributes(g, 'label_neuroimage').values()
+        color_label = np.array([l for l in labels])
+        color_label_to_plot = np.ones(color_label.shape)
+        color_label_to_plot[color_label == label_to_plot]=0
+        #print(color_label)
+        if np.sum(color_label == label_to_plot)==0:
+            print(ind)
+        else:
+            s_obj, nodes_cb_obj = gv.graph_nodes_to_sources(nodes_coords, node_data=color_label_to_plot, nodes_mask=None, c_map='nipy_spectral')
+            vb_sc2.add_to_subplot(s_obj)
+    vb_sc2.preview()
