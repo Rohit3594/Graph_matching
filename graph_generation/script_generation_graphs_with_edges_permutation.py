@@ -88,6 +88,8 @@ def generate_sphere_random_sampling(vertex_number=100, radius=1.0):
     return coords
 
 
+
+
 def generate_nb_outliers_and_nb_supress(nb_vertices):
 
     """
@@ -100,19 +102,18 @@ def generate_nb_outliers_and_nb_supress(nb_vertices):
     mean_real_data = 88         # mean real data
     std_real_data = 4           # std real data
     
-    sig_A_B =  std_real_data/2  # sig_A = sig_B = sig/2
+    sig_A_B =  std_real_data #/2  # sig_A = sig_B = sig/2
 
     # mean_real_data = nb_vertices - mu_A + mu_B
 
-    mu_A = 4                                                       # mean for nb of nodes to supress
-    mu_B = (mean_real_data - nb_vertices) + mu_A                   # mean nb of outliers
+    mu_A = 5                                                       # mean for nb of nodes to supress
+    mu_B = (mean_real_data - nb_vertices) + mu_A   
 
+    nb_supress = np.random.normal(0,1,1)                # mean nb of outliers
+    nb_supress = np.abs(np.round(nb_supress * sig_A_B + mu_A))               # Sample nb_nodes_to_supress
 
-    nb_supress = np.random.randn(1) * sig_A_B + mu_A
-    nb_supress = np.round(nb_supress[0])                # Sample nb_outliers
-
-    nb_outliers = np.random.randn(1) * sig_A_B + mu_B
-    nb_outliers = np.round(nb_outliers[0])               # Sample nb_outliers
+    nb_outliers = np.random.normal(0,1,1)
+    nb_outliers = np.abs(np.round(nb_outliers * sig_A_B + mu_B))                   # Sample nb_outliers
 
 
     return int(nb_outliers),int(nb_supress)
@@ -458,14 +459,14 @@ def generate_n_graph_family_and_save(path_to_write, nb_runs, nb_ref_graph, nb_sa
 
 
 if __name__ == '__main__':
-    path_to_write = '/home/rohit/PhD_Work/GM_my_version/Graph_matching/data/simu_graph/varied_outliers/'
+    path_to_write = '/home/rohit/PhD_Work/GM_my_version/Graph_matching/data/simu_graph/varide_outliers_multi_trials_2/'
 
     nb_runs = 1
-    nb_sample_graphs = 1000 #  # of graphs to generate before selecting the NN graphs with highest geodesic distance.
-    nb_graphs = 20 # nb of graphs to generate
-    nb_vertices = 30  #72 based on Kaltenmark, MEDIA, 2020
+    nb_sample_graphs = 5000 #  # of graphs to generate before selecting the NN graphs with highest geodesic distance.
+    nb_graphs = 134 # nb of graphs to generate
+    nb_vertices = 72  #72 based on Kaltenmark, MEDIA, 2020
     min_noise = 100
-    max_noise = 1000
+    max_noise = 800
     step_noise = 200
     #min_outliers = 0
     max_outliers = 10
