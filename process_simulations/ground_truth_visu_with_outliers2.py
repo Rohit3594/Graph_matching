@@ -120,9 +120,9 @@ if __name__ == "__main__":
 
 # IMportant: The graph with largest number of node should be used as a reference here for visualization 
 
-	dummy_for_visu(g,g1)
-	dummy_for_visu(g,g2)
-	dummy_for_visu(g,g3)
+	# dummy_for_visu(g,g1)
+	# dummy_for_visu(g,g2)
+	# dummy_for_visu(g,g3)
 
 
 

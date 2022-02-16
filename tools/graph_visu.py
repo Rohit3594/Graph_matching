@@ -55,7 +55,7 @@ def get_visb_sc_shape(visb_sc):
     return k[-1]
 
 
-def graph_nodes_to_sources(nodes_coords, node_data=None, nodes_size=None, nodes_mask=None, c_map=None, symbol='disc', vmin=None, vmax=None):
+def graph_nodes_to_sources(nodes_coords, node_data=None, nodes_size=None, nodes_mask=None, c_map=None, symbol='disc', vmin=-1, vmax=10):
     if nodes_size is None:
         nodes_size = 15.
 
@@ -82,6 +82,7 @@ def graph_nodes_to_sources(nodes_coords, node_data=None, nodes_size=None, nodes_
             c_map = 'jet'
         if vmin is None:
             vmin = np.min(node_data[nodes_mask])
+
         if vmax is None:
             vmax = np.max(node_data[nodes_mask])
         print(vmin,vmax)
@@ -95,6 +96,7 @@ def graph_nodes_to_sources(nodes_coords, node_data=None, nodes_size=None, nodes_
                         radius_min=nodes_size, radius_max=nodes_size, alpha=.4)
         cb_obj = None
     return s_obj, cb_obj
+
 
 
 def graph_edges_to_connect(graph, nodes_coords, edge_attribute=None, nodes_mask=None):

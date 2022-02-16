@@ -148,7 +148,7 @@ def generate_noisy_graph(original_graph, nb_vertices, sigma_noise_nodes=1, sigma
 
 
     nb_outliers, nb_supress = generate_nb_outliers_and_nb_supress(nb_vertices)  # Sample nb_outliers and nb_supress
-    nb_supress = 0 # TEMPORARILY
+    nb_outliers = 0 # TEMPORARILY
 
 
     noisy_coord_all = noisy_coord
@@ -188,9 +188,6 @@ def generate_noisy_graph(original_graph, nb_vertices, sigma_noise_nodes=1, sigma
     for node in noisy_graph.nodes():
         node_attribute_dict[node] = {"coord": np.array(compute_noisy_edges.vertices[node]),'is_dummy':False}
 
-    if nb_supress > 0:
-        dummy_nodes = [j for j in range(len(noisy_graph.nodes), len(noisy_graph.nodes) + len(supress_list))]
-        noisy_graph.add_nodes_from(dummy_nodes,is_dummy=True) # add dummy nodes
 
 
     nx.set_node_attributes(noisy_graph, node_attribute_dict)
@@ -217,6 +214,8 @@ def generate_noisy_graph(original_graph, nb_vertices, sigma_noise_nodes=1, sigma
     ground_truth_permutation = []
     counter = 0
     check = False
+
+    
     
     for i in range(len(noisy_graph.nodes)): 
         for j in range(len(noisy_coord_all)):  
@@ -230,14 +229,12 @@ def generate_noisy_graph(original_graph, nb_vertices, sigma_noise_nodes=1, sigma
         
 
 
-
-
-
     for outlier in sphere_random_sampling:
         for i in range(len(noisy_graph.nodes)):
             if np.mean(noisy_graph.nodes[i]['coord']) == np.mean(outlier):
                 if i<nb_vertices:
                     value.append(i)
+
 
 
     if nb_outliers > 0 and len(key)!=0:
@@ -248,6 +245,7 @@ def generate_noisy_graph(original_graph, nb_vertices, sigma_noise_nodes=1, sigma
                 index+=1
                 if index == len(key):
                     break
+
 
         key = key + value
         value = value + key
@@ -306,16 +304,34 @@ def get_in_between_perm_matrix(perm_mat_1, perm_mat_2):
 	Given two permutation from noisy graphs to a reference graph,
 	Return the permutation matrix to go from one graph to the other
 	"""
-    result_perm = np.zeros((perm_mat_1.shape[0],), dtype=int)
+    result_perm = {}
 
-    for node_reference, node_noisy_1 in enumerate(perm_mat_1):
-        # get the corresponding node in the second graph
-        node_noisy_2 = perm_mat_2[node_reference]
-
-        # Fill the result
-        result_perm[node_noisy_1] = node_noisy_2
+    for i in range(len(perm_mat_1)):
+        for j in range(len(perm_mat_2)):
+            if perm_mat_1[i] == perm_mat_2[j]:
+                result_perm[i] = j
 
     return result_perm
+
+
+# def get_in_between_perm_matrix_old(perm_mat_1, perm_mat_2):
+#     """
+#     Given two permutation from noisy graphs to a reference graph,
+#     Return the permutation matrix to go from one graph to the other
+#     """
+#     result_perm = np.zeros((perm_mat_1.shape[0],), dtype=int)
+
+#     for node_reference, node_noisy_1 in enumerate(perm_mat_1):
+#         # get the corresponding node in the second graph
+#         node_noisy_2 = perm_mat_2[node_reference]
+
+#         # Fill the result
+#         result_perm[node_noisy_1] = node_noisy_2
+
+#     return result_perm
+
+
+
 
 
 def generate_graph_family(nb_sample_graphs, nb_graphs, nb_vertices, radius, nb_outliers, ref_graph, noise_node=1, noise_edge=1,
@@ -386,27 +402,43 @@ def generate_graph_family(nb_sample_graphs, nb_graphs, nb_vertices, radius, nb_o
     print("Verifying len of sorted_graphs,sorted_ground_truth,min_geo(should be equal):",len(sorted_graphs),len(sorted_ground_truth),len(min_geo))
  
 
-    # Initialise permutation matrices to reference graph
-    ground_truth_perm_to_ref = np.zeros((nb_graphs, nb_vertices), dtype=int)
-    ground_truth_perm = np.zeros((nb_graphs, nb_graphs, nb_vertices), dtype=int)
+    # # Initialise permutation matrices to reference graph
+    # ground_truth_perm_to_ref = np.zeros((nb_graphs, nb_vertices), dtype=int)
+    # ground_truth_perm = np.zeros((nb_graphs, nb_graphs, nb_vertices), dtype=int)
 
 
 
     # Save the ground_truth permutation
-    count = 0
-    for ground_truth in sorted_ground_truth[:nb_graphs]: # Select the nb_graphs with largest min-geo distance
-        ground_truth_perm_to_ref[count, :len(ground_truth)] = ground_truth
-        count +=1 
+    # count = 0
+    # for ground_truth in sorted_ground_truth[:nb_graphs]: # Select the nb_graphs with largest min-geo distance
+    #     ground_truth_perm_to_ref[count, :len(ground_truth)] = ground_truth
+    #     count +=1 
+
+
+
+    ground_truth_perm_to_ref = sorted_ground_truth[:nb_graphs]
+
 
 
     # We generate the ground_truth permutation between graphs
     print("Groundtruth Labeling..")
+
+    ground_truth_perm = {}
+
     for i_graph in tqdm(range(nb_graphs)):
+
         for j_graph in range(nb_graphs):
-            ground_truth_perm[i_graph, j_graph, :] = \
-                get_in_between_perm_matrix(ground_truth_perm_to_ref[i_graph, :], ground_truth_perm_to_ref[j_graph, :])
+
+
+            # ground_truth_perm[i_graph, j_graph, :]=get_in_between_perm_matrix(ground_truth_perm_to_ref[i_graph, :], ground_truth_perm_to_ref[j_graph, :])
+
+           ground_truth_perm[str(i_graph)+str(j_graph)] = get_in_between_perm_matrix(ground_truth_perm_to_ref[i_graph], ground_truth_perm_to_ref[j_graph])
+
+
 
     return sorted_graphs[:nb_graphs] , ground_truth_perm
+
+
 
 
 def generate_n_graph_family_and_save(path_to_write, nb_runs, nb_ref_graph, nb_sample_graphs,nb_graphs, nb_vertices,
@@ -466,6 +498,7 @@ def generate_n_graph_family_and_save(path_to_write, nb_runs, nb_ref_graph, nb_sa
                                                                    noise_edge=noise,
                                                                    nb_neighbors_to_consider=nb_neighbors_to_consider)
 
+
             for i_family, graph_family in enumerate(list_graphs):
 
                 sorted_graph = nx.Graph()
@@ -477,7 +510,10 @@ def generate_n_graph_family_and_save(path_to_write, nb_runs, nb_ref_graph, nb_sa
                 nx.write_gpickle(sorted_graph, os.path.join(path_parameters_folder, "graphs",
                                                             "graph_" + str(i_family) + ".gpickle"))
 
-            np.save(os.path.join(path_parameters_folder, "ground_truth"), ground_truth_perm)
+            # np.save(os.path.join(path_parameters_folder, "ground_truth"), ground_truth_perm)
+
+            nx.write_gpickle(ground_truth_perm, path_parameters_folder+ "/ground_truth.gpickle")
+
 
 
 
@@ -488,8 +524,8 @@ if __name__ == '__main__':
     nb_sample_graphs = 500 #  # of graphs to generate before selecting the NN graphs with highest geodesic distance.
     nb_graphs = 20 # nb of graphs to generate
     nb_vertices = 30  #72 based on Kaltenmark, MEDIA, 2020
-    min_noise = 100
-    max_noise = 300
+    min_noise = 1400
+    max_noise = 1500
     step_noise = 200
     #min_outliers = 0
     max_outliers = 20
