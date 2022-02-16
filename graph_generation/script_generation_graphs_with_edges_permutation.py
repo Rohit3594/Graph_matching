@@ -12,6 +12,7 @@ import os
 import tools.graph_processing as gp
 from sphere import *
 from tqdm.auto import tqdm,trange
+from scipy.stats import betabinom
 import random
 
 
@@ -88,6 +89,14 @@ def generate_sphere_random_sampling(vertex_number=100, radius=1.0):
     return coords
 
 
+def compute_beta(alpha, n, mean):
+    return (1-mean/n) / (mean/n) * alpha
+
+
+def compute_alpha(n, mean, variance):
+    ratio = (1-mean/n) / (mean/n)
+    alpha = ((1+ratio)**2 * variance - n**2 * ratio) / (n*ratio*(1+ratio) - variance* (1 + ratio)**3)
+    return alpha
 
 
 def generate_nb_outliers_and_nb_supress(nb_vertices):
@@ -99,21 +108,19 @@ def generate_nb_outliers_and_nb_supress(nb_vertices):
 
     """
 
-    mean_real_data = 88         # mean real data
+    #mean_real_data = 40         # mean real data
     std_real_data = 4           # std real data
-    
-    sig_A_B =  std_real_data #/2  # sig_A = sig_B = sig/2
 
-    # mean_real_data = nb_vertices - mu_A + mu_B
 
-    mu_A = 5                                                       # mean for nb of nodes to supress
-    mu_B = (mean_real_data - nb_vertices) + mu_A   
+    mu = 15 # mu_A = mu_B = mu
+    sigma = std_real_data
+    n = 25
 
-    nb_supress = np.random.normal(0,1,1)                # mean nb of outliers
-    nb_supress = np.abs(np.round(nb_supress * sig_A_B + mu_A))               # Sample nb_nodes_to_supress
+    alpha = compute_alpha(n , mu, sigma**2)  # corresponding alpha with respect to given mu and sigma
+    beta = compute_beta(alpha, n, mu)       # corresponding beta
 
-    nb_outliers = np.random.normal(0,1,1)
-    nb_outliers = np.abs(np.round(nb_outliers * sig_A_B + mu_B))                   # Sample nb_outliers
+    nb_supress = betabinom.rvs(n, alpha, beta, size=1)[0]
+    nb_outliers = betabinom.rvs(n, alpha, beta, size=1)[0]                 # Sample nb_outliers
 
 
     return int(nb_outliers),int(nb_supress)
@@ -141,20 +148,27 @@ def generate_noisy_graph(original_graph, nb_vertices, sigma_noise_nodes=1, sigma
 
 
     nb_outliers, nb_supress = generate_nb_outliers_and_nb_supress(nb_vertices)  # Sample nb_outliers and nb_supress
+    nb_supress = 0 # TEMPORARILY
 
+
+    noisy_coord_all = noisy_coord
 
     #Supress Non-Outlier nodes
     if nb_supress > 0:
 
-        for i in range(nb_supress):
-            pop_index = random.sample(range(len(noisy_coord)), 1)
-            noisy_coord.pop(pop_index[0])
+        print("nb_supress : ",nb_supress)
+
+        supress_list = random.sample(range(len(noisy_coord)), nb_supress) # Indexes to remove 
+        removed_coords = [noisy_coord[i] for i in range(len(noisy_coord)) if i in supress_list]
+        #noisy_coord = [dummy_coords if i in supress_list else noisy_coord[i] for i in range(len(noisy_coord))]
+        noisy_coord = [noisy_coord[i] for i in range(len(noisy_coord)) if i not in supress_list]
 
 
     # Add Outliers
     sphere_random_sampling = []
     if nb_outliers > 0:
-        #print("nb_outliers: ", nb_outliers)
+
+        print("nb_outliers: ", nb_outliers)
 
         sphere_random_sampling = generate_sphere_random_sampling(vertex_number=nb_outliers, radius=radius)
         # merge pertubated and outlier coordinates to add edges 
@@ -172,7 +186,12 @@ def generate_noisy_graph(original_graph, nb_vertices, sigma_noise_nodes=1, sigma
 
     node_attribute_dict = {}
     for node in noisy_graph.nodes():
-        node_attribute_dict[node] = {"coord": np.array(compute_noisy_edges.vertices[node])}
+        node_attribute_dict[node] = {"coord": np.array(compute_noisy_edges.vertices[node]),'is_dummy':False}
+
+    if nb_supress > 0:
+        dummy_nodes = [j for j in range(len(noisy_graph.nodes), len(noisy_graph.nodes) + len(supress_list))]
+        noisy_graph.add_nodes_from(dummy_nodes,is_dummy=True) # add dummy nodes
+
 
     nx.set_node_attributes(noisy_graph, node_attribute_dict)
 
@@ -196,18 +215,21 @@ def generate_noisy_graph(original_graph, nb_vertices, sigma_noise_nodes=1, sigma
     # Extracting the ground-truth correspondence
 
     ground_truth_permutation = []
-
-    for ar1 in noisy_coord:
-        for i in range(len(noisy_graph.nodes)):
-
-            if np.mean(ar1) == np.mean(noisy_graph.nodes[i]['coord']):    
-                if i >=nb_vertices:
+    counter = 0
+    check = False
+    
+    for i in range(len(noisy_graph.nodes)): 
+        for j in range(len(noisy_coord_all)):  
+            
+            if np.linalg.norm(noisy_coord_all[j] - noisy_graph.nodes[i]['coord']) == 0.:
+                #check = True
+                
+                if j >= len(noisy_coord_all):
                     key.append(i)
-                ground_truth_permutation.append(i)
-                break
+                ground_truth_permutation.append(j)
+        
 
-    #print("len ground_truth_permutation: ", len(ground_truth_permutation))
-    #print("len noisy_coord : ", len(noisy_coord))
+
 
 
 
@@ -279,7 +301,6 @@ def mean_edge_len(G):
     return all_geo
 
 
-
 def get_in_between_perm_matrix(perm_mat_1, perm_mat_2):
     """
 	Given two permutation from noisy graphs to a reference graph,
@@ -345,7 +366,7 @@ def generate_graph_family(nb_sample_graphs, nb_graphs, nb_vertices, radius, nb_o
     for graphs,gt in zip(list_noisy_graphs,list_ground_truth):
         z = mean_edge_len(graphs)
     
-        if min(z) > 7.0:
+        if min(z) > 0.0:
             selected_graphs.append(graphs) # select the noisy graph.
             selected_ground_truth.append(gt) # and its corresponding ground-truth.
             min_geo.append(min(z))
@@ -451,6 +472,8 @@ def generate_n_graph_family_and_save(path_to_write, nb_runs, nb_ref_graph, nb_sa
                 sorted_graph.add_nodes_from(sorted(graph_family.nodes(data=True)))  # Sort the nodes of the graph by key
                 sorted_graph.add_edges_from(graph_family.edges(data=True))
 
+                print("Length of noisy graph: ",len(sorted_graph.nodes))
+
                 nx.write_gpickle(sorted_graph, os.path.join(path_parameters_folder, "graphs",
                                                             "graph_" + str(i_family) + ".gpickle"))
 
@@ -459,28 +482,29 @@ def generate_n_graph_family_and_save(path_to_write, nb_runs, nb_ref_graph, nb_sa
 
 
 if __name__ == '__main__':
-    path_to_write = '/home/rohit/PhD_Work/GM_my_version/Graph_matching/data/simu_graph/varide_outliers_multi_trials_2/'
+    path_to_write = '/home/rohit/PhD_Work/GM_my_version/Graph_matching/data/simu_graph/varied_outliers/'
 
     nb_runs = 1
-    nb_sample_graphs = 5000 #  # of graphs to generate before selecting the NN graphs with highest geodesic distance.
-    nb_graphs = 134 # nb of graphs to generate
-    nb_vertices = 72  #72 based on Kaltenmark, MEDIA, 2020
+    nb_sample_graphs = 500 #  # of graphs to generate before selecting the NN graphs with highest geodesic distance.
+    nb_graphs = 20 # nb of graphs to generate
+    nb_vertices = 30  #72 based on Kaltenmark, MEDIA, 2020
     min_noise = 100
-    max_noise = 800
+    max_noise = 300
     step_noise = 200
     #min_outliers = 0
-    max_outliers = 10
-    step_outliers = 5
+    max_outliers = 20
+    step_outliers = 10
     save_reference = 1
     nb_ref_graph = 1000
     radius = 100
+
 
 
     list_noise = np.arange(min_noise, max_noise, step_noise)
     #list_outliers = np.array(list(range(min_outliers, max_outliers, step_outliers)))
     nb_neighbors_to_consider_outliers = 10
 
-    # call the generation procedure
+    # call the generation procedure 
     generate_n_graph_family_and_save(path_to_write=path_to_write,
                                      nb_runs=nb_runs,
                                      nb_ref_graph=nb_ref_graph,

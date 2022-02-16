@@ -10,7 +10,10 @@ CBAR_STATE = dict(cbtxtsz=30, txtsz=30., width=.1, cbtxtsh=3.,
 
 
 def graph_nodes_coords_to_sources(graph_no_dummy):
-    nodes_coords = gp.graph_nodes_attribute(graph_no_dummy, 'sphere_3dcoords')
+    print(nx.get_node_attributes(graph_no_dummy,'coord'))
+    print(len(nx.get_node_attributes(graph_no_dummy,'coord')))
+    nodes_coords = gp.graph_nodes_attribute(graph_no_dummy, 'coord') # change accordingly
+
     s_obj = SourceObj('nodes', nodes_coords, color='black', symbol='o',
                         radius_min=15., radius_max=15., alpha=.7)
     return s_obj
@@ -71,6 +74,9 @@ def graph_nodes_to_sources(nodes_coords, node_data=None, nodes_size=None, nodes_
 
     """Color the sources according to data
     """    
+    print('node data:',node_data)
+    print('node mask:',nodes_mask)
+
     if node_data is not None:
         if c_map is None:
             c_map = 'jet'
@@ -131,6 +137,7 @@ def show_graph(graph_no_dummy, nodes_coords, node_color_attribute=None, edge_col
     # manage nodes
     if node_color_attribute is not None:
         node_data = gp.graph_nodes_attribute(graph_no_dummy, node_color_attribute)
+        print('LEN NODE DATA IN GV:',len(node_data))
     else:
         node_data = None
     s_obj, nodes_cb_obj = graph_nodes_to_sources(nodes_coords, node_data=node_data, nodes_size=nodes_size, nodes_mask=nodes_mask, c_map=c_map)
