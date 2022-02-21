@@ -148,7 +148,7 @@ def generate_noisy_graph(original_graph, nb_vertices, sigma_noise_nodes=1, sigma
 
 
     nb_outliers, nb_supress = generate_nb_outliers_and_nb_supress(nb_vertices)  # Sample nb_outliers and nb_supress
-    nb_outliers = 0 # TEMPORARILY
+    #nb_outliers = 0 # TEMPORARILY
 
 
     noisy_coord_all = noisy_coord
@@ -156,7 +156,7 @@ def generate_noisy_graph(original_graph, nb_vertices, sigma_noise_nodes=1, sigma
     #Supress Non-Outlier nodes
     if nb_supress > 0:
 
-        print("nb_supress : ",nb_supress)
+        # print("nb_supress : ",nb_supress)
 
         supress_list = random.sample(range(len(noisy_coord)), nb_supress) # Indexes to remove 
         removed_coords = [noisy_coord[i] for i in range(len(noisy_coord)) if i in supress_list]
@@ -215,45 +215,50 @@ def generate_noisy_graph(original_graph, nb_vertices, sigma_noise_nodes=1, sigma
     counter = 0
     check = False
 
+
     
     
     for i in range(len(noisy_graph.nodes)): 
-        for j in range(len(noisy_coord_all)):  
-            
+        for j in range(len(noisy_coord_all)):  # upto the indexes of outliers
             if np.linalg.norm(noisy_coord_all[j] - noisy_graph.nodes[i]['coord']) == 0.:
-                #check = True
-                
-                if j >= len(noisy_coord_all):
-                    key.append(i)
                 ground_truth_permutation.append(j)
+                continue
+                
+            elif j == len(noisy_coord_all) - 1.:
+                 for outlier in sphere_random_sampling:
+                        if np.linalg.norm(outlier - noisy_graph.nodes[i]['coord']) == 0.:
+                            ground_truth_permutation.append('O')
         
 
 
-    for outlier in sphere_random_sampling:
-        for i in range(len(noisy_graph.nodes)):
-            if np.mean(noisy_graph.nodes[i]['coord']) == np.mean(outlier):
-                if i<nb_vertices:
-                    value.append(i)
+
+    # for outlier in sphere_random_sampling:
+    #     for i in range(len(noisy_graph.nodes)):
+
+    #         if np.linalg.norm(outlier - noisy_graph.nodes[i]['coord']) == 0.:
+
+    #             if i<nb_vertices:
+    #                 value.append(i)
 
 
 
-    if nb_outliers > 0 and len(key)!=0:
-        index = 0
-        for j in range(len(ground_truth_permutation)):
-            if ground_truth_permutation[j] == key[index]:
-                ground_truth_permutation[j] = value[index]
-                index+=1
-                if index == len(key):
-                    break
+    # if nb_outliers > 0 and len(key)!=0:
+    #     index = 0
+    #     for j in range(len(ground_truth_permutation)):
+    #         if ground_truth_permutation[j] == key[index]:
+    #             ground_truth_permutation[j] = value[index]
+    #             index+=1
+    #             if index == len(key):
+    #                 break
 
 
-        key = key + value
-        value = value + key
+    #     key = key + value
+    #     value = value + key
 
-        mapping = dict(zip(key,value))
-        #print("mapping :",mapping)
-        #print("number of nodes in graphs: ", len(noisy_graph.nodes))
-        noisy_graph = nx.relabel_nodes(noisy_graph, mapping)
+    #     mapping = dict(zip(key,value))
+    #     #print("mapping :",mapping)
+    #     #print("number of nodes in graphs: ", len(noisy_graph.nodes))
+    #     noisy_graph = nx.relabel_nodes(noisy_graph, mapping)
 
 
     # Remove 10% of random edges
@@ -261,6 +266,7 @@ def generate_noisy_graph(original_graph, nb_vertices, sigma_noise_nodes=1, sigma
     noisy_graph.remove_edges_from(edge_to_remove)
 
     noisy_graph.remove_edges_from(nx.selfloop_edges(noisy_graph))
+
 
 
     return ground_truth_permutation, noisy_graph
@@ -301,13 +307,17 @@ def mean_edge_len(G):
 
 def get_in_between_perm_matrix(perm_mat_1, perm_mat_2):
     """
-	Given two permutation from noisy graphs to a reference graph,
-	Return the permutation matrix to go from one graph to the other
-	"""
+    Given two permutation from noisy graphs to a reference graph,
+    Return the permutation matrix to go from one graph to the other
+    """
     result_perm = {}
-
     for i in range(len(perm_mat_1)):
+        if perm_mat_1[i] == 'O':
+                continue
         for j in range(len(perm_mat_2)):
+            if perm_mat_2[j] == 'O':
+                continue
+            
             if perm_mat_1[i] == perm_mat_2[j]:
                 result_perm[i] = j
 
@@ -432,7 +442,7 @@ def generate_graph_family(nb_sample_graphs, nb_graphs, nb_vertices, radius, nb_o
 
             # ground_truth_perm[i_graph, j_graph, :]=get_in_between_perm_matrix(ground_truth_perm_to_ref[i_graph, :], ground_truth_perm_to_ref[j_graph, :])
 
-           ground_truth_perm[str(i_graph)+str(j_graph)] = get_in_between_perm_matrix(ground_truth_perm_to_ref[i_graph], ground_truth_perm_to_ref[j_graph])
+           ground_truth_perm[str(i_graph)+','+str(j_graph)] = get_in_between_perm_matrix(ground_truth_perm_to_ref[i_graph], ground_truth_perm_to_ref[j_graph])
 
 
 
@@ -524,8 +534,8 @@ if __name__ == '__main__':
     nb_sample_graphs = 500 #  # of graphs to generate before selecting the NN graphs with highest geodesic distance.
     nb_graphs = 20 # nb of graphs to generate
     nb_vertices = 30  #72 based on Kaltenmark, MEDIA, 2020
-    min_noise = 1400
-    max_noise = 1500
+    min_noise = 100
+    max_noise = 400
     step_noise = 200
     #min_outliers = 0
     max_outliers = 20
