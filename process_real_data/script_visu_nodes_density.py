@@ -16,6 +16,7 @@ if __name__ == "__main__":
     sphere_mesh = sio.load_mesh(file_sphere_mesh)
 
 
+
     list_graphs = gp.load_graphs_in_list(path_to_graphs)
     graphs_nodes_number = list()
     for graph in list_graphs:
@@ -31,6 +32,7 @@ if __name__ == "__main__":
     # using an average mesh as template
     template_mesh = '../data/template_mesh/lh.OASIS_testGrp_average_inflated.gii'
     mesh = gv.reg_mesh(sio.load_mesh(template_mesh))
+
 
 
     density_map = gv.nodes_density_map(list_graphs, mesh, nb_iter=3, dt=0.5)

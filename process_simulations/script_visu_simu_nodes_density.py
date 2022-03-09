@@ -8,15 +8,21 @@ import tools.graph_visu as gv
 import tools.graph_processing as gp
 import slam.io as sio
 import slam.plot as splt
+from graph_matching_tools.metrics import matching
 
 if __name__ == "__main__":
+
+
 
     file_template_mesh = '../data/template_mesh/lh.OASIS_testGrp_average_inflated.gii'
     file_sphere_mesh = '../data/template_mesh/ico100_7.gii'
     simus_run = 0
     #path_to_graphs = '../data/simu_graph/noise_70,outliers_0/'+str(simus_run)+'/graphs'
-    path_to_graphs = '../data/simu_graph/ten_thous/'+str(simus_run)+'/noise_800,outliers_12/graphs'
-    list_graphs = gp.load_graphs_in_list(path_to_graphs)
+
+    path_to_graphs = '../data/simu_graph/simu_test_single_noise/0.0/noise_100,outliers_varied/graphs/'
+    list_graphs = gp.load_graphs_in_order(path_to_graphs)
+
+
 
     print(len(list_graphs))
 
@@ -33,6 +39,7 @@ if __name__ == "__main__":
     # plt.figure()
     # plt.hist(density_map, bins=50)
     # plt.show()
+
 
 
     visb_sc = splt.visbrain_plot(mesh=mesh,

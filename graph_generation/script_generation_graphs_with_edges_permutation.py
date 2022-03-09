@@ -112,7 +112,7 @@ def generate_nb_outliers_and_nb_supress(nb_vertices):
     std_real_data = 4           # std real data
 
 
-    mu = 15 # mu_A = mu_B = mu
+    mu = 10 # mu_A = mu_B = mu
     sigma = std_real_data
     n = 25
 
@@ -148,7 +148,8 @@ def generate_noisy_graph(original_graph, nb_vertices, sigma_noise_nodes=1, sigma
 
 
     nb_outliers, nb_supress = generate_nb_outliers_and_nb_supress(nb_vertices)  # Sample nb_outliers and nb_supress
-    #nb_outliers = 0 # TEMPORARILY
+    nb_outliers = 0 # TEMPORARILY
+    nb_supress = 0
 
 
     noisy_coord_all = noisy_coord
@@ -168,7 +169,7 @@ def generate_noisy_graph(original_graph, nb_vertices, sigma_noise_nodes=1, sigma
     sphere_random_sampling = []
     if nb_outliers > 0:
 
-        print("nb_outliers: ", nb_outliers)
+        #print("nb_outliers: ", nb_outliers)
 
         sphere_random_sampling = generate_sphere_random_sampling(vertex_number=nb_outliers, radius=radius)
         # merge pertubated and outlier coordinates to add edges 
@@ -186,7 +187,7 @@ def generate_noisy_graph(original_graph, nb_vertices, sigma_noise_nodes=1, sigma
 
     node_attribute_dict = {}
     for node in noisy_graph.nodes():
-        node_attribute_dict[node] = {"coord": np.array(compute_noisy_edges.vertices[node]),'is_dummy':False}
+        node_attribute_dict[node] = {"coord": np.array(compute_noisy_edges.vertices[node]),'is_dummy':False,'is_outlier':False}
 
 
 
@@ -227,7 +228,9 @@ def generate_noisy_graph(original_graph, nb_vertices, sigma_noise_nodes=1, sigma
             elif j == len(noisy_coord_all) - 1.:
                  for outlier in sphere_random_sampling:
                         if np.linalg.norm(outlier - noisy_graph.nodes[i]['coord']) == 0.:
-                            ground_truth_permutation.append('O')
+                            noisy_graph.nodes[i]['is_outlier'] = True
+
+                            ground_truth_permutation.append(-1)
         
 
 
@@ -312,10 +315,10 @@ def get_in_between_perm_matrix(perm_mat_1, perm_mat_2):
     """
     result_perm = {}
     for i in range(len(perm_mat_1)):
-        if perm_mat_1[i] == 'O':
+        if perm_mat_1[i] == -1:
                 continue
         for j in range(len(perm_mat_2)):
-            if perm_mat_2[j] == 'O':
+            if perm_mat_2[j] == -1:
                 continue
             
             if perm_mat_1[i] == perm_mat_2[j]:
@@ -392,7 +395,7 @@ def generate_graph_family(nb_sample_graphs, nb_graphs, nb_vertices, radius, nb_o
     for graphs,gt in zip(list_noisy_graphs,list_ground_truth):
         z = mean_edge_len(graphs)
     
-        if min(z) > 0.0:
+        if min(z) > 7.0:
             selected_graphs.append(graphs) # select the noisy graph.
             selected_ground_truth.append(gt) # and its corresponding ground-truth.
             min_geo.append(min(z))
@@ -440,13 +443,14 @@ def generate_graph_family(nb_sample_graphs, nb_graphs, nb_vertices, radius, nb_o
         for j_graph in range(nb_graphs):
 
 
-            # ground_truth_perm[i_graph, j_graph, :]=get_in_between_perm_matrix(ground_truth_perm_to_ref[i_graph, :], ground_truth_perm_to_ref[j_graph, :])
+            ##ground_truth_perm[i_graph, j_graph, :]=get_in_between_perm_matrix(ground_truth_perm_to_ref[i_graph, :], ground_truth_perm_to_ref[j_graph, :])
 
            ground_truth_perm[str(i_graph)+','+str(j_graph)] = get_in_between_perm_matrix(ground_truth_perm_to_ref[i_graph], ground_truth_perm_to_ref[j_graph])
 
 
 
-    return sorted_graphs[:nb_graphs] , ground_truth_perm
+
+    return sorted_graphs[:nb_graphs] , ground_truth_perm,ground_truth_perm_to_ref
 
 
 
@@ -492,14 +496,14 @@ def generate_n_graph_family_and_save(path_to_write, nb_runs, nb_ref_graph, nb_sa
         for noise in list_noise:
             #for outliers in list_outliers:
 
-            folder_name = "noise_" + str(noise) + ",outliers_" + str(max_outliers)
+            folder_name = "noise_" + str(noise) + ",outliers_varied"  #+ str(max_outliers)
             path_parameters_folder = os.path.join(trial_path, folder_name)
 
             if not os.path.isdir(path_parameters_folder):
                 os.mkdir(path_parameters_folder)
                 os.mkdir(os.path.join(path_parameters_folder, "graphs"))
 
-            list_graphs,ground_truth_perm  = generate_graph_family(nb_sample_graphs= nb_sample_graphs,nb_graphs=nb_graphs,
+            list_graphs,ground_truth_perm,ground_truth_perm_to_ref  = generate_graph_family(nb_sample_graphs= nb_sample_graphs,nb_graphs=nb_graphs,
                                                                    nb_vertices=nb_vertices,
                                                                    radius=radius,
                                                                    nb_outliers=max_outliers,
@@ -517,10 +521,12 @@ def generate_n_graph_family_and_save(path_to_write, nb_runs, nb_ref_graph, nb_sa
 
                 print("Length of noisy graph: ",len(sorted_graph.nodes))
 
-                nx.write_gpickle(sorted_graph, os.path.join(path_parameters_folder, "graphs",
-                                                            "graph_" + str(i_family) + ".gpickle"))
+
+                nx.write_gpickle(sorted_graph, os.path.join(path_parameters_folder, "graphs","graph_{:05d}".format(i_family) + ".gpickle"))
 
             # np.save(os.path.join(path_parameters_folder, "ground_truth"), ground_truth_perm)
+
+            nx.write_gpickle(ground_truth_perm_to_ref, path_parameters_folder+ "/permutation_to_ref_graph.gpickle")
 
             nx.write_gpickle(ground_truth_perm, path_parameters_folder+ "/ground_truth.gpickle")
 
@@ -528,20 +534,20 @@ def generate_n_graph_family_and_save(path_to_write, nb_runs, nb_ref_graph, nb_sa
 
 
 if __name__ == '__main__':
-    path_to_write = '/home/rohit/PhD_Work/GM_my_version/Graph_matching/data/simu_graph/varied_outliers/'
+    path_to_write = '/home/rohit/PhD_Work/GM_my_version/Graph_matching/data/simu_graph/test_without_outliers/'
 
-    nb_runs = 1
-    nb_sample_graphs = 500 #  # of graphs to generate before selecting the NN graphs with highest geodesic distance.
-    nb_graphs = 20 # nb of graphs to generate
-    nb_vertices = 30  #72 based on Kaltenmark, MEDIA, 2020
+    nb_runs = 10
+    nb_sample_graphs = 5000 #  # of graphs to generate before selecting the NN graphs with highest geodesic distance.
+    nb_graphs = 20 #134 # nb of graphs to generate
+    nb_vertices = 30 #88 as per real data mean  #72 based on Kaltenmark, MEDIA, 2020 // 88 based on the avg number of nodes in the real data.
     min_noise = 100
-    max_noise = 400
-    step_noise = 200
+    max_noise = 1400
+    step_noise = 300
     #min_outliers = 0
     max_outliers = 20
     step_outliers = 10
     save_reference = 1
-    nb_ref_graph = 1000
+    nb_ref_graph = 5000
     radius = 100
 
 

@@ -41,6 +41,22 @@ def sphere_nearest_neighbor_interpolation(graph, sphere_mesh, coord_attribute='c
     #return graph
 
 
+def load_graphs_in_order(path_to_graphs,suffix=".gpickle"):
+
+    g_files = []
+    with os.scandir(path_to_graphs) as files:
+        for file in files:
+            if file.name.endswith(suffix):
+                g_files.append(file.name)
+
+    g_files.sort()
+
+
+    list_graphs = [nx.read_gpickle(path_to_graphs+"/"+graph) for graph in g_files]
+
+    return list_graphs
+
+
 def load_graphs_in_list(path_to_graphs_folder):
     """
     Return a list of graph loaded from the path

@@ -111,18 +111,6 @@ if __name__ == "__main__":
 
 
 
-	# nx.write_gpickle(g,'g_updated.gpickle')
-	# nx.write_gpickle(g1,'g1_updated.gpickle')
-	# nx.write_gpickle(g2,'g2_updated.gpickle')
-	# nx.write_gpickle(g3,'g3_updated.gpickle')
-
-
-
-# IMportant: The graph with largest number of node should be used as a reference here for visualization 
-
-	# dummy_for_visu(g,g1)
-	# dummy_for_visu(g,g2)
-	# dummy_for_visu(g,g3)
 
 
 

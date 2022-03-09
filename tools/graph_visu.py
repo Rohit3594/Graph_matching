@@ -19,6 +19,7 @@ def graph_nodes_coords_to_sources(graph_no_dummy):
     return s_obj
 
 
+
 def nodes_density_map(list_graphs, mesh, nb_iter=10, dt=0.5):
     """
     Return the smoothed texture of all non labeled points
@@ -37,12 +38,12 @@ def nodes_density_map(list_graphs, mesh, nb_iter=10, dt=0.5):
     non_smoothed_texture = non_smoothed_texture/len(list_graphs)
 
     # smooth the texture
-    # smoothed_texture = sdg.laplacian_texture_smoothing(mesh,
-    #                                                    non_smoothed_texture,
-    #                                                    nb_iter,
-    #                                                    dt)
+    smoothed_texture = sdg.laplacian_texture_smoothing(mesh,
+                                                       non_smoothed_texture,
+                                                       nb_iter,
+                                                       dt)
 
-    return non_smoothed_texture
+    return smoothed_texture
 
 
 def get_visb_sc_shape(visb_sc):
@@ -55,7 +56,7 @@ def get_visb_sc_shape(visb_sc):
     return k[-1]
 
 
-def graph_nodes_to_sources(nodes_coords, node_data=None, nodes_size=None, nodes_mask=None, c_map=None, symbol='disc', vmin=-1, vmax=20):
+def graph_nodes_to_sources(nodes_coords, node_data=None, nodes_size=None, nodes_mask=None, c_map=None, symbol='disc', vmin=-1, vmax=25):
     if nodes_size is None:
         nodes_size = 15.
 
