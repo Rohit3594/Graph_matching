@@ -12,41 +12,53 @@ if __name__ == "__main__":
     # real data
     path_to_graphs = './data/OASIS_full_batch/modified_graphs'
 
-    # Get the meshes
-    list_graphs = gp.load_graphs_in_list(path_to_graphs)
+    noise_folder = 'noise_100,outliers_varied'
+
+    path_to_graphs = './data/simu_graph/simu_test_single_noise/0.0/'+noise_folder+'/graphs/'
+
+    # compute the histos
+    bins = np.arange(0, max_degree_value, max_degree_value/nb_bins)
+
+
+        # Get the meshes
+    list_graphs = gp.load_graphs_in_order(path_to_graphs)
     degree_list = list()
     fig_labels = list()
-    real_avg_degree = list()
-
+    avg_degree = list()
     for ind, graph in enumerate(list_graphs):
-        fig_labels.append('graph_'+str(ind))
+        fig_labels.append('simu_graph_'+str(ind))
         gp.remove_dummy_nodes(graph)
         print(len(graph.nodes))
         graph.remove_edges_from(nx.selfloop_edges(graph))
         degree_list.append(list(dict(nx.degree(graph)).values()))
 
-        real_avg_degree.append(np.mean(list(dict(nx.degree(graph)).values())))
-    # compute the histos
-    bins = np.arange(0, max_degree_value, max_degree_value/nb_bins)
+        avg_degree.append(np.mean(list(dict(nx.degree(graph)).values())))
 
+    print('simu avg_degree_list:',np.mean(np.array(avg_degree)))
+
+    
+    # compute the histos
     degree_histo = list()
     for i_d, dist in enumerate(degree_list):
         hist, bin_edges = np.histogram(dist, bins, density=True)
         degree_histo.append(hist)
-
     degree_histo = np.array(degree_histo)
+
+
     # lines for the plot
     y = np.mean(degree_histo, 0)
     y_upper = y + np.std(degree_histo, 0)
     y_lower = y - np.std(degree_histo, 0)
     # error plot from real data
-    fig_c = tp.error_plot(x=bins, y=y, y_lower=y_lower, y_upper=y_upper, line_label='degree real data', color='rgb(20, 20, 200)')
+    fig_c = tp.error_plot(x=bins, y=y, y_lower=y_lower, y_upper=y_upper, line_label='degree simus', color='rgb(200, 20, 20)')
 
-    #simulated graphs
 
-    noise_folder = 'noise_400,outliers_varied'
 
-    path_to_graphs = './data/simu_graph/simu_test_single_noise/0.0/'+noise_folder+'/graphs/'
+    
+
+    noise_folder_1 = 'noise_100,outliers_varied'
+
+    path_to_graphs = './data/simu_graph/simu_test_single_noise/0.1/'+noise_folder_1+'/graphs/'
         # Get the meshes
     list_graphs = gp.load_graphs_in_order(path_to_graphs)
     degree_list = list()
@@ -90,7 +102,7 @@ if __name__ == "__main__":
 
     fig.update_layout(
         yaxis_title='proportion',
-        title= noise_folder+'    '+'Real Degree average: '+str(np.mean(np.array(real_avg_degree)))+'    Simu Degree average: '+str(np.mean(np.array(avg_degree))),
+        title= noise_folder+'    '+noise_folder_1,
         hovermode="x"
     )
     #fig.show(renderer="browser")

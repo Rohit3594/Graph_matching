@@ -48,9 +48,10 @@ if __name__ == "__main__":
     fig_c = tp.error_plot(x=x, y=y, y_lower=y_lower, y_upper=y_upper, line_label='geo real data', color='rgb(20, 20, 200)')
 
     #simulated graphs
-    path_to_graphs = './data/simu_graph/ten_thous/0/noise_1000,outliers_16/graphs/'
+    path_to_graphs = './data/simu_graph/simu_test/0/noise_100,outliers_20/graphs/'
         # Get the meshes
-    list_graphs = gp.load_graphs_in_list(path_to_graphs)
+    list_graphs = gp.load_graphs_in_order(path_to_graphs)
+
     geo_list = list()
     fig_labels = list()
     for ind, graph in enumerate(list_graphs):
@@ -84,7 +85,7 @@ if __name__ == "__main__":
 
     fig.update_layout(
         yaxis_title='proportion',
-        title='distribution of geodesic_distance noise_1000,outliers_16',
+        title='distribution of geodesic_distance noise_100,outliers_varied',
         hovermode="x"
     )
     #fig.show(renderer="browser")
