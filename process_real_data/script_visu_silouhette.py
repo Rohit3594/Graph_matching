@@ -58,7 +58,7 @@ if __name__ == "__main__":
     pickle_out = open(os.path.join(path_to_silhouette, label_attribute+'_silhouette.gpickle'), "rb")
     silhouette_dict = p.load(pickle_out)
     pickle_out.close()
-    clust_silhouette = gca.get_silhouette_per_cluster(silhouette_dict)
+    clust_silhouette, clust_nb_nodes = gca.get_silhouette_per_cluster(silhouette_dict)
 
     # # save the silhouette value if necessary
     # if path_to_save != "":
