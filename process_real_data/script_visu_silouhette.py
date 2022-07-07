@@ -32,12 +32,12 @@ if __name__ == "__main__":
 
     # path_to_match_mat = "../data/OASIS_full_batch/Hippi_res_real_mat.npy"
     # X_Hippi = np.load(path_to_match_mat)
-    label_attribute = 'labelling_mALS'
+    label_attribute = 'labelling_kerGM'
     mesh = sio.load_mesh(template_mesh)
     largest_ind=24
     print('get_clusters_from_assignment')
     #gca.get_clusters_from_assignment_hippi(list_graphs, X_Hippi, largest_ind, mesh, label_attribute)
-    gca.get_clusters_from_assignment(list_graphs, X_mALS, largest_ind, mesh, label_attribute)
+    gca.get_clusters_from_assignment(list_graphs, X_kerGM, largest_ind, mesh, label_attribute)
     print('create_clusters_lists')
     cluster_dict = gca.create_clusters_lists(list_graphs, label_attribute=label_attribute)
     # Calculate the centroid
