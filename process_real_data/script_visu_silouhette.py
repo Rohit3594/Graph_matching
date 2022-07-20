@@ -1,4 +1,6 @@
 import os
+import sys
+sys.path.append("/home/rohit/PhD_Work/GM_my_version/Graph_matching/")
 import slam.io as sio
 import tools.graph_visu as gv
 import tools.graph_processing as gp
@@ -14,13 +16,13 @@ from visbrain.objects import SourceObj, ColorbarObj
 
 if __name__ == "__main__":
     # template_mesh = '/mnt/data/work/python_sandBox/Graph_matching/data/template_mesh/ico100_7.gii'
-    template_mesh = '/mnt/data/work/python_sandBox/Graph_matching/data/template_mesh/lh.OASIS_testGrp_average_inflated.gii'
-    path_to_graphs = '/mnt/data/work/python_sandBox/Graph_matching/data/OASIS_full_batch/modified_graphs'
-    path_to_silhouette = '/mnt/data/work/python_sandBox/Graph_matching/data/OASIS_full_batch'
-    path_to_mALS = "/mnt/data/work/python_sandBox/Graph_matching/data/OASIS_full_batch/X_mALS.mat"
-    path_to_mSync = "/mnt/data/work/python_sandBox/Graph_matching/data/OASIS_full_batch/X_mSync.mat"
-    path_to_CAO = "/mnt/data/work/python_sandBox/Graph_matching/data/OASIS_full_batch/X_cao_cst_o.mat"
-    path_to_kerGM = "/mnt/data/work/python_sandBox/Graph_matching/data/OASIS_full_batch/X_pairwise_kergm.mat"
+    template_mesh = '../data/template_mesh/lh.OASIS_testGrp_average_inflated.gii'
+    path_to_graphs = '../data/OASIS_full_batch/modified_graphs'
+    path_to_silhouette = '../data/OASIS_full_batch'
+    path_to_mALS = "../data/OASIS_full_batch/X_mALS.mat"
+    path_to_mSync = "../data/OASIS_full_batch/X_mSync.mat"
+    path_to_CAO = "../data/OASIS_full_batch/X_cao_cst_o.mat"
+    path_to_kerGM = "../data/OASIS_full_batch/X_pairwise_kergm.mat"
     # path_to_match_mat = "/home/rohit/PhD_Work/GM_my_version/RESULT_FRIOUL_HIPPI/Hippi_res_real_mat.npy"
 
     list_graphs = gp.load_graphs_in_list(path_to_graphs)
@@ -32,12 +34,18 @@ if __name__ == "__main__":
 
     # path_to_match_mat = "../data/OASIS_full_batch/Hippi_res_real_mat.npy"
     # X_Hippi = np.load(path_to_match_mat)
-    label_attribute = 'labelling_mALS'
+    #label_attribute = 'labelling_CAO' # must be changed also
+
+    label_attribute = 'labelling_kerGM'
+
     mesh = sio.load_mesh(template_mesh)
     largest_ind=24
     print('get_clusters_from_assignment')
     #gca.get_clusters_from_assignment_hippi(list_graphs, X_Hippi, largest_ind, mesh, label_attribute)
-    gca.get_clusters_from_assignment(list_graphs, X_mALS, largest_ind, mesh, label_attribute)
+    #gca.get_clusters_from_assignment(list_graphs, X_CAO, largest_ind, mesh, label_attribute)
+
+    gca.get_clusters_from_assignment(list_graphs, X_kerGM, largest_ind, mesh, label_attribute)
+
     print('create_clusters_lists')
     cluster_dict = gca.create_clusters_lists(list_graphs, label_attribute=label_attribute)
     # Calculate the centroid
@@ -58,7 +66,7 @@ if __name__ == "__main__":
     pickle_out = open(os.path.join(path_to_silhouette, label_attribute+'_silhouette.gpickle'), "rb")
     silhouette_dict = p.load(pickle_out)
     pickle_out.close()
-    clust_silhouette = gca.get_silhouette_per_cluster(silhouette_dict)
+    clust_silhouette, clust_nb_nodes = gca.get_silhouette_per_cluster(silhouette_dict)
 
     # # save the silhouette value if necessary
     # if path_to_save != "":
