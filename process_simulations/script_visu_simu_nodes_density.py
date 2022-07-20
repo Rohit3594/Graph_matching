@@ -19,7 +19,7 @@ if __name__ == "__main__":
     simus_run = 0
     #path_to_graphs = '../data/simu_graph/noise_70,outliers_0/'+str(simus_run)+'/graphs'
 
-    path_to_graphs = '../data/simu_graph/simu_test_single_noise/0.0/noise_100,outliers_varied/graphs/'
+    path_to_graphs = '../data/simu_graph/NEW_SIMUS_JULY_11/0/noise_100,outliers_varied/graphs/'
     list_graphs = gp.load_graphs_in_order(path_to_graphs)
 
 
