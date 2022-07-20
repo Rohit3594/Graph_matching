@@ -10,33 +10,43 @@ def mean_edge_len(G):
     all_geo = [z['geodesic_distance'] for x,y,z in list(G.edges.data())]
     mean_geo = np.array(all_geo).mean()
     std = np.std(all_geo)
-    
     return all_geo
+
+
+def graph_remove_dummy_nodes(graph):
+    nodes_dummy_true = [x for x,y in graph.nodes(data=True) if y['is_dummy']==True]
+    graph.remove_nodes_from(nodes_dummy_true)
+    #print(len(graph.nodes))
+    return graph
+
 
 
 if __name__ == "__main__":
     geo_values = 200
     # real data
-    path_to_graphs = './data/OASIS_full_batch/modified_graphs'
+    path_to_graphs =  './data/Oasis_original_new_with_dummy/modified_graphs/'
 
     # Get the meshes
-    list_graphs = gp.load_graphs_in_list(path_to_graphs)
+    #list_graphs = gp.load_graphs_in_list(path_to_graphs)
+    list_graphs = [nx.read_gpickle(path_to_graphs+'/'+graph) for graph in np.sort(os.listdir(path_to_graphs))]
+    list_graphs = [graph_remove_dummy_nodes(g) for g in list_graphs]
+
     geo_list = list()
     fig_labels = list()
 
     for ind, graph in enumerate(list_graphs):
         fig_labels.append('graph_'+str(ind))
         gp.remove_dummy_nodes(graph)
-        print(len(graph.nodes))
+        print('nb_nodes:',len(graph.nodes))
         graph.remove_edges_from(nx.selfloop_edges(graph))
         geo_list.append(mean_edge_len(graph))
     # compute the histos
     geo_histo = np.zeros((len(geo_list), geo_values))
     for i_d, dist in enumerate(geo_list):
         count = np.bincount(dist)
-        print("len bincount",len(count))
+        #print("len bincount",len(count))
         for i,c in enumerate(count):
-            print(i,c)
+            #print(i,c)
             geo_histo[i_d, i] += c
         geo_histo[i_d, :] = geo_histo[i_d, :]/np.sum(count)
     # lines for the plot
@@ -48,16 +58,17 @@ if __name__ == "__main__":
     fig_c = tp.error_plot(x=x, y=y, y_lower=y_lower, y_upper=y_upper, line_label='geo real data', color='rgb(20, 20, 200)')
 
     #simulated graphs
-    path_to_graphs = './data/simu_graph/simu_test/0/noise_100,outliers_20/graphs/'
+    path_to_graphs = './data/simu_graph/NEW_SIMUS_JULY_11/0/noise_1000,outliers_varied/graphs/'
         # Get the meshes
-    list_graphs = gp.load_graphs_in_order(path_to_graphs)
+    #list_graphs = gp.load_graphs_in_order(path_to_graphs)
+    list_graphs = [nx.read_gpickle(path_to_graphs+'/'+graph) for graph in np.sort(os.listdir(path_to_graphs))]
 
     geo_list = list()
     fig_labels = list()
     for ind, graph in enumerate(list_graphs):
         fig_labels.append('simu_graph_'+str(ind))
         gp.remove_dummy_nodes(graph)
-        print(len(graph.nodes))
+        #print('nb_nodes:',len(graph.nodes))
         graph.remove_edges_from(nx.selfloop_edges(graph))
         geo_list.append(mean_edge_len(graph))
     # compute the histos
@@ -85,7 +96,7 @@ if __name__ == "__main__":
 
     fig.update_layout(
         yaxis_title='proportion',
-        title='distribution of geodesic_distance noise_100,outliers_varied',
+        title='distribution of geodesic_distance noise_1000,outliers_varied',
         hovermode="x"
     )
     #fig.show(renderer="browser")

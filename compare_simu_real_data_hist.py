@@ -6,14 +6,24 @@ import tools.plotly_extension as tp
 import plotly.graph_objs as go
 
 
+def graph_remove_dummy_nodes(graph):
+    nodes_dummy_true = [x for x,y in graph.nodes(data=True) if y['is_dummy']==True]
+    graph.remove_nodes_from(nodes_dummy_true)
+    #print(len(graph.nodes))
+    return graph
+
+
 if __name__ == "__main__":
     max_degree_value = 20
     nb_bins = 20
     # real data
-    path_to_graphs = './data/OASIS_full_batch/modified_graphs'
+    path_to_graphs =  './data/Oasis_original_new_with_dummy/modified_graphs/'
 
     # Get the meshes
-    list_graphs = gp.load_graphs_in_list(path_to_graphs)
+    list_graphs = [nx.read_gpickle(path_to_graphs+'/'+graph) for graph in np.sort(os.listdir(path_to_graphs))]
+    list_graphs = [graph_remove_dummy_nodes(g) for g in list_graphs]
+
+
     degree_list = list()
     fig_labels = list()
     real_avg_degree = list()
@@ -44,11 +54,15 @@ if __name__ == "__main__":
 
     #simulated graphs
 
-    noise_folder = 'noise_400,outliers_varied'
+    noise_folder= 'noise_100,outliers_varied'
 
-    path_to_graphs = './data/simu_graph/simu_test_single_noise/0.0/'+noise_folder+'/graphs/'
+    path_to_graphs = './data/simu_graph/NEW_SIMUS_JULY_11/0/'+noise_folder+'/graphs/'
+
         # Get the meshes
-    list_graphs = gp.load_graphs_in_order(path_to_graphs)
+    #list_graphs = gp.load_graphs_in_order(path_to_graphs)
+    list_graphs = [nx.read_gpickle(path_to_graphs+'/'+graph) for graph in np.sort(os.listdir(path_to_graphs))]
+
+
     degree_list = list()
     fig_labels = list()
     avg_degree = list()
