@@ -147,6 +147,9 @@ venv.bak/
 KerGM_python/grackel
 *.gpickle
 *.mat
+*.zip
+*.npy
+*.pickle
 
 # .idea/misc.xml 
 # *.ipr
