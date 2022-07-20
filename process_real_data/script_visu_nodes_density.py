@@ -9,8 +9,9 @@ import slam.plot as splt
 
 if __name__ == "__main__":
 
-    path_to_graphs = '../data/OASIS_full_batch/modified_graphs'
+    #path_to_graphs = '../data/OASIS_full_batch/modified_graphs'
     #path_to_graphs = '../data/simu_graph/' #simulated graphs
+    path_to_graphs = '../data/Oasis_original_graphs_renamed/'  # non registered graphs
 
     file_sphere_mesh = '../data/template_mesh/ico100_7.gii'
     sphere_mesh = sio.load_mesh(file_sphere_mesh)
