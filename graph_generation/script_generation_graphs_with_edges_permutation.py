@@ -148,8 +148,8 @@ def generate_noisy_graph(original_graph, nb_vertices, sigma_noise_nodes=1, sigma
 
 
     nb_outliers, nb_supress = generate_nb_outliers_and_nb_supress(nb_vertices)  # Sample nb_outliers and nb_supress
-    nb_outliers = 0 # TEMPORARILY
-    nb_supress = 0
+    #nb_outliers = 0 # TEMPORARILY
+    #nb_supress = 0
 
 
     noisy_coord_all = noisy_coord
@@ -534,10 +534,10 @@ def generate_n_graph_family_and_save(path_to_write, nb_runs, nb_ref_graph, nb_sa
 
 
 if __name__ == '__main__':
-    path_to_write = '/home/rohit/PhD_Work/GM_my_version/Graph_matching/data/simu_graph/test_without_outliers/'
+    path_to_write = '/home/rohit/PhD_Work/GM_my_version/Graph_matching/data/simu_graph/test_CAO/'
 
-    nb_runs = 10
-    nb_sample_graphs = 5000 #  # of graphs to generate before selecting the NN graphs with highest geodesic distance.
+    nb_runs = 4
+    nb_sample_graphs = 1000 #  # of graphs to generate before selecting the NN graphs with highest geodesic distance.
     nb_graphs = 20 #134 # nb of graphs to generate
     nb_vertices = 30 #88 as per real data mean  #72 based on Kaltenmark, MEDIA, 2020 // 88 based on the avg number of nodes in the real data.
     min_noise = 100
@@ -547,8 +547,9 @@ if __name__ == '__main__':
     max_outliers = 20
     step_outliers = 10
     save_reference = 1
-    nb_ref_graph = 5000
+    nb_ref_graph = 1000
     radius = 100
+
 
 
 

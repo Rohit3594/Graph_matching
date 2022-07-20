@@ -175,7 +175,7 @@ def get_matching(full_matching, graph_1_num, graph_2_num, nb_graphs):
 
 def get_matching_affinity(affinity_matrix, matching):
     """
-    Given an complete affinity matrix and a matching, return the affinity value of this matching
+    Given a complete affinity matrix and a matching, return the affinity value of this matching
     """
 
     vectorized_matching = matching.flatten()

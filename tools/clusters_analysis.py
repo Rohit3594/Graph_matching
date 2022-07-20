@@ -26,7 +26,7 @@ def get_clusters_from_assignment(list_graphs, matching_matrix, largest_ind, mesh
     nb_graphs = len(list_graphs)
     g_l = list_graphs[largest_ind]
     color_label_ordered = label_nodes_according_to_coord(g_l, mesh, coord_dim=1)
-    r_perm = p.load(open("/mnt/data/work/python_sandBox/Graph_matching/data/r_perm.gpickle","rb"))
+    r_perm = p.load(open("../data/r_perm.gpickle","rb"))
     color_label = color_label_ordered[r_perm]
     gp.add_nodes_attribute(g_l, color_label, labelling_attribute_name)
     default_value = -0.1#0.05

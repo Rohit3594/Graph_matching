@@ -9,7 +9,7 @@ import scipy.io as sio
 import os
 from multiprocessing import Pool
 import argparse
-import pickle5 as pickle
+import pickle as pickle
 
 
 def gaussian_kernel(attribute_1, attribute_2, gamma=1):
@@ -78,7 +78,10 @@ def compute_heuristic_gamma(graph_1, graph_2):
 			full_coordinates.append(graph_2.nodes[node]["coord"])
 	graph_2_gamma_coord = compute_median_distances_all_pair(full_coordinates, "geodesic")
 
+
+
 	gamma_coord = 1/np.mean([graph_1_gamma_coord, graph_2_gamma_coord])
+
 
 
 	# we get all the geodesic distances for graph_1
@@ -326,6 +329,8 @@ def generate_and_save_all_affinity_and_incidence_in_path(path_to_folder, kernel_
 
 ####################
 
+
+
 if __name__ == "__main__":
 
 	# We parse the argument from command line
@@ -334,7 +339,7 @@ if __name__ == "__main__":
 	parser.add_argument("--nb_workers", help="number of processes to launch", default=1, type=int)
 	parser.add_argument("--cpt_full_matrix", help="Decide if we the file should include full affinity matrices or just the smaller one for KerGM (0=False, 1=True)", type=int, default=0)
 	parser.add_argument("--kernel_type", help="kernel type, only gaussian right now", default="gaussian")
-	parser.add_argument("--gaussian_gamma", help="gamma value for the gaussian kernel", default=0, type=float)
+	parser.add_argument("--gaussian_gamma", help="gamma value for the gaussian kernel", default=1, type=float)
 	args = parser.parse_args()
 
 	
