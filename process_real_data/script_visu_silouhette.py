@@ -36,15 +36,19 @@ if __name__ == "__main__":
     # X_Hippi = np.load(path_to_match_mat)
     #label_attribute = 'labelling_CAO' # must be changed also
 
-    label_attribute = 'labelling_kerGM'
+    #label_attribute = 'labelling_kerGM'
 
+    label_attribute = 'labelling_kerGM'
     mesh = sio.load_mesh(template_mesh)
     largest_ind=24
     print('get_clusters_from_assignment')
     #gca.get_clusters_from_assignment_hippi(list_graphs, X_Hippi, largest_ind, mesh, label_attribute)
+
     #gca.get_clusters_from_assignment(list_graphs, X_CAO, largest_ind, mesh, label_attribute)
 
     gca.get_clusters_from_assignment(list_graphs, X_kerGM, largest_ind, mesh, label_attribute)
+
+    #gca.get_clusters_from_assignment(list_graphs, X_kerGM, largest_ind, mesh, label_attribute)
 
     print('create_clusters_lists')
     cluster_dict = gca.create_clusters_lists(list_graphs, label_attribute=label_attribute)
