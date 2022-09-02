@@ -11,14 +11,15 @@ if __name__ == "__main__":
 
     #path_to_graphs = '../data/OASIS_full_batch/modified_graphs'
     #path_to_graphs = '../data/simu_graph/' #simulated graphs
-    path_to_graphs = '../data/Oasis_original_graphs_renamed/'  # non registered graphs
+    path_to_graphs = '../data/Oasis_original_new/'  # non registered graphs
 
     file_sphere_mesh = '../data/template_mesh/ico100_7.gii'
     sphere_mesh = sio.load_mesh(file_sphere_mesh)
 
 
-
     list_graphs = gp.load_graphs_in_list(path_to_graphs)
+
+
     graphs_nodes_number = list()
     for graph in list_graphs:
         gp.remove_dummy_nodes(graph)
@@ -31,7 +32,7 @@ if __name__ == "__main__":
     print('sum across subjects=', np.sum(graphs_nodes_number))
 
     # using an average mesh as template
-    template_mesh = '../data/template_mesh/lh.OASIS_testGrp_average_inflated.gii'
+    template_mesh = '../data/template_mesh/OASIS_avg.lh.white.talairach.unreg.ico7.gii'
     mesh = gv.reg_mesh(sio.load_mesh(template_mesh))
 
 

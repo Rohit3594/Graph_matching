@@ -58,7 +58,7 @@ if __name__ == "__main__":
     fig_c = tp.error_plot(x=x, y=y, y_lower=y_lower, y_upper=y_upper, line_label='geo real data', color='rgb(20, 20, 200)')
 
     #simulated graphs
-    path_to_graphs = './data/simu_graph/NEW_SIMUS_JULY_11/0/noise_1000,outliers_varied/graphs/'
+    path_to_graphs = './data/simu_graph/NEW_SIMUS_JULY_11/3/noise_1000,outliers_varied/graphs/'
         # Get the meshes
     #list_graphs = gp.load_graphs_in_order(path_to_graphs)
     list_graphs = [nx.read_gpickle(path_to_graphs+'/'+graph) for graph in np.sort(os.listdir(path_to_graphs))]
@@ -95,9 +95,14 @@ if __name__ == "__main__":
         #     line=dict(color='rgb(25, 25, 180)')))
 
     fig.update_layout(
-        yaxis_title='proportion',
+        yaxis_title='Proportion',
+        xaxis_title='Geodesic distance',
         title='distribution of geodesic_distance noise_1000,outliers_varied',
-        hovermode="x"
+        hovermode="x",
+        font=dict(
+        size=30,
+    )
+
     )
     #fig.show(renderer="browser")
     fig.write_html('first_figure.html', auto_open=True)

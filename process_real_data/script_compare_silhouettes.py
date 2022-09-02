@@ -14,9 +14,9 @@ import tools.clusters_analysis as gca
 if __name__ == "__main__":
     # template_mesh = '/mnt/data/work/python_sandBox/Graph_matching/data/template_mesh/ico100_7.gii'
     template_mesh = '/mnt/data/work/python_sandBox/Graph_matching/data/template_mesh/lh.OASIS_testGrp_average_inflated.gii'
-    path_to_graphs = '/mnt/data/work/python_sandBox/Graph_matching/data/OASIS_full_batch/modified_graphs'
-    path_to_silhouette = '/mnt/data/work/python_sandBox/Graph_matching/data/OASIS_full_batch'
-    methods = ['kerGM', 'mALS', 'mSync', 'hippi']
+    path_to_graphs = '/mnt/data/work/python_sandBox/Graph_matching/data/Oasis_original_new/'
+    path_to_silhouette = '/mnt/data/work/python_sandBox/Graph_matching/data/Oasis_original_new_with_dummy/'
+    methods = ['kerGM', 'mALS', 'mSync']
 
     nb_bins=10
     dens = False

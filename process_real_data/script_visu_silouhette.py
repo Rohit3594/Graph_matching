@@ -14,18 +14,23 @@ from visbrain.objects import SourceObj, ColorbarObj
 
 
 
+
 if __name__ == "__main__":
     # template_mesh = '/mnt/data/work/python_sandBox/Graph_matching/data/template_mesh/ico100_7.gii'
     template_mesh = '../data/template_mesh/lh.OASIS_testGrp_average_inflated.gii'
-    path_to_graphs = '../data/OASIS_full_batch/modified_graphs'
-    path_to_silhouette = '../data/OASIS_full_batch'
-    path_to_mALS = "../data/OASIS_full_batch/X_mALS.mat"
-    path_to_mSync = "../data/OASIS_full_batch/X_mSync.mat"
-    path_to_CAO = "../data/OASIS_full_batch/X_cao_cst_o.mat"
-    path_to_kerGM = "../data/OASIS_full_batch/X_pairwise_kergm.mat"
+    path_to_graphs = '../data/Oasis_original_new/'
+    path_to_silhouette = '../data/Oasis_original_new_with_dummy'
+    path_to_mALS = "../data/Oasis_original_new_with_dummy/X_mALS.mat"
+    path_to_mSync = "../data/Oasis_original_new_with_dummy/X_mSync.mat"
+    path_to_CAO = "../data/Oasis_original_new_with_dummy/X_cao_cst_o.mat"
+    path_to_kerGM = "../data/Oasis_original_new_with_dummy/X_pairwise_kergm.mat"
     # path_to_match_mat = "/home/rohit/PhD_Work/GM_my_version/RESULT_FRIOUL_HIPPI/Hippi_res_real_mat.npy"
 
+
+
     list_graphs = gp.load_graphs_in_list(path_to_graphs)
+
+
 
     X_mALS = sco.loadmat(path_to_mALS)['X']
     X_mSync = sco.loadmat(path_to_mSync)['X']

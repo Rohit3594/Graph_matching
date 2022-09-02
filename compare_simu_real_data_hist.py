@@ -54,9 +54,9 @@ if __name__ == "__main__":
 
     #simulated graphs
 
-    noise_folder= 'noise_100,outliers_varied'
+    noise_folder= 'noise_1000,outliers_varied'
 
-    path_to_graphs = './data/simu_graph/NEW_SIMUS_JULY_11/0/'+noise_folder+'/graphs/'
+    path_to_graphs = './data/simu_graph/NEW_SIMUS_JULY_11/3/'+noise_folder+'/graphs/'
 
         # Get the meshes
     #list_graphs = gp.load_graphs_in_order(path_to_graphs)
@@ -103,9 +103,13 @@ if __name__ == "__main__":
         #     line=dict(color='rgb(25, 25, 180)')))
 
     fig.update_layout(
-        yaxis_title='proportion',
+        xaxis_title='Degree',
+        yaxis_title='Proportion',
         title= noise_folder+'    '+'Real Degree average: '+str(np.mean(np.array(real_avg_degree)))+'    Simu Degree average: '+str(np.mean(np.array(avg_degree))),
-        hovermode="x"
+        hovermode="x",
+        font=dict(
+        size=30,
+    )
     )
     #fig.show(renderer="browser")
     fig.write_html('first_figure.html', auto_open=True)

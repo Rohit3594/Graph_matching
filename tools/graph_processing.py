@@ -37,7 +37,7 @@ def sphere_nearest_neighbor_interpolation(graph, sphere_mesh, coord_attribute='c
         nn[ind] = nn_tmp
     #print(nodes_coords.shape)
     #print(len(nn))
-    #nx.set_node_attributes(graph, list_to_dict(nn), 'ico100_7_vertex_index')
+    #nx.set_node_attributes(graph, list_to_dict(nn), 'ico100_7_vertex_index_noreg')
     nx.set_node_attributes(graph, list_to_dict(nn), 'ico100_7_vertex_index') # Non Registered Vertex
 
     #return graph
