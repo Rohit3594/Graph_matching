@@ -187,6 +187,7 @@ def get_all_silhouette_value(list_graphs, cluster_dict):
     result_dict = {}
 
     for cluster_key in cluster_dict:
+        print('working on cluster:: ', cluster_key)
         for main_counter in range(len(cluster_dict[cluster_key])):
 
             graph_main, node_main = cluster_dict[cluster_key][main_counter]

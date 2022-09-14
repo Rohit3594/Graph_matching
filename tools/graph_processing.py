@@ -43,37 +43,19 @@ def sphere_nearest_neighbor_interpolation(graph, sphere_mesh, coord_attribute='c
     #return graph
 
 
-def load_graphs_in_order(path_to_graphs,suffix=".gpickle"):
-
+def load_graphs_in_list(path_to_graphs_folder, suffix=".gpickle"):
+    """
+    Return a list of graph loaded from the path, ordered according to the filename on disk
+    """
     g_files = []
-    with os.scandir(path_to_graphs) as files:
+    with os.scandir(path_to_graphs_folder) as files:
         for file in files:
             if file.name.endswith(suffix):
                 g_files.append(file.name)
 
-    g_files.sort()
+    g_files.sort()  # sort according to filenames
 
-
-    list_graphs = [nx.read_gpickle(path_to_graphs+"/"+graph) for graph in g_files]
-
-    return list_graphs
-
-
-def load_graphs_in_list(path_to_graphs_folder):
-    """
-    Return a list of graph loaded from the path
-    """
-
-    #simu_folders =['noise_10,outliers_0','noise_10,outliers_10','noise_50,outliers_0','noise_50,outliers_10'] #temporary solution
-
-    #path_to_graphs_folder = os.path.join(path, "modified_graphs")
-    #path_to_graphs_folder = os.path.join(path, simu_folders[0]+'/0/graphs' ) # for simulated graph
-
-    list_graphs = []
-    for i_graph in range(0, len(os.listdir(path_to_graphs_folder))):
-        path_graph = os.path.join(path_to_graphs_folder, "graph_"+str(i_graph)+".gpickle")
-        graph = nx.read_gpickle(path_graph)
-        list_graphs.append(graph)
+    list_graphs = [nx.read_gpickle(os.path.join(path_to_graphs_folder,graph)) for graph in g_files]
 
     return list_graphs
 
