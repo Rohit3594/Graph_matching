@@ -145,7 +145,7 @@ venv.bak/
 
 # project
 KerGM_python/grackel
-*.gpickle
+#*.gpickle
 *.zip
 *.npy
 *.pickle
