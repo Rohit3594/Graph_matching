@@ -39,7 +39,7 @@ if __name__ == "__main__":
     #label_attribute = 'labelling_CAO'
     #gca.get_clusters_from_assignment(list_graphs, X_CAO, largest_ind, mesh, label_attribute)
     label_attribute = 'labelling_kerGM'
-    gca.get_clusters_from_assignment(list_graphs, X_kerGM, largest_ind, mesh, label_attribute)
+    gca.get_labelling_from_assignment(list_graphs, X_kerGM, largest_ind, mesh, label_attribute)
     #label_attribute = 'labelling_mSync'
     #gca.get_clusters_from_assignment(list_graphs, X_mSync, largest_ind, mesh, label_attribute)
     #label_attribute = 'labelling_mALS'
@@ -60,10 +60,11 @@ if __name__ == "__main__":
 
     reg_mesh = gv.reg_mesh(mesh)
     vb_sc = gv.visbrain_plot(reg_mesh)
-    s_obj, cb_obj = gca.get_silhouette_source_obj(centroid_dict,
-                                              list_graphs,
-                                              clust_silhouette,
-                                              mesh, c_map='jet', clim=(-1,1))
+
+    centroids_3Dpos = gca.get_centroids_coords(centroid_dict, list_graphs, mesh)
+    s_obj, nodes_cb_obj = gv.graph_nodes_to_sources(centroids_3Dpos, node_data=clust_silhouette,
+                                                        nodes_size=60, nodes_mask=None, c_map='jet', symbol='disc',
+                                                        vmin=-1, vmax=1)
 
     vb_sc.add_to_subplot(s_obj)
     # visb_sc_shape = gv.get_visb_sc_shape(vb_sc)

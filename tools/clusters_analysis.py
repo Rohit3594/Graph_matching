@@ -22,7 +22,7 @@ def label_nodes_according_to_coord(graph_no_dummy, template_mesh, coord_dim=1):
     return one_nodes_coords_scaled
 
 
-def get_clusters_from_assignment(list_graphs, matching_matrix, largest_ind, mesh, labelling_attribute_name):
+def get_labelling_from_assignment(list_graphs, matching_matrix, largest_ind, mesh, labelling_attribute_name):
     nb_graphs = len(list_graphs)
     g_l = list_graphs[largest_ind]
     color_label_ordered = label_nodes_according_to_coord(g_l, mesh, coord_dim=1)
@@ -49,7 +49,7 @@ def get_clusters_from_assignment(list_graphs, matching_matrix, largest_ind, mesh
     return transfered_labels
 
 
-def get_clusters_from_assignment_hippi(list_graphs, matching_matrix, largest_ind, mesh, labelling_attribute_name):
+def get_labelling_from_assignment_hippi(list_graphs, matching_matrix, largest_ind, mesh, labelling_attribute_name):
     nb_graphs = len(list_graphs)
     g_l = list_graphs[largest_ind]
     color_label_ordered = label_nodes_according_to_coord(g_l, mesh, coord_dim=1)
@@ -172,9 +172,9 @@ def get_centroid_clusters(list_graphs, clusters_dict):
 
             if distance_to_centroid < min_distance or min_distance == -1:
                 min_distance = distance_to_centroid
-                point_to_save = (graph_num, node)
+                centroid_node = (graph_num, node)
 
-        result_dict[cluster_key] = point_to_save
+        result_dict[cluster_key] = centroid_node
 
     return result_dict
 
@@ -246,13 +246,10 @@ def get_silhouette_per_cluster(silhouette_dict):
     return silhouette_data, cluster_nb_nodes
 
 
-def get_silhouette_source_obj(centroid_dict, list_graphs, silhouette_data, mesh, c_map='jet', clim=None):
-    """
-    Return a SourceObj that represent the silhouette value at each cluster centroid
-    """
+def get_centroids_coords(centroid_dict, list_graphs, mesh):
 
     nb_clusters = len(list(centroid_dict.keys()))
-    silhouette_3Dpos = np.zeros((nb_clusters, 3))
+    centroids_3Dpos = np.zeros((nb_clusters, 3))
 
     # Get the data
     for cluster_i, cluster_key in enumerate(centroid_dict):
@@ -263,28 +260,33 @@ def get_silhouette_source_obj(centroid_dict, list_graphs, silhouette_data, mesh,
         vertex_pos = mesh.vertices[vertex, :]
         # print(vertex_pos)
         # print(silhouette_3Dpos.shape)
-        silhouette_3Dpos[cluster_i, :] = vertex_pos
+        centroids_3Dpos[cluster_i, :] = vertex_pos
+    return centroids_3Dpos
 
-    # Create the source obj
-    transl_bary = np.mean(silhouette_3Dpos)
-    nodes_coords = 1.01*(silhouette_3Dpos-transl_bary)+transl_bary
-    silhouette_text = [str(elem) for elem in silhouette_data]
-    s_obj = SourceObj('nodes', nodes_coords, color='black',
-                        edge_color='black', symbol='o', edge_width=2.,
-                        radius_min=60., radius_max=60., alpha=.9)
-    s_obj.color_sources(data=silhouette_data, cmap=c_map,clim=clim)
-    # Get the colorbar of the source object
-    CBAR_STATE = dict(cbtxtsz=30, txtsz=30., width=.1, cbtxtsh=3.,
-                  rect=(-.3, -2., 1., 4.), txtcolor='k', border=False)
-    cb_obj = ColorbarObj(s_obj, **CBAR_STATE)
 
-    # source_silhouette = SourceObj("source_silhouette",
-    #                               nodes_coords,
-    #                               silhouette_data,
-    #                               text=silhouette_text,
-    #                               radius_min=20,
-    #                               radius_max=30,
-    #                               text_size=50)
+def compute_node_consistency(matching_matrix, nb_graphs, nb_nodes):
+    nodeCstPerGraph = np.zeros((nb_nodes, nb_graphs))
+    for graph_ref_num in range(nb_graphs):
+        print('graph_ref_num=', graph_ref_num)
+        #rscope = (graph_ref_num - 1) * nb_nodes + 1:graph_ref_num * nb_nodes
+        rscope = range(graph_ref_num * nb_nodes, (graph_ref_num + 1) * nb_nodes)
+        for i in range(nb_graphs-1):
+            #x_k_i = matching_matrix[, ]
+            iscope = range(i * nb_nodes, (i+1)*nb_nodes)
+            Xri = np.array(matching_matrix[np.ix_(rscope, iscope)], dtype=int)
+            for j in range(i+1,nb_graphs):
+                jscope = range(j * nb_nodes, (j + 1) * nb_nodes)
+                Xij = np.array(matching_matrix[np.ix_(iscope, jscope)], dtype=int)
+                Xrj = np.array(matching_matrix[np.ix_(rscope, jscope)], dtype=int)
+                Xrij = np.matmul(Xri, Xij)
+                nodeCstPerGraph[:, graph_ref_num] += (1-np.sum(np.abs(Xrij-Xrj),1)/2)
 
-    return s_obj, cb_obj
-
+    # normalize the summation value
+    nodeCstPerGraph = nodeCstPerGraph/(nb_graphs*(nb_graphs-1)/2)
+    # sort
+    # [~,IX] = np.sort(nodeCstPerGraph,1,'descend')
+    # nodeCstPerGraph2 = np.zeros(nb_nodes,nb_graphs)
+    # for ref in range(nb_graphs):
+    #     nodeCstPerGraph2(IX(1:inCnt,ref),ref) = 1
+    # nodeCstPerGraph = nodeCstPerGraph2
+    return nodeCstPerGraph

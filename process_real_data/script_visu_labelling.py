@@ -101,7 +101,7 @@ if __name__ == "__main__":
 
 
     print('get_clusters_from_assignment')
-    gca.get_clusters_from_assignment(list_graphs, matching_matrix, largest_ind, mesh, label_attribute)
+    gca.get_labelling_from_assignment(list_graphs, matching_matrix, largest_ind, mesh, label_attribute)
     print('create_clusters_lists')
     cluster_dict = gca.create_clusters_lists(list_graphs, label_attribute=label_attribute)
     # Calculate the centroid
@@ -111,10 +111,11 @@ if __name__ == "__main__":
     silhouette_dict = p.load(pickle_out)
     pickle_out.close()
     clust_silhouette = gca.get_silhouette_per_cluster(silhouette_dict)
-    s_obj, cb_obj = gca.get_silhouette_source_obj(centroid_dict,
-                                              list_graphs,
-                                              clust_silhouette,
-                                              mesh, c_map='jet', clim=(-1,1))
+    centroids_3Dpos = gca.get_centroids_coords(centroid_dict, list_graphs, mesh)
+    s_obj, nodes_cb_obj = gv.graph_nodes_to_sources(centroids_3Dpos, node_data=clust_silhouette,
+                                                        nodes_size=60, nodes_mask=None, c_map='jet', symbol='disc',
+                                                        vmin=-1, vmax=1)
+
 
     vb_sc.add_to_subplot(s_obj)
     vb_sc.preview()

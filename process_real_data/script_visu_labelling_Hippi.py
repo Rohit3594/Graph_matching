@@ -124,7 +124,9 @@ if __name__ == "__main__":
             #data_mask = gp.remove_dummy_nodes(g)
             nodes_coords = gp.graph_nodes_to_coords(g, 'ico100_7_vertex_index', reg_mesh)
             print(nodes_coords.shape)
-            s_obj, nodes_cb_obj = gv.graph_nodes_to_sources(g, nodes_coords, node_data=transfered_labels, nodes_mask=None, c_map='nipy_spectral')
+            s_obj, nodes_cb_obj = gv.graph_nodes_to_sources(nodes_coords, node_data=transfered_labels, nodes_mask=None, c_map='nipy_spectral')
+
+
             vb_sc.add_to_subplot(s_obj)
         print('nb_unmatched',nb_unmatched)
         print("Preview")
