@@ -15,12 +15,13 @@ from visbrain.objects import SourceObj, ColorbarObj
 
 if __name__ == "__main__":
     path_to_graphs = '../data/Oasis_original_new_with_dummy/modified_graphs'
-    path_to_silhouette = '../data/Oasis_original_new_with_dummy/silhouette'
-    path_to_mALS = "../data/Oasis_original_new_with_dummy/X_mALS.mat"
-    path_to_mSync = "../data/Oasis_original_new_with_dummy/X_mSync.mat"
-    path_to_CAO = "../data/Oasis_original_new_with_dummy/X_cao_cst_o.mat"
-    path_to_kerGM = "../data/Oasis_original_new_with_dummy/X_pairwise_kergm.mat"
     template_mesh = '../data/template_mesh/lh.OASIS_testGrp_average_inflated.gii'
+    path_to_silhouette = '../data/Oasis_original_new_with_dummy/silhouette'
+    reg_or_unreg = '_unreg'#''
+    path_to_mALS = "../data/Oasis_original_new_with_dummy/X_mALS"+reg_or_unreg+".mat"
+    path_to_mSync = "../data/Oasis_original_new_with_dummy/X_mSync"+reg_or_unreg+".mat"
+    path_to_CAO = "../data/Oasis_original_new_with_dummy/X_cao_cst_o.mat"
+    path_to_kerGM = "../data/Oasis_original_new_with_dummy/X_pairwise_kergm"+reg_or_unreg+".mat"
     mesh = sio.load_mesh(template_mesh)
     list_graphs = gp.load_graphs_in_list(path_to_graphs)
     for i,g in enumerate(list_graphs):
@@ -38,12 +39,12 @@ if __name__ == "__main__":
     #gca.get_clusters_from_assignment_hippi(list_graphs, X_Hippi, largest_ind, mesh, label_attribute)
     #label_attribute = 'labelling_CAO'
     #gca.get_clusters_from_assignment(list_graphs, X_CAO, largest_ind, mesh, label_attribute)
-    #label_attribute = 'labelling_kerGM'
-    #gca.get_clusters_from_assignment(list_graphs, X_kerGM, largest_ind, mesh, label_attribute)
-    #label_attribute = 'labelling_mSync'
-    #gca.get_clusters_from_assignment(list_graphs, X_mSync, largest_ind, mesh, label_attribute)
-    label_attribute = 'labelling_mALS'
-    gca.get_labelling_from_assignment(list_graphs, X_mALS, largest_ind, mesh, label_attribute)
+    label_attribute = 'labelling_kerGM'+reg_or_unreg
+    gca.get_labelling_from_assignment(list_graphs, X_kerGM, largest_ind, mesh, label_attribute)
+    # label_attribute = 'labelling_mSync'+reg_or_unreg
+    # gca.get_labelling_from_assignment(list_graphs, X_mSync, largest_ind, mesh, label_attribute)
+    # label_attribute = 'labelling_mALS'+reg_or_unreg
+    # gca.get_labelling_from_assignment(list_graphs, X_mALS, largest_ind, mesh, label_attribute)
 
     print('create_clusters_lists')
     cluster_dict = gca.create_clusters_lists(list_graphs, label_attribute=label_attribute)
