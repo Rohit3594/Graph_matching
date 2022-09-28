@@ -25,8 +25,8 @@ def label_nodes_according_to_coord(graph_no_dummy, template_mesh, coord_dim=1):
 def get_labelling_from_assignment(list_graphs, matching_matrix, largest_ind, mesh, labelling_attribute_name):
     nb_graphs = len(list_graphs)
     g_l = list_graphs[largest_ind]
-    color_label_ordered = label_nodes_according_to_coord(g_l, mesh, coord_dim=1)
-    r_perm = p.load(open("../data/r_perm.gpickle","rb"))
+    color_label_ordered = label_nodes_according_to_coord(g_l, mesh, coord_dim=0)
+    r_perm = p.load(open("../data/r_perm_22.gpickle","rb"))
     color_label = color_label_ordered[r_perm]
     gp.add_nodes_attribute(g_l, color_label, labelling_attribute_name)
     default_value = -0.1#0.05
@@ -141,7 +141,7 @@ def create_clusters_lists(list_graphs, label_attribute="label_dbscan"):
     return {i: result_dict[i] for i in result_dict if len(result_dict[i]) > 1}
 
 
-def get_centroid_clusters(list_graphs, clusters_dict):
+def get_centroid_clusters(list_graphs, clusters_dict, coords_attribute="sphere_3dcoords"):
     """
     Return a dictionary which gives for each cluster the belonging point
     which is the closest to the centroid
@@ -157,7 +157,7 @@ def get_centroid_clusters(list_graphs, clusters_dict):
         # fill the matrix
         for elem_i, (graph_num, node) in enumerate(clusters_dict[cluster_key]):
             graph = list_graphs[graph_num]
-            position_mat[elem_i, :] = graph.nodes[node]["sphere_3dcoords"]
+            position_mat[elem_i, :] = graph.nodes[node][coords_attribute]
 
         # get the centroid
         centroid = position_mat.mean(0)
@@ -167,7 +167,7 @@ def get_centroid_clusters(list_graphs, clusters_dict):
         for graph_num, node in clusters_dict[cluster_key]:
 
             graph = list_graphs[graph_num]
-            position_node = graph.nodes[node]["sphere_3dcoords"]
+            position_node = graph.nodes[node][coords_attribute]
             distance_to_centroid = np.linalg.norm(centroid - position_node)
 
             if distance_to_centroid < min_distance or min_distance == -1:
@@ -246,7 +246,7 @@ def get_silhouette_per_cluster(silhouette_dict):
     return silhouette_data, cluster_nb_nodes
 
 
-def get_centroids_coords(centroid_dict, list_graphs, mesh):
+def get_centroids_coords(centroid_dict, list_graphs, mesh, attribute_vertex_index="ico100_7_vertex_index"):
 
     nb_clusters = len(list(centroid_dict.keys()))
     centroids_3Dpos = np.zeros((nb_clusters, 3))
@@ -256,7 +256,7 @@ def get_centroids_coords(centroid_dict, list_graphs, mesh):
         graph_num, node = centroid_dict[cluster_key]
         graph = list_graphs[graph_num]
 
-        vertex = graph.nodes[node]["ico100_7_vertex_index"]
+        vertex = graph.nodes[node][attribute_vertex_index]
         vertex_pos = mesh.vertices[vertex, :]
         # print(vertex_pos)
         # print(silhouette_3Dpos.shape)
