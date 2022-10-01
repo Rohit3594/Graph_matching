@@ -149,7 +149,7 @@ KerGM_python/grackel
 *.zip
 *.npy
 *.pickle
-*.mat
+#*.mat
 # .idea/misc.xml 
 # *.ipr
 

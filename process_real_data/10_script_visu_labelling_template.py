@@ -27,7 +27,7 @@ if __name__ == "__main__":
 
     # read the assignment matrices
     x_mSync = sco.loadmat(os.path.join(path_to_match_mat, "X_mSync.mat"))["X"]
-    x_mALS = sco.loadmat(os.path.join(path_to_match_mat, "X_mALS_unreg.mat"))["X"]
+    x_mALS = sco.loadmat(os.path.join(path_to_match_mat, "X_mALS.mat"))["X"]
     x_cao = sco.loadmat(os.path.join(path_to_match_mat, "X_cao_cst_o.mat"))["X"]
     x_kerGM = sco.loadmat(os.path.join(path_to_match_mat,"X_pairwise_kergm.mat"))["full_assignment_mat"]
 
@@ -45,11 +45,11 @@ if __name__ == "__main__":
     cluster_dict = gca.create_clusters_lists(list_graphs, label_attribute=label_attribute)
     # Calculate the centroid
     print('get_centroid_clusters')
-    centroid_dict = gca.get_centroid_clusters(list_graphs, cluster_dict, coords_attribute="sphere_3dcoords_noreg")
+    centroid_dict = gca.get_centroid_clusters(list_graphs, cluster_dict, coords_attribute="sphere_3dcoords")
 
     vb_sc = gv.visbrain_plot(reg_mesh)
     for g in list_graphs:
-        nodes_coords = gp.graph_nodes_to_coords(g, 'ico100_7_vertex_index_noreg', reg_mesh)
+        nodes_coords = gp.graph_nodes_to_coords(g, 'ico100_7_vertex_index', reg_mesh)
         #labels = nx.get_node_attributes(g, 'label_media').values()
         labels = nx.get_node_attributes(g, label_attribute).values()
         color_label = np.array([l for l in labels])
@@ -57,9 +57,9 @@ if __name__ == "__main__":
                                                         c_map='nipy_spectral',  vmin=-0.1, vmax=1)
         vb_sc.add_to_subplot(s_obj)
 
-    centroids_3Dpos = gca.get_centroids_coords(centroid_dict, list_graphs, reg_mesh, attribute_vertex_index='ico100_7_vertex_index_noreg')
+    centroids_3Dpos = gca.get_centroids_coords(centroid_dict, list_graphs, reg_mesh, attribute_vertex_index='ico100_7_vertex_index')
     s_obj, nodes_cb_obj = gv.graph_nodes_to_sources(centroids_3Dpos, node_data=np.array(list(cluster_dict.keys())),
-                                                        nodes_size=60, nodes_mask=None, c_map='nipy_spectral', symbol='disc',
+                                                        nodes_size=90, nodes_mask=None, c_map='nipy_spectral', symbol='disc',
                                                         vmin=-0.1, vmax=1)
 
     vb_sc.add_to_subplot(s_obj)

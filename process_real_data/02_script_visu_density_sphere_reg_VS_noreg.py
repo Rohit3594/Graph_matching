@@ -13,7 +13,7 @@ import copy
 
 
 if __name__ == "__main__":
-    template_mesh = '/mnt/data/work/python_sandBox/Graph_matching/data/template_mesh/lh.OASIS_testGrp_average_inflated.gii'
+    template_mesh = '/mnt/data/work/python_sandBox/Graph_matching/data/template_mesh/OASIS_avg.lh.white.talairach.reg.ico7.inflated.gii'#lh.OASIS_testGrp_average_inflated.gii'
     path_to_graphs = '/mnt/data/work/python_sandBox/Graph_matching/data/OASIS_labelled_pits_graphs'
 
     list_graphs = gp.load_labelled_graphs_in_list(path_to_graphs, hemi='lh')
