@@ -18,7 +18,7 @@ if __name__ == "__main__":
     template_mesh = '../data/template_mesh/lh.OASIS_testGrp_average_inflated.gii'
     path_to_silhouette = '../data/Oasis_original_new_with_dummy/silhouette'
     reg_or_unreg = ''#'_unreg'#''
-    method = 'neuroimage'#'media'#'CAO'#'kerGM'#'mSync'#'mALS'#
+    method = 'kmeans_110_real_data_dummy'#'neuroimage'#'media'#'CAO'#'kerGM'#'mSync'#'mALS'#
     path_to_X = "../data/Oasis_original_new_with_dummy/X_"+method+reg_or_unreg+".mat"
     largest_ind = 22#24
 
@@ -28,13 +28,12 @@ if __name__ == "__main__":
         gp.remove_dummy_nodes(g)
         #print(i,len(g)) # allow to identify the largest graph (22)
 
-    print('get_clusters_from_assignment')
     if 'neuroimage' in method:
         label_attribute = 'label_neuroimage'#'label_media'
     elif 'media' in method:
         label_attribute = 'label_media'
     else:
-        if 'kerGM' in method:
+        if 'kerGM' or 'kmeans' in method:
             X = sco.loadmat(path_to_X)["full_assignment_mat"]
         else:
             X = sco.loadmat(path_to_X)['X']
