@@ -12,7 +12,8 @@ if __name__ == "__main__":
     path_to_graphs = '../data/Oasis_original_new_with_dummy/modified_graphs'
     path_to_consistency = '../data/Oasis_original_new_with_dummy/consistency'
     path_to_figs = '../data/Oasis_original_new_with_dummy/figures'
-    reg_or_unreg = '_unreg'#''
+    reg_or_unreg = ''#'_unreg'#''
+
 
     list_graphs = gp.load_graphs_in_list(path_to_graphs)
 
@@ -32,6 +33,17 @@ if __name__ == "__main__":
     nodeCstPerGraph_KerGM = pickle.load(pickle_in)
     pickle_in.close()
 
+    pickle_in = open(os.path.join(path_to_consistency,"nodeCstPerGraph_kmeans_110_real_data_dummy"+reg_or_unreg+".pck"),"rb")
+    nodeCstPerGraph_kmeans_110 = pickle.load(pickle_in)
+    pickle_in.close()
+
+    pickle_in = open(os.path.join(path_to_consistency,"nodeCstPerGraph_kmeans_90_real_data_dummy"+reg_or_unreg+".pck"),"rb")
+    nodeCstPerGraph_kmeans_90 = pickle.load(pickle_in)
+    pickle_in.close()
+
+    pickle_in = open(os.path.join(path_to_consistency,"nodeCstPerGraph_kmeans_70_real_data_dummy"+reg_or_unreg+".pck"),"rb")
+    nodeCstPerGraph_kmeans_70 = pickle.load(pickle_in)
+    pickle_in.close()
     # pickle_in = open(os.path.join(path_to_consistency,"nodeCstPerGraph_Hippi.pck"),"rb")
     # nodeCstPerGraph_Hippi = pickle.load(pickle_in)
     # pickle_in.close()
@@ -40,6 +52,10 @@ if __name__ == "__main__":
     print("Node consistency mSync:", np.mean(nodeCstPerGraph_mSync), np.std(nodeCstPerGraph_mSync))
     print("Node consistency KerGM:", np.mean(nodeCstPerGraph_KerGM), np.std(nodeCstPerGraph_KerGM))
     print("Node consistency CAO:", np.mean(nodeCstPerGraph_CAO), np.std(nodeCstPerGraph_CAO))
+    print("Node consistency kmeans110:", np.mean(nodeCstPerGraph_kmeans_110), np.std(nodeCstPerGraph_kmeans_110))
+    print("Node consistency kmeans90:", np.mean(nodeCstPerGraph_kmeans_90), np.std(nodeCstPerGraph_kmeans_90))
+    print("Node consistency kmeans70:", np.mean(nodeCstPerGraph_kmeans_70), np.std(nodeCstPerGraph_kmeans_70))
+
     # print("Node consistency Hippi:",np.mean(nodeCstPerGraph_Hippi), np.std(nodeCstPerGraph_Hippi))
 
     print(np.mean(nodeCstPerGraph_mALS,1))
