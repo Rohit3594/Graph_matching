@@ -12,9 +12,9 @@ if __name__ == "__main__":
     path_to_graphs = '../data/Oasis_original_new_with_dummy/modified_graphs'
     path_to_consistency = '../data/Oasis_original_new_with_dummy/consistency'
     path_to_figs = '../data/Oasis_original_new_with_dummy/figures'
-    reg_or_unreg = '_unreg'#''
+    reg_or_unreg = ''#'_unreg'#''
     ind_g=22
-    method = 'mALS'+reg_or_unreg#'KerGM'#'mSync'#'mALS'+reg_or_unreg
+    method = 'kmeans_110_real_data_dummy'#'mALS'#'kerGM'#'mSync'#'mALS'+reg_or_unreg
 
     if reg_or_unreg == '_unreg':
         graph_att = '_noreg'
@@ -24,7 +24,7 @@ if __name__ == "__main__":
     list_graphs = gp.load_graphs_in_list(path_to_graphs)
     print(len(list_graphs))
 
-    pickle_in = open(os.path.join(path_to_consistency,"nodeCstPerGraph_"+method+".pck"),"rb")
+    pickle_in = open(os.path.join(path_to_consistency,"nodeCstPerGraph_"+method+reg_or_unreg+".pck"),"rb")
     nodeCstPerGraph= pickle.load(pickle_in)
     pickle_in.close()
 

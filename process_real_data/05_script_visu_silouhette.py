@@ -19,7 +19,8 @@ if __name__ == "__main__":
     path_to_figs = '../data/Oasis_original_new_with_dummy/figures'
 
     reg_or_unreg = ''#'_unreg'#''
-    method = 'CAO'#'kerGM'#'mSync'#'mALS'#
+    method = 'kmeans_70_real_data_dummy'#'CAO'#'kerGM'#'mSync'#'mALS'#
+
     path_to_X = "../data/Oasis_original_new_with_dummy/X_"+method+reg_or_unreg+".mat"
     template_mesh = '../data/template_mesh/OASIS_avg.lh.white.talairach.reg.ico7.inflated.gii'#lh.OASIS_testGrp_average_inflated.gii'
     largest_ind = 22#24
@@ -30,7 +31,7 @@ if __name__ == "__main__":
         gp.remove_dummy_nodes(g)
         #print(i,len(g)) # allow to identify the largest graph (22)
 
-    if 'kerGM' in method:
+    if 'kerGM' or 'kmeans' in method:
         X = sco.loadmat(path_to_X)["full_assignment_mat"]
     else:
         X = sco.loadmat(path_to_X)['X']
