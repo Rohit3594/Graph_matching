@@ -17,7 +17,7 @@ if __name__ == "__main__":
     template_mesh = '/mnt/data/work/python_sandBox/Graph_matching/data/template_mesh/lh.OASIS_testGrp_average_inflated.gii'
     path_to_graphs = '/mnt/data/work/python_sandBox/Graph_matching/data/OASIS_labelled_pits_graphs'
     #path_to_match_mat = "/home/rohit/PhD_Work/GM_my_version/RESULT_FRIOUL_HIPPI/Hippi_res_real_mat.npy"
-    label_attribute = 'label_neuroimage'#'label_media'
+    label_attribute = 'label_media'#'label_neuroimage'#'label_media'
     list_graphs = gp.load_labelled_graphs_in_list(path_to_graphs, hemi='lh')
     for g in list_graphs:
         nx.set_node_attributes(g, values=False, name="is_dummy")
@@ -34,7 +34,7 @@ if __name__ == "__main__":
 
     vb_sc = gv.visbrain_plot(reg_mesh)
     vmin=0
-    vmax=329#vmax=92
+    vmax=92#329#92
     for g in list_graphs:
         nodes_coords = gp.graph_nodes_to_coords(g, 'ico100_7_vertex_index', reg_mesh)
         labels = nx.get_node_attributes(g, label_attribute).values()
@@ -56,7 +56,7 @@ if __name__ == "__main__":
 
     vb_sc2 = gv.visbrain_plot(reg_mesh)
 
-    label_to_plot = 222
+    label_to_plot = 0#222
     for ind,g in enumerate(list_graphs):
 
         nodes_coords = gp.graph_nodes_to_coords(g, 'ico100_7_vertex_index', reg_mesh)

@@ -10,30 +10,25 @@ if __name__ == "__main__":
     path_to_match_mat = '../data/Oasis_original_new_with_dummy/'
     path_to_consistency = '../data/Oasis_original_new_with_dummy/consistency'
     reg_or_unreg = ''#'_unreg'#''
-    method = 'kmeans_70_real_data_dummy'#'neuroimage'#'media'#'CAO'#'kerGM'#'mSync'#'mALS'#
+    method = 'media'#'neuroimage'#'kmeans_70_real_data_dummy'#'neuroimage'#'media'#'CAO'#'kerGM'#'mSync'#'mALS'#
     path_to_X = "../data/Oasis_original_new_with_dummy/X_"+method+reg_or_unreg+".mat"
 
     list_graphs = gp.load_graphs_in_list(path_to_graphs)
     nb_graphs = len(list_graphs)
 
-    if 'neuroimage' in method:
-        label_attribute = 'label_neuroimage'#'label_media'
-    elif 'media' in method:
-        label_attribute = 'label_media'
+    if 'kerGM' or 'kmeans' in method:
+        X = sco.loadmat(path_to_X)["full_assignment_mat"]
     else:
-        if 'kerGM' or 'kmeans' in method:
-            X = sco.loadmat(path_to_X)["full_assignment_mat"]
-        else:
-            X = sco.loadmat(path_to_X)['X']
+        X = sco.loadmat(path_to_X)['X']
 
 
-        # get the associated number of nodes
-        nb_nodes = int(X.shape[0]/nb_graphs)
-        print(nb_nodes)
-        nodeCstPerGraph = gca.compute_node_consistency(X, nb_graphs, nb_nodes)
-        pickle_out = open(os.path.join(path_to_consistency, "nodeCstPerGraph_"+method+reg_or_unreg+".pck"), "wb")
-        pickle.dump(nodeCstPerGraph, pickle_out)
-        pickle_out.close()
+    # get the associated number of nodes
+    nb_nodes = int(X.shape[0]/nb_graphs)
+    print(nb_nodes)
+    nodeCstPerGraph = gca.compute_node_consistency(X, nb_graphs, nb_nodes)
+    pickle_out = open(os.path.join(path_to_consistency, "nodeCstPerGraph_"+method+reg_or_unreg+".pck"), "wb")
+    pickle.dump(nodeCstPerGraph, pickle_out)
+    pickle_out.close()
 
     # # read the assignment matrices
     # x_mSync = sco.loadmat(os.path.join(path_to_match_mat, "X_mSync"+reg_or_unreg+".mat"))["X"]

@@ -17,6 +17,14 @@ if __name__ == "__main__":
 
     list_graphs = gp.load_graphs_in_list(path_to_graphs)
 
+    pickle_in = open(os.path.join(path_to_consistency,"nodeCstPerGraph_media.pck"),"rb")
+    nodeCstPerGraph_media = pickle.load(pickle_in)
+    pickle_in.close()
+
+    pickle_in = open(os.path.join(path_to_consistency,"nodeCstPerGraph_neuroimage.pck"),"rb")
+    nodeCstPerGraph_neuroimage = pickle.load(pickle_in)
+    pickle_in.close()
+
     pickle_in = open(os.path.join(path_to_consistency,"nodeCstPerGraph_mALS"+reg_or_unreg+".pck"),"rb")
     nodeCstPerGraph_mALS = pickle.load(pickle_in)
     pickle_in.close()
@@ -55,6 +63,8 @@ if __name__ == "__main__":
     print("Node consistency kmeans110:", np.mean(nodeCstPerGraph_kmeans_110), np.std(nodeCstPerGraph_kmeans_110))
     print("Node consistency kmeans90:", np.mean(nodeCstPerGraph_kmeans_90), np.std(nodeCstPerGraph_kmeans_90))
     print("Node consistency kmeans70:", np.mean(nodeCstPerGraph_kmeans_70), np.std(nodeCstPerGraph_kmeans_70))
+    print("Node consistency media:", np.mean(nodeCstPerGraph_media), np.std(nodeCstPerGraph_media))
+    print("Node consistency neuroimage:", np.mean(nodeCstPerGraph_neuroimage), np.std(nodeCstPerGraph_neuroimage))
 
     # print("Node consistency Hippi:",np.mean(nodeCstPerGraph_Hippi), np.std(nodeCstPerGraph_Hippi))
 

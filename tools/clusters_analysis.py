@@ -5,6 +5,25 @@ import pickle as p
 from visbrain.objects import SourceObj, ColorbarObj
 
 
+def unique_labels(all_labels):
+    u_labs = list()
+    for l in all_labels:
+        u_labs.extend(l)
+    return np.unique(u_labs)
+
+
+def nb_labelled_nodes_per_label(u_labs, all_labels):
+    u_l_count = list()
+    for u_l in u_labs:
+        subj_u = list()
+        for subj_labs in all_labels:
+            subj_u.append(np.sum(subj_labs == u_l))
+        #print(u_l)
+        #print(subj_u)
+        u_l_count.append(subj_u)
+    return np.array(u_l_count)
+
+
 def label_nodes_according_to_coord(graph_no_dummy, template_mesh, coord_dim=1):
     nodes_coords = gp.graph_nodes_to_coords(graph_no_dummy, 'ico100_7_vertex_index', template_mesh)
 
