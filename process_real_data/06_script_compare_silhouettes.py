@@ -9,6 +9,7 @@ import pickle as p
 import copy
 import matplotlib.pyplot as plt
 import tools.clusters_analysis as gca
+import numpy as np
 
 
 if __name__ == "__main__":
@@ -18,9 +19,9 @@ if __name__ == "__main__":
     path_to_silhouette = '/mnt/data/work/python_sandBox/Graph_matching/data/Oasis_original_new_with_dummy/silhouette'
     methods = ['CAO', 'kerGM', 'mALS', 'mSync','media','neuroimage','kmeans_70_real_data_dummy','kmeans_90_real_data_dummy','kmeans_110_real_data_dummy']
 
-    nb_bins=10
+    nb_bins=20
     dens = False
-    fig1, ax = plt.subplots(1, len(methods), sharey=True, sharex=True)
+    fig1, ax = plt.subplots(2, len(methods), sharey=True, sharex=False)
 
     clust_silhouettes = list()
     for ind, method in enumerate(methods):
@@ -35,17 +36,26 @@ if __name__ == "__main__":
         print(np.mean(clust_silhouette))
         print(np.std(clust_silhouette))
         print(len(clust_silhouette))
-        print(silhouette_dict.keys())
+        sort_ind = np.argsort(clust_silhouette)
+        print(np.array(list(silhouette_dict.keys()))[sort_ind])
+        print(np.array(clust_silhouette)[sort_ind])
         print(clust_nb_nodes_perc)
         if -0.1 in silhouette_dict.keys():
             ind_c=list(silhouette_dict.keys()).index(-0.1)
             print(clust_nb_nodes_perc[ind_c])
         clust_silhouettes.append(clust_silhouette)
 
-        ax[ind].hist(clust_silhouette, density=dens, bins=nb_bins)  # density=False would make counts
-        ax[ind].set_ylabel('Frequency')
-        ax[ind].set_xlabel('Data')
-        ax[ind].set_title(method)
-        ax[ind].grid(True)
+        ax[0, ind].hist(clust_silhouette, density=dens, bins=nb_bins)  # density=False would make counts
+        ax[0, ind].set_ylabel('Frequency')
+        ax[0, ind].set_xlabel('silhouette')
+        ax[0, ind].set_title(method)
+        ax[0, ind].grid(True)
+
+        ax[1, ind].hist(clust_nb_nodes_perc, density=dens, bins=nb_bins)  # density=False would make counts
+        ax[1, ind].set_ylabel('Frequency')
+        ax[1, ind].set_xlabel('perc of tot nodes')
+        ax[1, ind].set_title(method)
+        ax[1, ind].grid(True)
+
 
     plt.show()

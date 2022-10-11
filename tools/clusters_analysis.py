@@ -148,7 +148,6 @@ def create_clusters_lists(list_graphs, label_attribute="label_dbscan"):
 
     for i_graph, graph in enumerate(list_graphs):
         for node in graph.nodes:
-
             label_cluster = graph.nodes[node][label_attribute]
             if label_cluster != -1 and not graph.nodes[node]["is_dummy"]:
                 if label_cluster in result_dict:

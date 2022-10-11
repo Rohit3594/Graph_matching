@@ -6,6 +6,8 @@ import pickle
 from visbrain.objects import SourceObj, ColorbarObj
 import tools.graph_visu as gv
 import tools.graph_processing as gp
+import matplotlib.pyplot as plt
+import pickle as p
 
 if __name__ == "__main__":
     template_mesh = '../data/template_mesh/lh.OASIS_testGrp_average_inflated.gii'
@@ -13,6 +15,7 @@ if __name__ == "__main__":
     path_to_consistency = '../data/Oasis_original_new_with_dummy/consistency'
     path_to_figs = '../data/Oasis_original_new_with_dummy/figures'
     reg_or_unreg = ''#'_unreg'#''
+    methods = ['CAO', 'kerGM', 'mALS', 'mSync','media','neuroimage','kmeans_70_real_data_dummy','kmeans_90_real_data_dummy','kmeans_110_real_data_dummy']
 
 
     list_graphs = gp.load_graphs_in_list(path_to_graphs)
@@ -37,7 +40,7 @@ if __name__ == "__main__":
     nodeCstPerGraph_CAO = pickle.load(pickle_in)
     pickle_in.close()
 
-    pickle_in = open(os.path.join(path_to_consistency,"nodeCstPerGraph_KerGM"+reg_or_unreg+".pck"),"rb")
+    pickle_in = open(os.path.join(path_to_consistency,"nodeCstPerGraph_kerGM"+reg_or_unreg+".pck"),"rb")
     nodeCstPerGraph_KerGM = pickle.load(pickle_in)
     pickle_in.close()
 
@@ -75,3 +78,26 @@ if __name__ == "__main__":
     #print(np.mean(nodeCstPerGraph_CAO,1))
     #rank_mSync = np.linalg.matrix_rank(matching_mSync)
     #print(rank_mSync)
+
+    nb_bins=20
+    dens = False
+    fig1, ax = plt.subplots(2, len(methods), sharey=True, sharex=False)
+
+    clust_silhouettes = list()
+    for ind, method in enumerate(methods):
+        print('----------------------------')
+        print(method)
+        pickle_in = open(os.path.join(path_to_consistency,"nodeCstPerGraph_"+method+reg_or_unreg+".pck"),"rb")
+
+        meth_consistency = p.load(pickle_in)
+        pickle_in.close()
+
+        ax[0, ind].hist(meth_consistency, density=dens, bins=nb_bins)  # density=False would make counts
+        ax[0, ind].set_ylabel('Frequency')
+        ax[0, ind].set_xlabel('silhouette')
+        ax[0, ind].set_title(method)
+        ax[0, ind].grid(True)
+
+
+
+    plt.show()

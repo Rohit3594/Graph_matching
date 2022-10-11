@@ -15,23 +15,47 @@ if __name__ == "__main__":
     #template_mesh = '/mnt/data/work/python_sandBox/Graph_matching/data/template_mesh/ico100_7.gii'
     template_mesh = '../data/template_mesh/lh.OASIS_testGrp_average_inflated.gii'#'../data/template_mesh/OASIS_avg.lh.white.talairach.unreg.ico7.gii'#'../data/template_mesh/lh.OASIS_testGrp_average_inflated.gii'
 
+    # path_to_graphs = '../data/Oasis_original_new_with_dummy/modified_graphs'
+    # path_to_match_mat = '../data/Oasis_original_new_with_dummy/'
+    #
+    # list_graphs = gp.load_graphs_in_list(path_to_graphs)
+    # nb_graphs = len(list_graphs)
+    # tot_nb_nodes = 0
+    # for i, g in enumerate(list_graphs):
+    #     gp.remove_dummy_nodes(g)
+    #     tot_nb_nodes += len(g)
+    #
+    # # read the assignment matrices
+    # x_mSync = sco.loadmat(os.path.join(path_to_match_mat, "X_mSync.mat"))["X"]
+    # x_mALS = sco.loadmat(os.path.join(path_to_match_mat, "X_mALS.mat"))["X"]
+    # x_cao = sco.loadmat(os.path.join(path_to_match_mat, "X_cao_cst_o.mat"))["X"]
+    # x_kerGM = sco.loadmat(os.path.join(path_to_match_mat,"X_pairwise_kergm.mat"))["full_assignment_mat"]
+    #
+    # X = x_mALS
+
     path_to_graphs = '../data/Oasis_original_new_with_dummy/modified_graphs'
     path_to_match_mat = '../data/Oasis_original_new_with_dummy/'
+    path_to_consistency = '../data/Oasis_original_new_with_dummy/consistency'
+    reg_or_unreg = ''#'_unreg'#''
+    method = 'kmeans_70_real_data_dummy'#'neuroimage'#'media'#'CAO'#'kerGM'#'mSync'#'mALS'#
+    path_to_X = "../data/Oasis_original_new_with_dummy/X_"+method+reg_or_unreg+".mat"
 
     list_graphs = gp.load_graphs_in_list(path_to_graphs)
-    nb_graphs = len(list_graphs)
     tot_nb_nodes = 0
+    len_graphs = list()
     for i, g in enumerate(list_graphs):
         gp.remove_dummy_nodes(g)
+        len_graphs.append(len(g))
         tot_nb_nodes += len(g)
+    nb_graphs = len(list_graphs)
+    larg = np.argmax(len_graphs)
+    print(len_graphs[larg])
+    print(larg)
+    if 'kerGM' or 'kmeans' in method:
+        X = sco.loadmat(path_to_X)["full_assignment_mat"]
+    else:
+        X = sco.loadmat(path_to_X)['X']
 
-    # read the assignment matrices
-    x_mSync = sco.loadmat(os.path.join(path_to_match_mat, "X_mSync.mat"))["X"]
-    x_mALS = sco.loadmat(os.path.join(path_to_match_mat, "X_mALS.mat"))["X"]
-    x_cao = sco.loadmat(os.path.join(path_to_match_mat, "X_cao_cst_o.mat"))["X"]
-    x_kerGM = sco.loadmat(os.path.join(path_to_match_mat,"X_pairwise_kergm.mat"))["full_assignment_mat"]
-
-    X = x_mALS
 
     mesh = sio.load_mesh(template_mesh)
     reg_mesh = gv.reg_mesh(mesh)
@@ -70,6 +94,25 @@ if __name__ == "__main__":
         nb_unmatched_nodes = len(cluster_dict[-0.1])
     print('percent nb_unmatched_nodes=', 100*nb_unmatched_nodes/tot_nb_nodes)
 
+
+
+    vb_sc2 = gv.visbrain_plot(reg_mesh)
+
+    label_to_plot = -0.1#222
+    for ind,g in enumerate(list_graphs):
+
+        nodes_coords = gp.graph_nodes_to_coords(g, 'ico100_7_vertex_index', reg_mesh)
+        labels = nx.get_node_attributes(g, label_attribute).values()
+        color_label = np.array([l for l in labels])
+        color_label_to_plot = np.ones(color_label.shape)
+        color_label_to_plot[color_label == label_to_plot]=0
+        #print(color_label)
+        if np.sum(color_label == label_to_plot)==0:
+            print(ind)
+        else:
+            s_obj, nodes_cb_obj = gv.graph_nodes_to_sources(nodes_coords, node_data=color_label_to_plot, nodes_mask=None, c_map='nipy_spectral',  vmin=0, vmax=1)
+            vb_sc2.add_to_subplot(s_obj)
+    vb_sc2.preview()
 
 
     # default_value = -0.1#0.05
