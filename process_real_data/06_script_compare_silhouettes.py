@@ -21,6 +21,7 @@ if __name__ == "__main__":
 
     nb_bins=20
     dens = False
+
     fig1, ax = plt.subplots(2, len(methods), sharey=True, sharex=False)
 
     clust_silhouettes = list()

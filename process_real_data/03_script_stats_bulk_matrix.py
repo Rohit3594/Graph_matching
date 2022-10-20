@@ -52,8 +52,8 @@ if __name__ == "__main__":
     # read the assignment matrices
     x_mSync = sco.loadmat(os.path.join(path_to_match_mat, "X_mSync.mat"))["X"]
     x_mALS = sco.loadmat(os.path.join(path_to_match_mat, "X_mALS.mat"))["X"]
-    x_cao = sco.loadmat(os.path.join(path_to_match_mat, "X_cao_cst_o.mat"))["X"]
-    x_kerGM = sco.loadmat(os.path.join(path_to_match_mat,"X_pairwise_kergm.mat"))["full_assignment_mat"]
+    x_cao = sco.loadmat(os.path.join(path_to_match_mat, "X_CAO.mat"))["X"]
+    x_kerGM = sco.loadmat(os.path.join(path_to_match_mat,"X_kerGM.mat"))["full_assignment_mat"]
 
     # compute for each row of the assignment matrix the percent of matched nodes across the graphs
     match_no_dummy_mSync = 100*np.sum(x_mSync[:, not_dummy_vect],1)/ nb_graphs

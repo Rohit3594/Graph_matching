@@ -14,39 +14,109 @@ import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
     template_mesh = '../data/template_mesh/OASIS_avg.lh.white.talairach.reg.ico7.inflated.gii'#lh.OASIS_testGrp_average_inflated.gii'
-    mesh = sio.load_mesh(template_mesh)
+    mesh = gv.reg_mesh(sio.load_mesh(template_mesh))
 
     #path_to_graphs = '../data/OASIS_labelled_pits_graphs'
     path_to_graphs = '../data/Oasis_original_new_with_dummy/modified_graphs'
-    method = 'neuroimage'#'media'#'kmeans_70_real_data_dummy'#'CAO'#'kerGM'#'mSync'#'mALS'#
+    #method = 'neuroimage'#'media'#'kmeans_70_real_data_dummy'#'CAO'#'kerGM'#'mSync'#'mALS'#
+    methods = ['mALS','media']#,'neuroimage']#'mSync']#'CAO', 'kerGM', ,'kmeans_70_real_data_dummy','kmeans_90_real_data_dummy','kmeans_110_real_data_dummy']
+
     trash_label = -2#-0.1#-2
     reg_or_unreg = ''#'_unreg'#''
     largest_ind = 22#24
-
-    path_to_X = "../data/Oasis_original_new_with_dummy/X_"+method+reg_or_unreg+".mat"
+    default_label = -0.1
+    nb_bins = 20
+    dens = False
 
     list_graphs = gp.load_graphs_in_list(path_to_graphs)
+
+    fig1, ax = plt.subplots(2, len(methods), sharey=True, sharex=False)
+
+    for ind, method in enumerate(methods):
+        path_to_X = "../data/Oasis_original_new_with_dummy/X_"+method+reg_or_unreg+".mat"
+        print('----------------------------')
+        print(method)
+
+        if 'media' in method:
+            label_attribute = 'label_media'
+
+        elif 'neuroimage' in method:
+            label_attribute = 'label_neuroimage'
+
+        else:
+            if ('kerGM' in method) or ('kmeans' in method):
+                X = sco.loadmat(path_to_X)["full_assignment_mat"]
+            else:
+                X = sco.loadmat(path_to_X)['X']
+            print(X.shape)
+            print('get_clusters_from_assignment')
+            # label_attribute = 'labelling_hippi'
+            # gca.get_clusters_from_assignment_hippi(list_graphs, X_Hippi, largest_ind, mesh, label_attribute)
+            label_attribute = 'labelling_' + method + reg_or_unreg
+            trans_l = gca.get_labelling_from_assignment(list_graphs, X, largest_ind, mesh, label_attribute, default_label_value=default_label)
+
     for i,g in enumerate(list_graphs):
         gp.remove_dummy_nodes(g)
 
-    if 'media' in method:
-        label_attribute = 'label_media'
-    elif 'neuroimage' in method:
-        label_attribute = 'label_neuroimage'
+    for ind, method in enumerate(methods):
+        print('----------------------------')
+        print(method)
 
-    else:
-        if ('kerGM' in method) or ('kmeans' in method):
-            X = sco.loadmat(path_to_X)["full_assignment_mat"]
+        if 'media' in method:
+            label_attribute = 'label_media'
+
+        elif 'neuroimage' in method:
+            label_attribute = 'label_neuroimage'
+
         else:
-            X = sco.loadmat(path_to_X)['X']
-        print(X.shape)
-        print('get_clusters_from_assignment')
-        # label_attribute = 'labelling_hippi'
-        # gca.get_clusters_from_assignment_hippi(list_graphs, X_Hippi, largest_ind, mesh, label_attribute)
-        label_attribute = 'labelling_' + method + reg_or_unreg
-        gca.get_labelling_from_assignment(list_graphs, X, largest_ind, mesh, label_attribute)
+            label_attribute = 'labelling_' + method + reg_or_unreg
+
+        transfered_labels_all_graphs = gca.get_labelling_from_attribute(list_graphs,
+                                                                        labelling_attribute_name=label_attribute)
+
+        a_transfered_labels_all_graphs = np.array(gca.concatenate_labels(transfered_labels_all_graphs))
+        print(np.unique(a_transfered_labels_all_graphs))
+        ax[0, ind].hist(a_transfered_labels_all_graphs, density=dens, bins=nb_bins)  # density=False would make counts
+        ax[0, ind].set_ylabel('Frequency')
+        ax[0, ind].set_xlabel('labels')
+        ax[0, ind].set_title(method)
+        ax[0, ind].grid(True)
+
+    plt.show()
+
+    vb_sc = gv.visbrain_plot(mesh)
+    simbs = ['disc','ring','cross','square']
+    for ind, method in enumerate(methods):
+        if 'media' in method:
+            label_attribute = 'label_media'
+        elif 'neuroimage' in method:
+            label_attribute = 'label_neuroimage'
+
+        else:
+            label_attribute = 'labelling_' + method + reg_or_unreg
+
+        print(label_attribute)
+        cluster_dict = gca.create_clusters_lists(list_graphs, label_attribute=label_attribute)
+        # Calculate the centroid
+        centroid_dict = gca.get_centroid_clusters(list_graphs, cluster_dict, coords_attribute="sphere_3dcoords")
+        centroids_3Dpos = gca.get_centroids_coords(centroid_dict, list_graphs, mesh, attribute_vertex_index='ico100_7_vertex_index')
+        s_obj, nodes_cb_obj = gv.graph_nodes_to_sources(centroids_3Dpos, node_data=ind*np.ones(centroids_3Dpos.shape[0],),
+                                                        nodes_size=60, nodes_mask=None, c_map='jet', symbol=simbs[ind],
+                                                        vmin=0, vmax=len(methods))
+
+        vb_sc.add_to_subplot(s_obj)
+    vb_sc.preview()
 
 
+
+
+
+
+
+
+
+
+    label_attribute = 'label_neuroimage'
     all_labels = list()
     all_perc = list()
     nb_nodes = list()
@@ -63,7 +133,7 @@ if __name__ == "__main__":
     print('average nb nodes:', np.mean(nb_nodes))
     print('std of nb nodes:', np.std(nb_nodes))
 
-    u_labels = gca.unique_labels(all_labels)
+    u_labels = set(gca.concatenate_labels(all_labels))
     print('nb labels '+label_attribute+':', len(u_labels))
     print(u_labels)
 

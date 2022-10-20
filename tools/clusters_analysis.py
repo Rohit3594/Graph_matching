@@ -5,11 +5,25 @@ import pickle as p
 from visbrain.objects import SourceObj, ColorbarObj
 
 
-def unique_labels(all_labels):
-    u_labs = list()
+def get_assignment_from_labelling(list_graphs, labelling_attribute_name):
+    all_labels = get_labelling_from_attribute(list_graphs, labelling_attribute_name)
+    labels = concatenate_labels(all_labels)
+    nb_nodes = len(labels)
+    print(nb_nodes)
+    print(len(set(labels)))
+    X = np.zeros((nb_nodes, len(set(labels))))
+
+    for ind_node, label in zip(range(nb_nodes), labels):
+        X[ind_node, label] = 1
+
+    return X @ X.T
+
+
+def concatenate_labels(all_labels):
+    cat_labels = list()
     for l in all_labels:
-        u_labs.extend(l)
-    return np.unique(u_labs)
+        cat_labels.extend(l)
+    return cat_labels
 
 
 def nb_labelled_nodes_per_label(u_labs, all_labels):
@@ -41,31 +55,45 @@ def label_nodes_according_to_coord(graph_no_dummy, template_mesh, coord_dim=1):
     return one_nodes_coords_scaled
 
 
-def get_labelling_from_assignment(list_graphs, matching_matrix, largest_ind, mesh, labelling_attribute_name):
+def get_labelling_from_attribute(list_graphs, labelling_attribute_name):
+    all_labels = list()
+    for g in list_graphs:
+        labels = list(nx.get_node_attributes(g, labelling_attribute_name).values())
+        all_labels.append(labels)
+
+    return all_labels
+
+
+def get_labelling_from_assignment(list_graphs, matching_matrix, largest_ind, mesh, labelling_attribute_name, default_label_value):
     nb_graphs = len(list_graphs)
     g_l = list_graphs[largest_ind]
     color_label_ordered = label_nodes_according_to_coord(g_l, mesh, coord_dim=0)
     r_perm = p.load(open("../data/r_perm_22.gpickle","rb"))
     color_label = color_label_ordered[r_perm]
     gp.add_nodes_attribute(g_l, color_label, labelling_attribute_name)
-    default_value = -0.1#0.05
+    default_value = default_label_value
     nb_nodes = len(g_l.nodes)
     row_scope = range(largest_ind * nb_nodes, (largest_ind + 1) * nb_nodes)
 
     #nb_unmatched = 0
+    transfered_labels_all_graphs = list()
     for i in range(nb_graphs):
-        col_scope = range(i * nb_nodes, (i + 1) * nb_nodes)
-        perm_X = np.array(matching_matrix[np.ix_(row_scope, col_scope)], dtype=int) #Iterate through each Perm Matrix X fixing the largest graph
-        transfered_labels = np.ones(101)*default_value
-        for node_indx,ind in enumerate(row_scope):
-            match_index = np.where(perm_X[node_indx,:]==1)[0]
-
-            if len(match_index)>0:
-                transfered_labels[match_index[0]] = color_label[node_indx]
-        #nb_unmatched += np.sum(transfered_labels==default_value)
         g = list_graphs[i]
-        gp.add_nodes_attribute(g, transfered_labels, labelling_attribute_name)
-    return transfered_labels
+        if len(g.nodes) == nb_nodes:
+            col_scope = range(i * nb_nodes, (i + 1) * nb_nodes)
+            perm_X = np.array(matching_matrix[np.ix_(row_scope, col_scope)], dtype=int) #Iterate through each Perm Matrix X fixing the largest graph
+            transfered_labels = np.ones(nb_nodes)*default_value
+            for node_indx,ind in enumerate(row_scope):
+                match_index = np.where(perm_X[node_indx,:]==1)[0]
+
+                if len(match_index)>0:
+                    transfered_labels[match_index[0]] = color_label[node_indx]
+            #nb_unmatched += np.sum(transfered_labels==default_value)
+            transfered_labels_all_graphs.append(transfered_labels)
+            gp.add_nodes_attribute(g, transfered_labels, labelling_attribute_name)
+        else:
+            raise Exception("All graphs should have {:d} nodes, incl. dummy nodes".format(nb_nodes))
+    return transfered_labels_all_graphs
 
 
 def get_labelling_from_assignment_hippi(list_graphs, matching_matrix, largest_ind, mesh, labelling_attribute_name):
@@ -201,7 +229,6 @@ def get_all_silhouette_value(list_graphs, cluster_dict):
     """
     Return a dict with all the silhouette value that can be calculated for each cluster
     """
-
     result_dict = {}
 
     for cluster_key in cluster_dict:

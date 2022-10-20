@@ -64,7 +64,7 @@ def load_labelled_graphs_in_list(path_to_graphs_folder, hemi='lh'):
     """
     Return a list of graph loaded from the path
     """
-    files = os.listdir(path_to_graphs_folder)
+    files = os.listdir(path_to_graphs_folder).sort()
     files_to_load = list()
     for f in files:
         if '.gpickle' in f:
