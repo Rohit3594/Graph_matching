@@ -19,8 +19,8 @@ if __name__ == "__main__":
     path_to_silhouette = '../data/Oasis_original_new_with_dummy/silhouette'
     reg_or_unreg = ''#'_unreg'#''
     path_to_silhouette = '/mnt/data/work/python_sandBox/Graph_matching/data/Oasis_original_new_with_dummy/silhouette'
-    #methods = ['mALS', 'mSync','media','neuroimage','kerGM', 'CAO', ]
-    methods = ['kmeans_70_real_data_dummy','kmeans_90_real_data_dummy','kmeans_110_real_data_dummy']
+    methods = ['media','neuroimage']#,'mALS', 'mSync','kerGM', 'CAO']
+    #methods = ['kmeans_70_real_data_dummy','kmeans_90_real_data_dummy','kmeans_110_real_data_dummy']
     largest_ind = 22#24
     default_label = -0.1
     mesh = sio.load_mesh(template_mesh)

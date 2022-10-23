@@ -6,29 +6,38 @@ import tools.clusters_analysis as gca
 
 
 if __name__ == "__main__":
-    path_to_graphs = '../data/Oasis_original_new_with_dummy/modified_graphs'
-    path_to_match_mat = '../data/Oasis_original_new_with_dummy/'
     path_to_consistency = '../data/Oasis_original_new_with_dummy/consistency'
+    path_to_graphs = '../data/Oasis_original_new_with_dummy/modified_graphs'
+    path_to_X = '../data/Oasis_original_new_with_dummy'
     reg_or_unreg = ''#'_unreg'#''
-    method = 'media'#'neuroimage'#'kmeans_70_real_data_dummy'#'neuroimage'#'media'#'CAO'#'kerGM'#'mSync'#'mALS'#
-    path_to_X = "../data/Oasis_original_new_with_dummy/X_"+method+reg_or_unreg+".mat"
+    methods = ['media']#, 'neuroimage']#, 'mALS', 'kmeans_70_real_data', 'mSync']#,'kerGM', 'CAO']#['media', 'neuroimage']#,
+    #methods = ['kmeans_70_real_data_dummy','kmeans_90_real_data_dummy','kmeans_110_real_data_dummy']
 
+    # load the graphs
     list_graphs = gp.load_graphs_in_list(path_to_graphs)
     nb_graphs = len(list_graphs)
+    print('nb graphs ', nb_graphs)
 
-    if 'kerGM' or 'kmeans' in method:
-        X = sco.loadmat(path_to_X)["full_assignment_mat"]
-    else:
-        X = sco.loadmat(path_to_X)['X']
+    for ind, method in enumerate(methods):
+        print('----------------------------')
+        print(method)
+        # load the assignment matrix
+        if ('kmeans' in method) or ('neuroimage' in method) or ('media' in method):
+            file_X = os.path.join(path_to_X, "X_" + method + reg_or_unreg + "_dummy.mat")
+        else:
+            file_X = os.path.join(path_to_X, "X_" + method + reg_or_unreg + ".mat")
+        if ('kerGM' in method) or ('kmeans' in method) or ('neuroimage' in method) or ('media' in method):
+            X = sco.loadmat(file_X)["full_assignment_mat"]
+        else:
+            X = sco.loadmat(file_X)['X']
 
-
-    # get the associated number of nodes
-    nb_nodes = int(X.shape[0]/nb_graphs)
-    print(nb_nodes)
-    nodeCstPerGraph = gca.compute_node_consistency(X, nb_graphs, nb_nodes)
-    pickle_out = open(os.path.join(path_to_consistency, "nodeCstPerGraph_"+method+reg_or_unreg+".pck"), "wb")
-    pickle.dump(nodeCstPerGraph, pickle_out)
-    pickle_out.close()
+        # get the associated number of nodes
+        nb_nodes = int(X.shape[0]/nb_graphs)
+        print(nb_nodes)
+        nodeCstPerGraph = gca.compute_node_consistency(X, nb_graphs, nb_nodes)
+        pickle_out = open(os.path.join(path_to_consistency, "nodeCstPerGraph_"+method+reg_or_unreg+".pck"), "wb")
+        pickle.dump(nodeCstPerGraph, pickle_out)
+        pickle_out.close()
 
     # # read the assignment matrices
     # x_mSync = sco.loadmat(os.path.join(path_to_match_mat, "X_mSync"+reg_or_unreg+".mat"))["X"]

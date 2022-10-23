@@ -76,8 +76,8 @@ def graph_nodes_to_sources(nodes_coords, node_data=None, nodes_size=None, nodes_
 
     """Color the sources according to data
     """    
-    print('node data:',node_data)
-    print('node mask:',nodes_mask)
+    #print('node data:',node_data)
+    #print('node mask:',nodes_mask)
 
     if node_data is not None:
         if c_map is None:
@@ -87,9 +87,9 @@ def graph_nodes_to_sources(nodes_coords, node_data=None, nodes_size=None, nodes_
 
         if vmax is None:
             vmax = np.max(node_data[nodes_mask])
-        print(vmin,vmax)
-        print(len(node_data[nodes_mask]))
-        print(len(nodes_coords[nodes_mask]))
+        #print(vmin,vmax)
+        #print(len(node_data[nodes_mask]))
+        #print(len(nodes_coords[nodes_mask]))
         s_obj.color_sources(data=node_data[nodes_mask], cmap=c_map, vmin=vmin, vmax=vmax, clim=(vmin,vmax), under='gray', over='red')
         # Get the colorbar of the source object
         cb_obj = ColorbarObj(s_obj, **CBAR_STATE)
@@ -100,7 +100,6 @@ def graph_nodes_to_sources(nodes_coords, node_data=None, nodes_size=None, nodes_
                         radius_min=nodes_size, radius_max=nodes_size, alpha=.4)
         cb_obj = None
     return s_obj, cb_obj
-
 
 
 def graph_edges_to_connect(graph, nodes_coords, edge_attribute=None, nodes_mask=None):

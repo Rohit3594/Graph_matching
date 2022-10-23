@@ -5,18 +5,65 @@ import pickle as p
 from visbrain.objects import SourceObj, ColorbarObj
 
 
-def get_assignment_from_labelling(list_graphs, labelling_attribute_name):
-    all_labels = get_labelling_from_attribute(list_graphs, labelling_attribute_name)
-    labels = concatenate_labels(all_labels)
-    nb_nodes = len(labels)
-    print(nb_nodes)
-    print(len(set(labels)))
-    X = np.zeros((nb_nodes, len(set(labels))))
+def insert_at(arr, output_size, indices):
+    # assert len(output_size) == len(indices) == len(arr.shape)
+    result = np.zeros(output_size, dtype=np.uint16)
+    existing_indices = [np.setdiff1d(np.arange(axis_size), axis_indices, assume_unique=True)
+                        for axis_size, axis_indices in zip(output_size, indices)]
+    result[np.ix_(*existing_indices)] = arr
+    return result
 
-    for ind_node, label in zip(range(nb_nodes), labels):
-        X[ind_node, label] = 1
 
-    return X @ X.T
+def get_assignment_from_labelling(list_graphs, labelling_attribute_name, excluded_labels=None):
+    """
+    compute the assignment matrix based on the labeling stored in the nodes of the graphs in list_graphs,
+    as the node attribute labelling_attribute_name
+    :param list_graphs: list of graphs to work on
+    :param labelling_attribute_name: node attribute used to store the labeling for which we compute the assignment
+    matrix
+    :return: assign_mat the assignment matrix and unique_labels the set of labels found across all graphs and ordered
+    according to the rows of the computed assign_mat
+    """
+    all_graphs_labels = get_labelling_from_attribute(list_graphs, labelling_attribute_name)
+    list_all_graphs_labels = concatenate_labels(all_graphs_labels)
+    unique_labels = list(set(list_all_graphs_labels))
+    if excluded_labels is not None:
+        print('excluded labels ', excluded_labels)
+        for ex_lab in excluded_labels:
+            unique_labels.remove(ex_lab)
+    unique_labels.sort()
+    tot_nb_nodes = len(list_all_graphs_labels)
+    print('total number of nodes across all graphs', tot_nb_nodes)
+    print('number of different labels stored in graphs', len(unique_labels))
+    print('labels stored in graphs', unique_labels)
+    # relabelling to get continuous labels that will correspond to row of the assignment matrix
+    relabeled_list_all_graphs_labels = list()
+    for i in list_all_graphs_labels:
+        if i in unique_labels:  # handle excluded labels: these are not relabeled
+            idx = unique_labels.index(i)  # take the index of i in the set of labels
+            relabeled_list_all_graphs_labels.append(idx)  # making the relabeled list
+    print('relabeled labels', set(relabeled_list_all_graphs_labels))
+
+    assign_semimat = np.zeros((tot_nb_nodes, len(unique_labels)), dtype=np.uint16)
+    if excluded_labels is not None:
+        for ind_node, label in zip(range(tot_nb_nodes), relabeled_list_all_graphs_labels):
+            if label not in excluded_labels:
+                assign_semimat[ind_node, label] = 1
+    else:
+        for ind_node, label in zip(range(tot_nb_nodes), relabeled_list_all_graphs_labels):
+                assign_semimat[ind_node, label] = 1
+
+    X = assign_semimat @ assign_semimat.T
+
+    sizes_dummy = [nx.number_of_nodes(g) for g in list_graphs]
+    dummy_mask = [list(nx.get_node_attributes(graph, 'is_dummy').values()) for graph in list_graphs]
+    dummy_mask = sum(dummy_mask, [])
+    dummy_indexes = [i for i in range(len(dummy_mask)) if dummy_mask[i] == True]
+
+    X_w_dummy = insert_at(X, (sum(sizes_dummy), sum(sizes_dummy)),
+                               (dummy_indexes, dummy_indexes))
+
+    return X, X_w_dummy, unique_labels
 
 
 def concatenate_labels(all_labels):
@@ -176,15 +223,16 @@ def create_clusters_lists(list_graphs, label_attribute="label_dbscan"):
 
     for i_graph, graph in enumerate(list_graphs):
         for node in graph.nodes:
-            label_cluster = graph.nodes[node][label_attribute]
-            if label_cluster != -1 and not graph.nodes[node]["is_dummy"]:
+            if not graph.nodes[node]["is_dummy"]:
+                label_cluster = graph.nodes[node][label_attribute]
                 if label_cluster in result_dict:
                     result_dict[label_cluster].append((i_graph, node))
                 else:
                     result_dict[label_cluster] = [(i_graph, node)]
 
     # We make sure that every clusters have more than one element
-    return {i: result_dict[i] for i in result_dict if len(result_dict[i]) > 1}
+    #{i: result_dict[i] for i in result_dict if len(result_dict[i]) > 1}
+    return result_dict
 
 
 def get_centroid_clusters(list_graphs, clusters_dict, coords_attribute="sphere_3dcoords"):
@@ -309,7 +357,7 @@ def get_centroids_coords(centroid_dict, list_graphs, mesh, attribute_vertex_inde
     return centroids_3Dpos
 
 
-def compute_node_consistency(matching_matrix, nb_graphs, nb_nodes):
+def compute_node_consistency(bulk_matrix, nb_graphs, nb_nodes):
     nodeCstPerGraph = np.zeros((nb_nodes, nb_graphs))
     for graph_ref_num in range(nb_graphs):
         print('graph_ref_num=', graph_ref_num)
@@ -318,16 +366,16 @@ def compute_node_consistency(matching_matrix, nb_graphs, nb_nodes):
         for i in range(nb_graphs-1):
             #x_k_i = matching_matrix[, ]
             iscope = range(i * nb_nodes, (i+1)*nb_nodes)
-            Xri = np.array(matching_matrix[np.ix_(rscope, iscope)], dtype=int)
+            Xri = np.array(bulk_matrix[np.ix_(rscope, iscope)], dtype=int)
             for j in range(i+1,nb_graphs):
                 jscope = range(j * nb_nodes, (j + 1) * nb_nodes)
-                Xij = np.array(matching_matrix[np.ix_(iscope, jscope)], dtype=int)
-                Xrj = np.array(matching_matrix[np.ix_(rscope, jscope)], dtype=int)
+                Xij = np.array(bulk_matrix[np.ix_(iscope, jscope)], dtype=int)
+                Xrj = np.array(bulk_matrix[np.ix_(rscope, jscope)], dtype=int)
                 Xrij = np.matmul(Xri, Xij)
-                nodeCstPerGraph[:, graph_ref_num] += (1-np.sum(np.abs(Xrij-Xrj),1)/2)
+                nodeCstPerGraph[:, graph_ref_num] += np.sum(np.abs(Xrij-Xrj), 1)/2
 
     # normalize the summation value
-    nodeCstPerGraph = nodeCstPerGraph/(nb_graphs*(nb_graphs-1)/2)
+    nodeCstPerGraph = 1 - nodeCstPerGraph/(nb_graphs*(nb_graphs-1)/2)
     # sort
     # [~,IX] = np.sort(nodeCstPerGraph,1,'descend')
     # nodeCstPerGraph2 = np.zeros(nb_nodes,nb_graphs)

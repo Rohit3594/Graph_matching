@@ -55,8 +55,6 @@ if __name__ == "__main__":
             label_attribute = 'labelling_' + method + reg_or_unreg
             trans_l = gca.get_labelling_from_assignment(list_graphs, X, largest_ind, mesh, label_attribute, default_label_value=default_label)
 
-    for i,g in enumerate(list_graphs):
-        gp.remove_dummy_nodes(g)
 
     for ind, method in enumerate(methods):
         print('----------------------------')
@@ -85,7 +83,7 @@ if __name__ == "__main__":
     plt.show()
 
     vb_sc = gv.visbrain_plot(mesh)
-    simbs = ['disc','ring','cross','square']
+    simbs = ['cross','ring','disc','square']
     for ind, method in enumerate(methods):
         if 'media' in method:
             label_attribute = 'label_media'
