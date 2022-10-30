@@ -18,18 +18,18 @@ if __name__ == "__main__":
     path_to_X = "../data/Oasis_original_new_with_dummy"
     path_to_graphs = '../data/Oasis_original_new_with_dummy/modified_graphs'
     reg_or_unreg = ''#'_unreg'#''
-    method = 'neuroimage'#'mSync'#'kerGM'#'CAO'#'mALS'#'media'#'mALS'#'kmeans_70_real_data_dummy'#'media'#'CAO'#'mALS'#
+    method = 'mALS'#'neuroimage'#'mSync'#'kerGM'#'CAO'#'media'#'mALS'#'kmeans_70_real_data_dummy'#'media'#'CAO'#'mALS'#
     default_label = -0.1
-#    vmin = -0.1
-#    vmax = 1.1
-    vmin = 0
-    vmax = 300
+    vmin = -0.1
+    vmax = 1.1
+#     vmin = 0
+#     vmax = 300
 
     label_to_plot = 28#-2#default_label#222
 
 
     list_graphs = gp.load_graphs_in_list(path_to_graphs)
-
+    #list_graphs = list_graphs_i[3:5]
     print('----------------------------')
     print(method)
     # compute the labeling from the assignment matrix when needed
@@ -50,6 +50,7 @@ if __name__ == "__main__":
 
     print('create_clusters_lists')
     cluster_dict = gca.create_clusters_lists(list_graphs, label_attribute=label_attribute)
+    print(len(cluster_dict))
     print(cluster_dict.keys())
     # Calculate the centroid
     print('get_centroid_clusters')

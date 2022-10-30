@@ -25,7 +25,7 @@ if __name__ == "__main__":
     path_to_graphs = '/mnt/data/work/python_sandBox/Graph_matching/data/Oasis_original_new_with_dummy/modified_graphs'
     path_to_match_mat = '/mnt/data/work/python_sandBox/Graph_matching/data/Oasis_original_new_with_dummy/'
     method = 'media'#'neuroimage'#'CAO'#'kerGM'#'mSync'#'mALS'#
-    excluded_labels = [-2]
+    excluded_labels = None#[-2]
     path_to_X = "/mnt/data/work/python_sandBox/Graph_matching/data/Oasis_original_new_with_dummy"
     list_graphs = gp.load_graphs_in_list(path_to_graphs)
     X_met, X_met_w_dummy, labels_met = gca.get_assignment_from_labelling(list_graphs, labelling_attribute_name='label_'+method, excluded_labels=excluded_labels)
@@ -35,11 +35,11 @@ if __name__ == "__main__":
     X_dict = {}
     X_dict['full_assignment_mat'] = X_met
     X_dict['corresp_labels_rows'] = labels_met
-    sco.savemat(os.path.join(path_to_X, "X_"+method+".mat"), X_dict, do_compression='True')
+    #sco.savemat(os.path.join(path_to_X, "X_"+method+"_no_excl.mat"), X_dict, do_compression='True')
 
     X_w_dummy_dict = {}
     X_w_dummy_dict['full_assignment_mat'] = X_met_w_dummy
-    sco.savemat(os.path.join(path_to_X, "X_"+method+"_dummy.mat"), X_w_dummy_dict, do_compression='True')
+    #sco.savemat(os.path.join(path_to_X, "X_"+method+"_no_excl_dummy.mat"), X_w_dummy_dict, do_compression='True')
 
 
     # debug labels media

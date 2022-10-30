@@ -37,20 +37,20 @@ def get_assignment_from_labelling(list_graphs, labelling_attribute_name, exclude
     print('number of different labels stored in graphs', len(unique_labels))
     print('labels stored in graphs', unique_labels)
     # relabelling to get continuous labels that will correspond to row of the assignment matrix
-    relabeled_list_all_graphs_labels = list()
+    row_index_list_all_graphs_labels = list()
     for i in list_all_graphs_labels:
         if i in unique_labels:  # handle excluded labels: these are not relabeled
             idx = unique_labels.index(i)  # take the index of i in the set of labels
-            relabeled_list_all_graphs_labels.append(idx)  # making the relabeled list
-    print('relabeled labels', set(relabeled_list_all_graphs_labels))
+            row_index_list_all_graphs_labels.append(idx)  # making the relabeled list
+    print('row index corresponding to labels', set(row_index_list_all_graphs_labels))
 
     assign_semimat = np.zeros((tot_nb_nodes, len(unique_labels)), dtype=np.uint16)
     if excluded_labels is not None:
-        for ind_node, label in zip(range(tot_nb_nodes), relabeled_list_all_graphs_labels):
+        for ind_node, label in zip(range(tot_nb_nodes), row_index_list_all_graphs_labels):
             if label not in excluded_labels:
                 assign_semimat[ind_node, label] = 1
     else:
-        for ind_node, label in zip(range(tot_nb_nodes), relabeled_list_all_graphs_labels):
+        for ind_node, label in zip(range(tot_nb_nodes), row_index_list_all_graphs_labels):
                 assign_semimat[ind_node, label] = 1
 
     X = assign_semimat @ assign_semimat.T
@@ -276,58 +276,102 @@ def get_centroid_clusters(list_graphs, clusters_dict, coords_attribute="sphere_3
 def get_all_silhouette_value(list_graphs, cluster_dict):
     """
     Return a dict with all the silhouette value that can be calculated for each cluster
+    https://en.wikipedia.org/wiki/Silhouette_(clustering)
     """
     result_dict = {}
 
     for cluster_key in cluster_dict:
         print('working on cluster:: ', cluster_key)
-        for main_counter in range(len(cluster_dict[cluster_key])):
-
-            graph_main, node_main = cluster_dict[cluster_key][main_counter]
-            vector_1 = list_graphs[graph_main].nodes[node_main]["sphere_3dcoords"]
-
-            # We calculate the inter cluster similarity
-            a_list = []
-            for inter_cluster_counter in range(len(cluster_dict[cluster_key])):
-
-                if main_counter != inter_cluster_counter:
-                    graph_inter, node_inter = cluster_dict[cluster_key][inter_cluster_counter]
-                    vector_2 = list_graphs[graph_inter].nodes[node_inter]["sphere_3dcoords"]
-
-                    distance = np.linalg.norm(vector_1 - vector_2)
-                    a_list.append(distance)
-
-            a = np.mean(a_list)
-
-            # We calculate the average distance with points from other cluster
-            b_list = []
-            for cluster_intra_key in cluster_dict:
-
-                if cluster_intra_key != cluster_key:
-
-                    distance_list = []
-                    for intra_cluster_counter in range(len(cluster_dict[cluster_intra_key])):
-                        graph_intra, node_intra = cluster_dict[cluster_intra_key][intra_cluster_counter]
-                        vector_2 = list_graphs[graph_intra].nodes[node_intra]["sphere_3dcoords"]
-
-                        distance = np.linalg.norm(vector_1 - vector_2)
-                        distance_list.append(distance)
-
-                    b_list.append(np.mean(distance_list))
-
-            b = np.min(b_list)
-
-            silouhette = (b - a) / max(b, a)
-
+        nb_elem = len(cluster_dict[cluster_key])
+        if nb_elem<2:
+            silhouette = 0
             if cluster_key in result_dict:
-                result_dict[cluster_key].append(silouhette)
+                result_dict[cluster_key].append(silhouette)
             else:
-                result_dict[cluster_key] = [silouhette]
+                result_dict[cluster_key] = [silhouette]
+
+        else:
+            for main_counter in range(nb_elem):
+                graph_main, node_main = cluster_dict[cluster_key][main_counter]
+                vector_1 = list_graphs[graph_main].nodes[node_main]["sphere_3dcoords"]
+                # We compute the distance across points within the same cluster
+                a_list = []
+                for intra_cluster_counter in range(nb_elem):
+
+                    if main_counter != intra_cluster_counter:
+                        graph_inter, node_inter = cluster_dict[cluster_key][intra_cluster_counter]
+                        vector_2 = list_graphs[graph_inter].nodes[node_inter]["sphere_3dcoords"]
+                        distance = np.linalg.norm(vector_1 - vector_2)
+                        a_list.append(distance)
+
+                a = np.sum(a_list) / (nb_elem - 1)
+
+                # We compute the average distance with points from other clusters
+                b_list = []
+                for cluster_inter_key in cluster_dict:
+                    if cluster_inter_key != cluster_key:
+                        distance_list = []
+                        for intra_cluster_counter in range(len(cluster_dict[cluster_inter_key])):
+                            graph_intra, node_intra = cluster_dict[cluster_inter_key][intra_cluster_counter]
+                            vector_2 = list_graphs[graph_intra].nodes[node_intra]["sphere_3dcoords"]
+                            distance = np.linalg.norm(vector_1 - vector_2)
+                            distance_list.append(distance)
+                        b_list.append(np.mean(distance_list))
+                b = np.min(b_list)
+
+                silhouette = (b - a) / max(b, a)
+
+                if cluster_key in result_dict:
+                    result_dict[cluster_key].append(silhouette)
+                else:
+                    result_dict[cluster_key] = [silhouette]
 
     return result_dict
 
 
 def get_silhouette_per_cluster(silhouette_dict):
+    nb_clusters = len(silhouette_dict)
+    silhouette_data = np.zeros(nb_clusters)
+    cluster_nb_nodes = np.zeros(nb_clusters)
+
+    # Get the data
+    for cluster_i, cluster_key in enumerate(silhouette_dict):
+        silhouette_data[cluster_i] = np.mean(silhouette_dict[cluster_key])
+        cluster_nb_nodes[cluster_i] = len(silhouette_dict[cluster_key])
+    return silhouette_data, cluster_nb_nodes
+
+
+def get_silhouette_per_graph(cluster_dict, silhouette_dict, graph_ind, graph_nb_nodes):
+    nb_clusters = len(silhouette_dict)
+    nodes_silhouette = np.zeros(graph_nb_nodes)
+    # Get the data
+    for cluster_i, cluster_key in enumerate(silhouette_dict):
+        silhouette_data = silhouette_dict[cluster_key]
+        cluster_content = cluster_dict[cluster_key]
+        for clus_ind, clus in enumerate(cluster_content):
+            if clus[0] == graph_ind:
+                nodes_silhouette[clus[1]] = silhouette_data[clus_ind]
+    return nodes_silhouette
+
+
+def get_consistency_per_cluster(clusters_dict, nodeCstPerGraph):
+    nb_clusters = len(clusters_dict)
+    cluster_cst = np.zeros(nb_clusters)
+
+    for cluster_i, cluster_key in enumerate(clusters_dict):
+
+        # initialise the matrix which holds the position of all the point in the cluster
+        cluster_nodes_cst = np.zeros((len(clusters_dict[cluster_key]),))
+
+        # fill the matrix
+        for elem_i, (graph_num, node) in enumerate(clusters_dict[cluster_key]):
+            cluster_nodes_cst[elem_i] = nodeCstPerGraph[node, graph_num]
+
+        cluster_cst[cluster_i] = np.mean(cluster_nodes_cst)
+
+    return cluster_cst
+
+
     nb_clusters = len(silhouette_dict)
     silhouette_data = np.zeros(nb_clusters)
     cluster_nb_nodes = np.zeros(nb_clusters)
@@ -372,10 +416,17 @@ def compute_node_consistency(bulk_matrix, nb_graphs, nb_nodes):
                 Xij = np.array(bulk_matrix[np.ix_(iscope, jscope)], dtype=int)
                 Xrj = np.array(bulk_matrix[np.ix_(rscope, jscope)], dtype=int)
                 Xrij = np.matmul(Xri, Xij)
-                nodeCstPerGraph[:, graph_ref_num] += np.sum(np.abs(Xrij-Xrj), 1)/2
+                val = np.sum(np.abs(Xrij-Xrj), 1)
+                nodeCstPerGraph[:, graph_ref_num] += val/2
+                # if np.max(val)>10:
+                #     print(val)
+                #     toto
+
 
     # normalize the summation value
     nodeCstPerGraph = 1 - nodeCstPerGraph/(nb_graphs*(nb_graphs-1)/2)
+    # clamp
+    nodeCstPerGraph[nodeCstPerGraph < 0] = 0
     # sort
     # [~,IX] = np.sort(nodeCstPerGraph,1,'descend')
     # nodeCstPerGraph2 = np.zeros(nb_nodes,nb_graphs)

@@ -10,7 +10,7 @@ if __name__ == "__main__":
     path_to_graphs = '../data/Oasis_original_new_with_dummy/modified_graphs'
     path_to_X = '../data/Oasis_original_new_with_dummy'
     reg_or_unreg = ''#'_unreg'#''
-    methods = ['media']#, 'neuroimage']#, 'mALS', 'kmeans_70_real_data', 'mSync']#,'kerGM', 'CAO']#['media', 'neuroimage']#,
+    methods = ['media_no_excl']#['neuroimage'], #, 'mALS', 'kmeans_70_real_data', 'mSync']#,'kerGM', 'CAO']#['media', 'neuroimage']#,
     #methods = ['kmeans_70_real_data_dummy','kmeans_90_real_data_dummy','kmeans_110_real_data_dummy']
 
     # load the graphs
