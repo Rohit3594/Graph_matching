@@ -19,7 +19,7 @@ if __name__ == "__main__":
     #path_to_graphs = '../data/OASIS_labelled_pits_graphs'
     path_to_graphs = '../data/Oasis_original_new_with_dummy/modified_graphs'
     #method = 'neuroimage'#'media'#'kmeans_70_real_data_dummy'#'CAO'#'kerGM'#'mSync'#'mALS'#
-    methods = ['mALS','media']#,'neuroimage']#'mSync']#'CAO', 'kerGM', ,'kmeans_70_real_data_dummy','kmeans_90_real_data_dummy','kmeans_110_real_data_dummy']
+    methods = ['kerGM','media']#,]#'mSync']#'CAO', , ,'kmeans_70_real_data_dummy','kmeans_90_real_data_dummy','kmeans_110_real_data_dummy']
 
     trash_label = -2#-0.1#-2
     reg_or_unreg = ''#'_unreg'#''
