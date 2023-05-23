@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE GIFTI SYSTEM "http://gifti.projects.nitrc.org/gifti.dtd">
+<GIFTI Version="1.0"  NumberOfDataArrays="1">
+   <MetaData>
+      <MD>
+         <Name><![CDATA[gifticlib-version]]></Name>
+         <Value><![CDATA[gifti library version 1.08, 8 March, 2010]]></Value>
+      </MD>
+   </MetaData>
+   <LabelTable/>
+   <DataArray Intent="NIFTI_INTENT_NONE"
+              DataType="NIFTI_TYPE_INT16"
+              ArrayIndexingOrder="RowMajorOrder"
+              Dimensionality="1"
+              Dim0="40962"
+              Encoding="GZipBase64Binary"
+              Endian="LittleEndian"
+              ExternalFileName=""
+              ExternalFileOffset="">
+      <MetaData/>
+      <Data>eJzt2UEWgyAMBUC9/6W7cKu+10IoSWZOoJB8Ih4Hkc5/PwAAAAAAAEAZ/rzAWnqOUWoI6tHXAAAAAEA17j0BYCYnK6ym6wCATMwuQA7SiidqA2AtuQtwRzoC7Ek+A9Qn6wEA6jLrAQD0Zh7kohIAgFxML8RQWbzrXSG93747u09n6h92oyuhBr0MAADATL4zAejLKQgr6TgAgL2YzwBy2Cev93kSoCIZ05ndH2cNyUbNZmTXgDgSBuCdnAQAAAAubgkgI517x6oAAAAAMdw6AIDzEMboIAAAAKA79yPUo6oBgNnMFwAA/MosSSwVBvANqQnEkTD12WN6+gCqdgA2</Data>
+   </DataArray>
+</GIFTI>

@@ -1,0 +1,1 @@
+rsync -avh --dry-run --include-from='rsync_patterns' --prune-empty-dirs --info=progress2 yadav.r@pharo.int.univ-amu.fr://hpc/meca/users/auzias/OASIS_labelled_pits_rohit/data_pits_graph/OASIS_xhemi./

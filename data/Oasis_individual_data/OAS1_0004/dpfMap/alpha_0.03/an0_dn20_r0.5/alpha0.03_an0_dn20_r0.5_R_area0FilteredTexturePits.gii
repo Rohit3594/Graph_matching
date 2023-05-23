@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE GIFTI SYSTEM "http://gifti.projects.nitrc.org/gifti.dtd">
+<GIFTI Version="1.0"  NumberOfDataArrays="1">
+   <MetaData>
+      <MD>
+         <Name><![CDATA[gifticlib-version]]></Name>
+         <Value><![CDATA[gifti library version 1.08, 8 March, 2010]]></Value>
+      </MD>
+   </MetaData>
+   <LabelTable/>
+   <DataArray Intent="NIFTI_INTENT_NONE"
+              DataType="NIFTI_TYPE_INT16"
+              ArrayIndexingOrder="RowMajorOrder"
+              Dimensionality="1"
+              Dim0="131620"
+              Encoding="GZipBase64Binary"
+              Endian="LittleEndian"
+              ExternalFileName=""
+              ExternalFileOffset="">
+      <MetaData/>
+      <Data>eJzt2kFyAjEMBEDy/0+nckhVciAQVsYaq/sFy9qWZoVvNwAAgOk+dj8AAAF0CwAAAAAAAAAAAAC+uFcKwG4zetGMX7mWdwgAAAAA9czdAAAAAAAAoIp/32AKpx2yOcOsY3dd5Q0CTKHiAwDAqaR9AFhLrwWAc+jrAAAAAAArmL4yj10PAMBk8jD8l1MDAABwLt98ADOo9wCwii4LAAB7yOIAAAAAAAAAAACQwq0/rrB/oCuns5K3CUAuXQwqOVEA8Bw9cw3v9Qpv7wzWEQAAAAAAAACAZO6/APBNTwBgFz0IAOAcsh1AJ6oyf7E/AAAAAAA6Mr1NZeUAALLIbwAA8E4SOAAT6X8AQG/X0oqsAwBMJQcBAM+SG4A+VCSAmdR/VrCvAADyyXQAAAAAAAAAAABM5y5dV1YGyKBaAQAAAHCf6REAAABk8S0PTgEAQDZ5DgAAAAC4ypwRAAAAACCLuS6QRM0CAAAAAAAAAIDf3KkBTqS2Aeyh/kISJxYAnqFjAgCQS5oF6O5xpe5Ry3s8BQAAAAAAAABAF25TdGAVAABWkLIAAAAA4CcTMwAAAADYy4yOV9g3ZLJzAYB6EgZQQzWBfZw/AAAA6MyXOwAAAACPmSIBABPIPADAad6Rb2QoTmNPAwD5JBoAAACo4isbAKbQ9XmVvQMA0INcBvWcqx6sAwAAAFTxlQ3UU1kAAABgJjMBAADOId0CAFBBrsyXvIbJzw4AAADASiZHwF6qEAAAAABQx8QRAPRDAACoIFcDAMAMn1fvAGw=</Data>
+   </DataArray>
+</GIFTI>

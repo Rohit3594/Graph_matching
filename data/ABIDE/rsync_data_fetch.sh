@@ -1,0 +1,1 @@
+rsync -avh --dry-run --include-from='rsync_patterns' --prune-empty-dirs --info=progress2 yadav.r@pharo.int.univ-amu.fr:///hpc/meca/softs/dev/auzias/pyhon/pits_graph/data_pits_graph/ABIDE./

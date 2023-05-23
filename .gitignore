@@ -145,11 +145,12 @@ venv.bak/
 
 # project
 KerGM_python/grackel
-#*.gpickle
+*.gpickle
 *.zip
 *.npy
 *.pickle
-#*.mat
+*.mat
+*.gii
 # .idea/misc.xml 
 # *.ipr
 
