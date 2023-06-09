@@ -1,0 +1,39 @@
+see the basic distributions of pits : number of pits accor to sex.
+number of pits as a function of age.
+standard deviation as a function of the depth.
+etc.
+
+function(nodes involved for a specific function align in proximity) and geometry(same size brain should be closer.) use of attention to inject assumption.
+
+
+
+Processing HCP: list of step to 
+
+Monday 10AM meeting with Guillaume.
+
+
+
+See for a group of subject the visualizations - 
+
+-T-test on the distribution of male and females.
+-distrinution for number of male and female nodes.
+-To know how hard is the classification problem.
+
+- Hot topic: Brain age of from the representation.
+
+- ABIDE on the server, - > learn representations.
+- Guillaume is working extracting the graphs for ABIDE.
+
+-The cortical thickness changes with age, the volume also.
+-The brain flattens with age.
+-Cortical thickness per basin as a feature can be used.
+
+-Gender prediction with unregistered data, to check the impact of registeration.
+
+-Two method to compute the mean graph by FX.
+-One based on matching-KerGM and other optimal transport.
+-Could be an easy way to have an ISBI paper.
+
+Start overleaf with a structure, introduction with why sulcal pits is relevant for learning representation.(refer to, Deep learning encodes robust discriminative neuroimaging representations to outperform standard machine learning).
+
+Next friday meeting with all.
