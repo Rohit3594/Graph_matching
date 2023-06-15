@@ -50,7 +50,7 @@ list_graphs = gp.load_graphs_in_list(path_to_labelled_graphs)
 # fold = 7
 # model.load_state_dict(torch.load('OASIS_MINcut_gender_cross_val_'+str(fold)+'.model'))
 
-clusters_numpy  = pickle.load(open( "clusters_numpy_fold_2.pickle", "rb" ))
+clusters_numpy  = pickle.load(open( "clusters_numpy_fold_7.pickle", "rb" ))
 
 
 
@@ -82,7 +82,7 @@ for i,g in enumerate(list_graphs):
 
 	#gp.sphere_nearest_neighbor_interpolation(g, template_mesh)
 	nodes_coords = gp.graph_nodes_to_coords(g, 'ico100_7_vertex_index', template_mesh)
-	s_obj, c_obj, node_cb_obj = gv.show_graph(g, nodes_coords,node_color_attribute='mincut_label', nodes_size=10, c_map='tab20')
+	s_obj, c_obj, node_cb_obj = gv.show_graph(g, nodes_coords,node_color_attribute='mincut_label', nodes_size=10, c_map='tab10')
 	#vb_sc1.add_to_subplot(s_obj, row=visb_sc_shape[0] - 1, col=visb_sc_shape[1]- 1)
 	vb_sc.add_to_subplot(s_obj)
 
