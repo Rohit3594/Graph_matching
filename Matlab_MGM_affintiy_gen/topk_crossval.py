@@ -50,14 +50,14 @@ from torch_geometric.nn import GCNConv, DenseGraphConv
 
 class topk(torch.nn.Module):
 	
-	def __init__(self, in_channels, out_channels, embed_dim=32):
+	def __init__(self, in_channels, out_channels, embed_dim=16):
 		super(topk, self).__init__()
 		
 		
 		self.conv1 = GraphConv(num_node_features, embed_dim)
-		self.pool1 = TopKPooling(embed_dim, ratio=0.6)
+		self.pool1 = TopKPooling(embed_dim, ratio=0.7,nonlinearity=torch.sigmoid)
 		self.conv2 = GraphConv(embed_dim, embed_dim)
-		self.pool2 = TopKPooling(embed_dim, ratio=0.6)
+		self.pool2 = TopKPooling(embed_dim, ratio=0.7,nonlinearity=torch.sigmoid)
 
 		self.lin1 = torch.nn.Linear(embed_dim * 2, out_channels)
 		#self.lin2 = torch.nn.Linear(embed_dim, out_channels)
@@ -67,20 +67,22 @@ class topk(torch.nn.Module):
 		
 
 		x = F.relu(self.conv1(x, edge_index))
-		x, edge_index_1, _, batch, _, _ = self.pool1(x, edge_index, None, batch)
-		x1 = torch.cat([gmp(x, batch), gap(x, batch)], dim=1)
+		x, edge_index_1, edge_attr_1, batch_1, perm_1, score_1 = self.pool1(x, edge_index, None, batch)
+		x1 = torch.cat([gmp(x, batch_1), gap(x, batch_1)], dim=1)
 
 		x = F.relu(self.conv2(x, edge_index_1))
-		x, edge_index, _, batch, _, _ = self.pool2(x, edge_index_1, None, batch)
+		x, edge_index, _, batch, _, _ = self.pool2(x, edge_index_1, None, batch_1)
 		x2 = torch.cat([gmp(x, batch), gap(x, batch)], dim=1)
 
 
 		g_emb = x1 + x2
+		#g_emb = torch.cat([x1,x2], dim=1)
 
 		x = F.relu(g_emb)
-		out = self.lin1(x)
+		#out = self.lin1(x)
+		out = F.log_softmax(self.lin1(x), dim=-1)
 		
-		return out, g_emb, edge_index_1
+		return out, g_emb, self.pool1.weight, score_1
 		
 
 def graph_remove_dummy_nodes(graph):
@@ -124,7 +126,7 @@ def train():
 	
 	for data in train_loader:
 
-		out, g_emb, edge_index_1 = model(data.x, data.edge_index, data.batch) 
+		out, g_emb, w1,score_1 = model(data.x, data.edge_index, data.batch) 
 		loss = criterion(out, data.y)  
 		loss.backward() 
 		optimizer.step() 
@@ -139,7 +141,7 @@ def test(loader):
 	
 	for data in loader:
 	
-		out, g_emb, edge_index_1 =  model(data.x, data.edge_index, data.batch) 
+		out, g_emb, w1,score_1 =  model(data.x, data.edge_index, data.batch) 
 		
 		pred = out.argmax(dim=1)  
 		predictions.append(pred)
@@ -202,8 +204,10 @@ if __name__ == '__main__':
 		model = topk(num_node_features, 2)
 		
 
-		optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
-		criterion = torch.nn.CrossEntropyLoss()
+		optimizer = torch.optim.Adam(model.parameters(), lr=0.005)
+		#criterion = torch.nn.CrossEntropyLoss()
+		criterion = torch.nn.NLLLoss()
+		
 		
 		train_sampler = SubsetRandomSampler(train_idx)
 		test_sampler = SubsetRandomSampler(test_idx)
