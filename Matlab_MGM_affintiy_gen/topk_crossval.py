@@ -55,12 +55,14 @@ class topk(torch.nn.Module):
 		
 		
 		self.conv1 = GraphConv(num_node_features, embed_dim)
-		self.pool1 = TopKPooling(embed_dim, ratio=0.7,nonlinearity=torch.sigmoid)
+		self.pool1 = TopKPooling(embed_dim, ratio=0.5,nonlinearity=torch.sigmoid)
 		self.conv2 = GraphConv(embed_dim, embed_dim)
-		self.pool2 = TopKPooling(embed_dim, ratio=0.7,nonlinearity=torch.sigmoid)
+		self.pool2 = TopKPooling(embed_dim, ratio=0.5,nonlinearity=torch.sigmoid)
 
-		self.lin1 = torch.nn.Linear(embed_dim * 2, out_channels)
-		#self.lin2 = torch.nn.Linear(embed_dim, out_channels)
+		self.lin1 = torch.nn.Linear(embed_dim * 2, embed_dim)
+		self.bn1 = torch.nn.BatchNorm1d(embed_dim)
+
+		self.lin2 = torch.nn.Linear(embed_dim, out_channels)
 
 
 	def forward(self, x, edge_index, batch):
@@ -77,10 +79,11 @@ class topk(torch.nn.Module):
 
 		g_emb = x1 + x2
 		#g_emb = torch.cat([x1,x2], dim=1)
-
-		x = F.relu(g_emb)
-		#out = self.lin1(x)
-		out = F.log_softmax(self.lin1(x), dim=-1)
+		x = self.bn1(F.relu(self.lin1(g_emb)))
+		x = F.dropout(x, p=0.5, training=self.training)
+	
+		x= F.dropout(x, p=0.5, training=self.training)
+		out = F.log_softmax(self.lin2(x), dim=-1)
 		
 		return out, g_emb, self.pool1.weight, score_1
 		
@@ -228,15 +231,16 @@ if __name__ == '__main__':
 
 			test_acc, model,_ = test(test_loader)
 
-			if test_acc > best_accu:
+			if train_acc > best_accu:
 				
-				if epoch > 30: 
+				if epoch > 20: 
 
 					print('Saving Model ... ')
 					#torch.save(model.state_dict(), 'OASIS_gender_cross_val_'+str(fold)+'.model')
 					#torch.save(model.state_dict(), 'OASIS_MLP_gender_cross_val_'+str(fold)+'.model')
 					torch.save(model.state_dict(), 'OASIS_topk_gender_cross_val_'+str(fold)+'.model')
-					best_accu = test_acc
+					#best_accu = test_acc
+					best_accu = train_acc
 
 			test_acc_lst.append(test_acc)
 			print(f'Epoch: {epoch:03d}, Train Acc: {train_acc:.4f}, Test Acc: {test_acc:.4f}')
