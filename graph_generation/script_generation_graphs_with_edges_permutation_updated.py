@@ -538,11 +538,11 @@ def generate_n_graph_family_and_save(path_to_write, nb_runs, nb_ref_graph, nb_sa
 
 if __name__ == '__main__':
 
-    path_to_write = '/home/rohit/PhD_Work/GM_my_version/Graph_matching/data/simu_graph/NEW_SIMUS_JULY_11/'
+    path_to_write = '/home/rohit/PhD_Work/GM_my_version/Graph_matching/data/simu_graph/Small_set/'
 
-    nb_runs = 10
+    nb_runs = 1
     nb_sample_graphs = 10 #  # of graphs to generate before selecting the NN graphs with highest geodesic distance.
-    nb_graphs = 137 #137 # nb of graphs to generate
+    nb_graphs = 30 #137 # nb of graphs to generate
     nb_vertices = 88 #88 as per real data mean  #72 based on Kaltenmark, MEDIA, 2020 // 88 based on the avg number of nodes in the real data.
     
     max_outliers = 20

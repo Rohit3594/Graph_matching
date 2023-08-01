@@ -50,7 +50,7 @@ list_graphs = gp.load_graphs_in_list(path_to_labelled_graphs)
 # fold = 7
 # model.load_state_dict(torch.load('OASIS_MINcut_gender_cross_val_'+str(fold)+'.model'))
 
-clusters_numpy  = pickle.load(open( "clusters_numpy_fold_7.pickle", "rb" ))
+clusters_numpy  = pickle.load(open( "./mincut_clusters_with_3Dcoords/clusters_numpy_fold_2.pickle", "rb" ))
 
 
 

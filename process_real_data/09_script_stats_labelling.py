@@ -1,5 +1,5 @@
 import sys
-#sys.path.extend(['/home/rohit/PhD_Work/GM_my_version/Graph_matching'])
+sys.path.extend(['/home/rohit/PhD_Work/GM_my_version/Graph_matching'])
 import os
 import slam.io as sio
 import tools.graph_visu as gv
@@ -12,14 +12,28 @@ import pickle as p
 import copy
 import matplotlib.pyplot as plt
 
+
+def save_labelled_graphs(list_graphs,path_to_save):
+
+    for i in range(len(list_graphs)):
+
+        nx.write_gpickle(list_graphs[i], os.path.join(path_to_save,"graph_{:05d}".format(i) + ".gpickle"))
+
+
+
+
 if __name__ == "__main__":
     template_mesh = '../data/template_mesh/OASIS_avg.lh.white.talairach.reg.ico7.inflated.gii'#lh.OASIS_testGrp_average_inflated.gii'
     mesh = gv.reg_mesh(sio.load_mesh(template_mesh))
 
     #path_to_graphs = '../data/OASIS_labelled_pits_graphs'
     path_to_graphs = '../data/Oasis_original_new_with_dummy/modified_graphs'
+
+    path_to_save_labelled_graphs = '../data/Oasis_original_new_with_dummy/labelled_graphs'
     #method = 'neuroimage'#'media'#'kmeans_70_real_data_dummy'#'CAO'#'kerGM'#'mSync'#'mALS'#
     methods = ['kerGM','media']#,]#'mSync']#'CAO', , ,'kmeans_70_real_data_dummy','kmeans_90_real_data_dummy','kmeans_110_real_data_dummy']
+
+    methods = ['kerGM','mALS','mSync','CAO']
 
     trash_label = -2#-0.1#-2
     reg_or_unreg = ''#'_unreg'#''
@@ -82,6 +96,12 @@ if __name__ == "__main__":
 
     plt.show()
 
+
+    # print("saving labelled graphs.....")
+    # save_labelled_graphs(list_graphs,path_to_save_labelled_graphs)
+
+
+
     vb_sc = gv.visbrain_plot(mesh)
     simbs = ['cross','ring','disc','square']
     for ind, method in enumerate(methods):
@@ -99,17 +119,11 @@ if __name__ == "__main__":
         centroid_dict = gca.get_centroid_clusters(list_graphs, cluster_dict, coords_attribute="sphere_3dcoords")
         centroids_3Dpos = gca.get_centroids_coords(centroid_dict, list_graphs, mesh, attribute_vertex_index='ico100_7_vertex_index')
         s_obj, nodes_cb_obj = gv.graph_nodes_to_sources(centroids_3Dpos, node_data=ind*np.ones(centroids_3Dpos.shape[0],),
-                                                        nodes_size=60, nodes_mask=None, c_map='jet', symbol=simbs[ind],
+                                                        nodes_size=15, nodes_mask=None, c_map='jet', symbol=simbs[ind],
                                                         vmin=0, vmax=len(methods))
 
         vb_sc.add_to_subplot(s_obj)
     vb_sc.preview()
-
-
-
-
-
-
 
 
 

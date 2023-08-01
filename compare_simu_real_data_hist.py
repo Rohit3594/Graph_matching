@@ -17,7 +17,8 @@ if __name__ == "__main__":
     max_degree_value = 20
     nb_bins = 20
     # real data
-    path_to_graphs =  './data/Oasis_original_new_with_dummy/modified_graphs/'
+    #path_to_graphs =  './data/Oasis_original_new_with_dummy/modified_graphs/'
+    path_to_graphs =  './data/HCP/hcp_left/'
 
     # Get the meshes
     list_graphs = [nx.read_gpickle(path_to_graphs+'/'+graph) for graph in np.sort(os.listdir(path_to_graphs))]

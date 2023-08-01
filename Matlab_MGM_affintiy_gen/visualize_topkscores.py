@@ -45,7 +45,10 @@ path_to_labelled_graphs = '../data/Oasis_original_new_with_dummy/modified_graphs
 
 
 list_graphs = gp.load_graphs_in_list(path_to_labelled_graphs)
-topk_scores = pickle.load(open( "topk_scores_all_0.pickle", "rb" ))
+#topk_scores = pickle.load(open( "topk_scores_all_7.pickle", "rb" ))
+topk_scores = pickle.load(open( "topk_scores_pool1_7.pickle", "rb" ))
+
+mask_list = pickle.load(open( "mask_fold_7.pickle", "rb" ))
 
 template_mesh = gv.reg_mesh(sio.load_mesh(file_template_mesh))
 
@@ -97,7 +100,7 @@ for i,g in enumerate(list_graphs):
 
 	#gp.sphere_nearest_neighbor_interpolation(g, template_mesh)
 	nodes_coords = gp.graph_nodes_to_coords(g, 'ico100_7_vertex_index', template_mesh)
-	s_obj2, c_obj2, node_cb_obj2 = gv.show_graph(g, nodes_coords,node_color_attribute='topk_score', nodes_size=10, c_map='jet')
+	s_obj2, c_obj2, node_cb_obj2 = gv.show_graph(g, nodes_coords,node_color_attribute='topk_score',nodes_mask = mask_list[i], nodes_size=10, c_map='jet')
 	#vb_sc1.add_to_subplot(s_obj, row=visb_sc_shape[0] - 1, col=visb_sc_shape[1]- 1)
 	vb_sc2.add_to_subplot(s_obj2)
 vb_sc2.add_to_subplot(node_cb_obj2, row=visb_sc_shape2[0] - 1, col=visb_sc_shape2[0] + 0, width_max=300)

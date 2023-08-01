@@ -4,6 +4,8 @@ from visbrain.objects import SourceObj, ConnectObj, ColorbarObj
 import tools.graph_processing as gp
 import slam.differential_geometry as sdg
 import slam.plot as splt
+from matplotlib.colors import LinearSegmentedColormap
+import colorsys
 
 CBAR_STATE = dict(cbtxtsz=30, txtsz=30., width=.1, cbtxtsh=3.,
                   rect=(-.3, -2., 1., 4.), txtcolor='k', border=False)
@@ -32,7 +34,8 @@ def nodes_density_map(list_graphs, mesh, nb_iter=10, dt=0.5):
 
     for graph in list_graphs:
         for node in graph.nodes:
-            non_smoothed_texture[graph.nodes[node]["ico100_7_vertex_index"]] += 1
+            #non_smoothed_texture[graph.nodes[node]["ico100_7_vertex_index"]] += 1 # OASIS
+            non_smoothed_texture[graph.nodes[node]["Glasser2016_vertex_index"]] += 1 # HCP
 
     # normalization with respect to the number of graphs
     non_smoothed_texture = non_smoothed_texture/len(list_graphs)
@@ -56,7 +59,7 @@ def get_visb_sc_shape(visb_sc):
     return k[-1]
 
 
-def graph_nodes_to_sources(nodes_coords, node_data=None, nodes_size=None, nodes_mask=None, c_map=None, symbol='disc', vmin=None, vmax=None): # vmin = -1 vmax = 101
+def graph_nodes_to_sources(nodes_coords, node_data=None, nodes_size=None, nodes_mask=None, c_map=None, symbol='disc', vmin=-1, vmax=101): # vmin = -1 or 0 vmax = 101 or 1
     if nodes_size is None:
         nodes_size = 15.
 
@@ -148,7 +151,8 @@ def show_graph(graph_no_dummy, nodes_coords, node_color_attribute=None, edge_col
     s_obj, nodes_cb_obj = graph_nodes_to_sources(nodes_coords, node_data=node_data, nodes_size=nodes_size, nodes_mask=nodes_mask, c_map=c_map)
 
     # manage edges
-    c_obj = graph_edges_to_connect(graph_no_dummy, nodes_coords, edge_color_attribute, nodes_mask)
+    #c_obj = graph_edges_to_connect(graph_no_dummy, nodes_coords, edge_color_attribute, nodes_mask)
+    c_obj = None
 
     return s_obj, c_obj, nodes_cb_obj
 
@@ -203,3 +207,69 @@ def reg_mesh(mesh):
     mesh.apply_transform(transfo_full)
     mesh.vertices = mesh.vertices - np.mean(mesh.vertices, 0)
     return mesh
+
+def rand_cmap(nlabels, type='bright', first_color_black=True, last_color_black=False, verbose=True):
+    """
+    Creates a random colormap to be used together with matplotlib. Useful for segmentation tasks
+    :param nlabels: Number of labels (size of colormap)
+    :param type: 'bright' for strong colors, 'soft' for pastel colors
+    :param first_color_black: Option to use first color as black, True or False
+    :param last_color_black: Option to use last color as black, True or False
+    :param verbose: Prints the number of labels and shows the colormap. True or False
+    :return: colormap for matplotlib
+    """
+
+    if type not in ('bright', 'soft'):
+        print ('Please choose "bright" or "soft" for type')
+        return
+
+    if verbose:
+        print('Number of labels: ' + str(nlabels))
+
+    # Generate color map for bright colors, based on hsv
+    if type == 'bright':
+        randHSVcolors = [(np.random.uniform(low=0.0, high=1),
+                          np.random.uniform(low=0.2, high=1),
+                          np.random.uniform(low=0.9, high=1)) for i in range(nlabels)]
+
+        # Convert HSV list to RGB
+        randRGBcolors = []
+        for HSVcolor in randHSVcolors:
+            randRGBcolors.append(colorsys.hsv_to_rgb(HSVcolor[0], HSVcolor[1], HSVcolor[2]))
+
+        if first_color_black:
+            randRGBcolors[0] = [0, 0, 0]
+
+        if last_color_black:
+            randRGBcolors[-1] = [0, 0, 0]
+
+        random_colormap = LinearSegmentedColormap.from_list('new_map', randRGBcolors, N=nlabels)
+
+    # Generate soft pastel colors, by limiting the RGB spectrum
+    if type == 'soft':
+        low = 0.6
+        high = 0.95
+        randRGBcolors = [(np.random.uniform(low=low, high=high),
+                          np.random.uniform(low=low, high=high),
+                          np.random.uniform(low=low, high=high)) for i in range(nlabels)]
+
+        if first_color_black:
+            randRGBcolors[0] = [0, 0, 0]
+
+        if last_color_black:
+            randRGBcolors[-1] = [0, 0, 0]
+        random_colormap = LinearSegmentedColormap.from_list('new_map', randRGBcolors, N=nlabels)
+
+    # Display colorbar
+    if verbose:
+        from matplotlib import colors, colorbar
+        from matplotlib import pyplot as plt
+        fig, ax = plt.subplots(1, 1, figsize=(15, 0.5))
+
+        bounds = np.linspace(0, nlabels, nlabels + 1)
+        norm = colors.BoundaryNorm(bounds, nlabels)
+
+        cb = colorbar.ColorbarBase(ax, cmap=random_colormap, norm=norm, spacing='proportional', ticks=None,
+                                   boundaries=bounds, format='%1i', orientation=u'horizontal')
+
+    return random_colormap

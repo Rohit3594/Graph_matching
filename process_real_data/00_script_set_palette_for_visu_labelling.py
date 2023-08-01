@@ -1,6 +1,6 @@
 import sys
 import os
-#sys.path.extend(['/home/rohit/PhD_Work/GM_my_version/Graph_matching'])
+sys.path.extend(['/home/rohit/PhD_Work/GM_my_version/Graph_matching'])
 import slam.io as sio
 import tools.graph_visu as gv
 import tools.graph_processing as gp
@@ -9,6 +9,7 @@ import numpy as np
 import networkx as nx
 import scipy.io as sco
 import pickle as p
+
 
 
 def farthest_point_sampling(coords):
@@ -48,8 +49,10 @@ if __name__ == "__main__":
 #'../data/template_mesh/OASIS_avg.lh.white.talairach.unreg.ico7.gii'
     path_to_graphs = '../data/Oasis_original_new_with_dummy/modified_graphs'
     path_to_match_mat = '../data/Oasis_original_new_with_dummy/'
-    cmap = rand_cmap(101, type='bright', first_color_black=True, last_color_black=False, verbose=True)#'nipy_spectral'#'gist_ncar'#'nipy_spectral'
+
+    cmap = gv.rand_cmap(101, type='bright', first_color_black=True, last_color_black=False, verbose=True)#'nipy_spectral'#'gist_ncar'#'nipy_spectral'
     list_graphs = gp.load_graphs_in_list(path_to_graphs)
+    cmap = 'gist_ncar'
 
     ico_mesh = sio.load_mesh('../data/template_mesh/ico100_7.gii')
     mesh = sio.load_mesh(template_mesh)
