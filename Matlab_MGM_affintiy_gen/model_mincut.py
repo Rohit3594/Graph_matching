@@ -97,3 +97,5 @@ class mincutnet(torch.nn.Module):
 model = mincutnet(num_node_features, 2)
 
 
+
+

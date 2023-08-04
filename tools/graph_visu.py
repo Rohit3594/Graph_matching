@@ -93,6 +93,9 @@ def graph_nodes_to_sources(nodes_coords, node_data=None, nodes_size=None, nodes_
         #print(vmin,vmax)
         #print(len(node_data[nodes_mask]))
         #print(len(nodes_coords[nodes_mask]))
+
+        print(node_data[nodes_mask])
+
         s_obj.color_sources(data=node_data[nodes_mask], cmap=c_map, vmin=vmin, vmax=vmax, clim=(vmin,vmax), under='gray', over='red')
         # Get the colorbar of the source object
         cb_obj = ColorbarObj(s_obj, **CBAR_STATE)

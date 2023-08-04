@@ -1,6 +1,6 @@
 import os
 import sys
-#sys.path.append("/home/rohit/PhD_Work/GM_my_version/Graph_matching/")
+sys.path.append("/home/rohit/PhD_Work/GM_my_version/Graph_matching/")
 import slam.io as sio
 import tools.graph_visu as gv
 import tools.graph_processing as gp
@@ -19,8 +19,8 @@ if __name__ == "__main__":
     reg_mesh = gv.reg_mesh(sio.load_mesh(template_mesh))
     path_to_silhouette = '../data/Oasis_original_new_with_dummy/silhouette'
     reg_or_unreg = ''#'_unreg'#''
-    path_to_silhouette = '/mnt/data/work/python_sandBox/Graph_matching/data/Oasis_original_new_with_dummy/silhouette'
-    methods = ['mSync','kerGM', 'CAO']#['media','neuroimage']#, ['mALS']#
+    #path_to_silhouette = '/mnt/data/work/python_sandBox/Graph_matching/data/Oasis_original_new_with_dummy/silhouette'
+    methods = ['MatchEig']#['media','neuroimage']#, ['mALS','CAO']#
     #methods = ['kmeans_70_real_data_dummy','kmeans_90_real_data_dummy','kmeans_110_real_data_dummy']
     largest_ind = 22#24
     default_label = -0.1

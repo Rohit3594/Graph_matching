@@ -33,7 +33,7 @@ if __name__ == "__main__":
     #method = 'neuroimage'#'media'#'kmeans_70_real_data_dummy'#'CAO'#'kerGM'#'mSync'#'mALS'#
     methods = ['kerGM','media']#,]#'mSync']#'CAO', , ,'kmeans_70_real_data_dummy','kmeans_90_real_data_dummy','kmeans_110_real_data_dummy']
 
-    methods = ['kerGM','mALS','mSync','CAO']
+    methods = ['mALS','mSync','CAO','MatchEig']
 
     trash_label = -2#-0.1#-2
     reg_or_unreg = ''#'_unreg'#''
