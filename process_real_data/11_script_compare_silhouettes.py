@@ -17,7 +17,7 @@ if __name__ == "__main__":
     template_mesh = '/mnt/data/work/python_sandBox/Graph_matching/data/template_mesh/lh.OASIS_testGrp_average_inflated.gii'
     path_to_graphs = '/mnt/data/work/python_sandBox/Graph_matching/data/Oasis_original_new/'
     path_to_silhouette = '/mnt/data/work/python_sandBox/Graph_matching/data/Oasis_original_new_with_dummy/silhouette'
-    methods = ['CAO', 'kerGM', 'mALS', 'mSync','media','neuroimage']#,'kmeans_70_real_data_dummy','kmeans_90_real_data_dummy','kmeans_110_real_data_dummy']
+    methods = ['MatchEig','CAO', 'kerGM', 'mALS', 'mSync','media','neuroimage']#,'kmeans_70_real_data_dummy','kmeans_90_real_data_dummy','kmeans_110_real_data_dummy']
 
     nb_bins=20
     dens = False

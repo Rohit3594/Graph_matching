@@ -22,7 +22,7 @@ if __name__ == "__main__":
     path_to_figs = '../data/Oasis_original_new_with_dummy/figures'
     path_to_X = "../data/Oasis_original_new_with_dummy"
     reg_or_unreg = ''#'_unreg'#''
-    method = 'CAO'#'mSync'#'neuroimage'#'mALS'#'media'#'kerGM'#'kerGM'#'CAO'#'kerGM'#'kmeans_70_real_data_dummy'#
+    method = 'MatchEig'#'CAO'#'mSync'#'neuroimage'#'mALS'#'media'#'kerGM'#'kerGM'#'CAO'#'kerGM'#'kmeans_70_real_data_dummy'#
     default_label = -0.1
     vmin = -1
     vmax = 1

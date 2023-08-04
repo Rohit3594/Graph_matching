@@ -18,7 +18,7 @@ if __name__ == "__main__":
     path_to_X = "../data/Oasis_original_new_with_dummy"
     path_to_graphs = '../data/Oasis_original_new_with_dummy/modified_graphs'
     reg_or_unreg = ''#'_unreg'#''
-    method = 'mALS'#'neuroimage'#'mSync'#'kerGM'#'CAO'#'media'#'mALS'#'kmeans_70_real_data_dummy'#'media'#'CAO'#'mALS'#
+    method = 'MatchEig'#'mALS'#'neuroimage'#'mSync'#'kerGM'#'CAO'#'media'#'mALS'#'kmeans_70_real_data_dummy'#'media'#'CAO'#'mALS'#
     default_label = -0.1
     vmin = -0.1
     vmax = 1.1

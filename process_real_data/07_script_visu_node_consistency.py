@@ -12,15 +12,15 @@ import tools.clusters_analysis as gca
 if __name__ == "__main__":
     template_mesh = '../data/template_mesh/OASIS_avg.lh.white.talairach.reg.ico7.inflated.gii'  # lh.OASIS_testGrp_average_inflated.gii'
     reg_mesh = gv.reg_mesh(sio.load_mesh(template_mesh))
-    c_map = 'Greens'#'Reds_r'#'brg'#''nipy_spectral'
+    c_map = 'Reds_r'#'Greens'#'hot'#'brg'#''nipy_spectral'
     path_to_X = "../data/Oasis_original_new_with_dummy"
     path_to_graphs = '../data/Oasis_original_new_with_dummy/modified_graphs'
     path_to_consistency = '../data/Oasis_original_new_with_dummy/consistency'
     reg_or_unreg = ''  # '_unreg'#''
-    method = 'neuroimage'#'kerGM'#'mALS'#'CAO'#'media_no_excl'#'kerGM'#'mSync'#'media_no_excl'#'mSync'#  # #'mALS'#'kmeans_70_real_data_dummy'#'media'#'CAO'#'mALS'#
+    method = 'kerGM'#'mALS'#'neuroimage'#'MatchEig'#'kerGM'#'CAO'#'media_no_excl'#'kerGM'#'mSync'#'media_no_excl'#'mSync'#  # #'mALS'#'kmeans_70_real_data_dummy'#'media'#'CAO'#'mALS'#
     default_label = -0.1
-    vmin = 0.7
-    vmax = 1
+    vmin = 0#0.5
+    vmax = 0.5#1
 
 
     list_graphs = gp.load_graphs_in_list(path_to_graphs)
@@ -98,8 +98,8 @@ if __name__ == "__main__":
 
     vb_sc.add_to_subplot(s_obj)
     visb_sc_shape = gv.get_visb_sc_shape(vb_sc)
-    vb_sc.add_to_subplot(nodes_cb_obj, row=visb_sc_shape[0] - 1,
-                               col=visb_sc_shape[1] + 1, width_max=60)
+    #vb_sc.add_to_subplot(nodes_cb_obj, row=visb_sc_shape[0] - 1,
+    #                           col=visb_sc_shape[1] + 1, width_max=60)
 
     vb_sc.preview()
     #vb_sc.screenshot(os.path.join(path_to_figs, 'consistency_'+method+'.png'))

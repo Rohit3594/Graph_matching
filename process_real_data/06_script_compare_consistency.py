@@ -15,7 +15,7 @@ if __name__ == "__main__":
     path_to_consistency = '../data/Oasis_original_new_with_dummy/consistency'
     path_to_figs = '../data/Oasis_original_new_with_dummy/figures'
     reg_or_unreg = ''#'_unreg'#''
-    methods = ['media','media_no_excl','media_no_excl_neg_values','neuroimage', 'kerGM', 'mALS', 'mSync', 'CAO']#, 'kmeans_70_real_data_dummy','kmeans_90_real_data_dummy','kmeans_110_real_data_dummy']
+    methods = ['MatchEig','media','media_no_excl','media_no_excl_neg_values','neuroimage', 'kerGM', 'mALS', 'mSync', 'CAO']#, 'kmeans_70_real_data_dummy','kmeans_90_real_data_dummy','kmeans_110_real_data_dummy']
     #, 'mSync', 'CAO'
 
     list_graphs = gp.load_graphs_in_list(path_to_graphs)
