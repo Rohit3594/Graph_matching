@@ -128,50 +128,55 @@ if __name__ == "__main__":
 
 
 
-    label_attribute = 'label_neuroimage'
-    all_labels = list()
-    all_perc = list()
-    nb_nodes = list()
-    nb_unlabelled = list()
-    for g in list_graphs:
-        nb_nodes.append(len(g.nodes()))
-        labels_media = list(nx.get_node_attributes(g, label_attribute).values())
-        all_labels.append(labels_media)
-        a_labels = np.array(labels_media)
-        perc_unlabelled = np.sum(a_labels==trash_label)/len(labels_media)
-        nb_unlabelled.append(np.sum(a_labels==trash_label))
-        all_perc.append(perc_unlabelled)
+    # label_attribute = 'label_neuroimage'
+    # all_labels = list()
+    # all_perc = list()
+    # nb_nodes = list()
+    # nb_unlabelled = list()
+    # for g in list_graphs:
+    #     nb_nodes.append(len(g.nodes()))
+    #     labels_media = list(nx.get_node_attributes(g, label_attribute).values())
+    #     all_labels.append(labels_media)
+    #     a_labels = np.array(labels_media)
+    #     perc_unlabelled = np.sum(a_labels==trash_label)/len(labels_media)
+    #     nb_unlabelled.append(np.sum(a_labels==trash_label))
+    #     all_perc.append(perc_unlabelled)
 
-    print('average nb nodes:', np.mean(nb_nodes))
-    print('std of nb nodes:', np.std(nb_nodes))
+    # print('average nb nodes:', np.mean(nb_nodes))
+    # print('std of nb nodes:', np.std(nb_nodes))
 
-    u_labels = set(gca.concatenate_labels(all_labels))
-    print('nb labels '+label_attribute+':', len(u_labels))
-    print(u_labels)
+    # u_labels = set(gca.concatenate_labels(all_labels))
+    # print('nb labels '+label_attribute+':', len(u_labels))
+    # print(u_labels)
 
-    print('average across individuals of the number of unlabelled nodes', np.mean(np.array(all_perc)))
-    print(all_perc)
+    # print('average across individuals of the number of unlabelled nodes', np.mean(np.array(all_perc)))
+    # print(all_perc)
 
-    print('total percentage of unlabelled nodes', np.sum(nb_unlabelled)/np.sum(nb_nodes))
+    # print('total percentage of unlabelled nodes', np.sum(nb_unlabelled)/np.sum(nb_nodes))
 
-    nb_labelled_nodes = gca.nb_labelled_nodes_per_label(u_labels, all_labels)
-    print(nb_labelled_nodes)
-    print(nb_labelled_nodes.shape)
-    nb_nodes_per_label = nb_labelled_nodes.sum(axis=1)
-    print(nb_nodes_per_label/len(list_graphs))
-    print(nb_labelled_nodes.max(axis=1))
+    # nb_labelled_nodes = gca.nb_labelled_nodes_per_label(u_labels, all_labels)
+    # print(nb_labelled_nodes)
+    # print(nb_labelled_nodes.shape)
+    # nb_nodes_per_label = nb_labelled_nodes.sum(axis=1)
+    # print(nb_nodes_per_label/len(list_graphs))
+    # print(nb_labelled_nodes.max(axis=1))
 
-    nb_bins=10
-    dens = False
-    fig1, ax = plt.subplots(1, 1, sharey=True, sharex=True)
+    # nb_bins=10
+    # dens = False
+    # fig1, ax = plt.subplots(1, 1, sharey=True, sharex=True)
 
-    ax.hist(nb_nodes_per_label/len(list_graphs), density=dens, bins=nb_bins)  # density=False would make counts
-    ax.set_ylabel('Frequency')
-    ax.set_xlabel('Data')
-    ax.set_title(method)
-    ax.grid(True)
+    # ax.hist(nb_nodes_per_label/len(list_graphs), density=dens, bins=nb_bins)  # density=False would make counts
+    # ax.set_ylabel('Frequency')
+    # ax.set_xlabel('Data')
+    # ax.set_title(method)
+    # ax.grid(True)
 
-    plt.show()
+    # plt.show()
+
+
+# -----------------------------------------------------------------
+
+
     #
     # #list_graphs = gp.load_labelled_graphs_in_list(path_to_graphs, hemi='lh')
     # all_labels_neuroimage = list()
