@@ -1,5 +1,5 @@
 import sys
-sys.path.extend(['/home/rohit/PhD_Work/GM_my_version/Graph_matching'])
+#sys.path.extend(['/home/rohit/PhD_Work/GM_my_version/Graph_matching'])
 import os
 import slam.io as sio
 import tools.graph_visu as gv
@@ -53,12 +53,12 @@ if __name__ == "__main__":
     #path_to_graphs = '../data/OASIS_labelled_pits_graphs'
     path_to_labelled_graphs = '../data/Oasis_original_new_with_dummy/labelled_graphs'
 
+    vmax = 0.7
+    #methods = ['media','neuroimage']#'mALS']
 
-    #methods = ['media','mALS']
+    methods = ['mALS','mSync','CAO','kerGM','MatchEig','media','neuroimage']
 
-    #methods = ['mALS','mSync','CAO','kerGM','MatchEig','media','neuroimage']
-
-    methods = ['neuroimage']
+    #methods = ['neuroimage']
 
     trash_label = -2#-0.1#-2
     reg_or_unreg = ''#'_unreg'#''
@@ -70,13 +70,14 @@ if __name__ == "__main__":
     list_graphs = gp.load_graphs_in_list(path_to_labelled_graphs)
 
 
-    vb_sc = gv.visbrain_plot(mesh)
-    visb_sc_shape = gv.get_visb_sc_shape(vb_sc)
+
 
     simbs = ['cross','ring','disc','square']
 
     for ind, method in enumerate(methods):
-
+        print('------------'+method+'---------------')
+        vb_sc = gv.visbrain_plot(mesh)
+        visb_sc_shape = gv.get_visb_sc_shape(vb_sc)
         if 'media' in method:
             label_attribute = 'label_media'
         elif 'neuroimage' in method:
@@ -92,8 +93,8 @@ if __name__ == "__main__":
         depth_dict_var = {}
 
         for k in depth_dict:
-        	mean_var = np.std(depth_dict[k])
-        	depth_dict_var[k] = mean_var
+            mean_var = np.std(depth_dict[k])
+            depth_dict_var[k] = mean_var
 
         # Calculate the centroid
         centroid_dict = gca.get_centroid_clusters(list_graphs, cluster_dict, coords_attribute="sphere_3dcoords")
@@ -112,10 +113,10 @@ if __name__ == "__main__":
         # To plot individual methods
 
         s_obj, nodes_cb_obj = gv.graph_nodes_to_sources(centroids_3Dpos, node_data=np.array(list(depth_dict_var.values())),
-                                                        nodes_size=30, nodes_mask=None, c_map='gist_heat',vmin=0, vmax=1)
+                                                        nodes_size=30, nodes_mask=None, c_map='jet',vmin=0, vmax=vmax)
 
         vb_sc.add_to_subplot(s_obj)
 
-    vb_sc.add_to_subplot(nodes_cb_obj, row=visb_sc_shape[0] - 1, col=visb_sc_shape[0] + 0, width_max=300)
-    vb_sc.preview()
+        #vb_sc.add_to_subplot(nodes_cb_obj, row=visb_sc_shape[0] - 1, col=visb_sc_shape[0] + 0, width_max=300)
+        vb_sc.preview()
 
