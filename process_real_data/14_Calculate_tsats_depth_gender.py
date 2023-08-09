@@ -115,26 +115,28 @@ if __name__ == '__main__':
 	labeled_graphs = gp.load_graphs_in_list(path_to_labelled_graphs)
 	gender_corresp = np.array(nx.read_gpickle(path_ro_correspondence))[:,2] # gender correp list
 
-	tstats_mALS = calculate_tstats_and_pvalues(gender_corresp, 'labelling_mALS')
-	tstats_mSync = calculate_tstats_and_pvalues(gender_corresp, 'labelling_mSync')
-	tstats_matcheig = calculate_tstats_and_pvalues(gender_corresp, 'labelling_MatchEig')
-	tstats_CAO = calculate_tstats_and_pvalues(gender_corresp, 'labelling_CAO')
-	tstats_kerGM = calculate_tstats_and_pvalues(gender_corresp, 'labelling_kerGM')
+	# tstats_mALS = calculate_tstats_and_pvalues(gender_corresp, 'labelling_mALS')
+	# tstats_mSync = calculate_tstats_and_pvalues(gender_corresp, 'labelling_mSync')
+	# tstats_matcheig = calculate_tstats_and_pvalues(gender_corresp, 'labelling_MatchEig')
+	# tstats_CAO = calculate_tstats_and_pvalues(gender_corresp, 'labelling_CAO')
+	# tstats_kerGM = calculate_tstats_and_pvalues(gender_corresp, 'labelling_kerGM')
 
 
 	template_mesh = '../data/template_mesh/OASIS_avg.lh.white.talairach.reg.ico7.inflated.gii'#lh.OASIS_testGrp_average_inflated.gii'
 	mesh = gv.reg_mesh(sio.load_mesh(template_mesh))
 
-	vb_sc = gv.visbrain_plot(mesh)
-	visb_sc_shape = gv.get_visb_sc_shape(vb_sc)
 
 	simbs = ['cross','ring','disc','square']
 
 	#methods = ['mALS','mSync','CAO','kerGM','MatchEig','media','neuroimage']
 
-	methods = ['kerGM']
+	methods = ['mSync','CAO','media','mALS']
 
 	for ind, method in enumerate(methods):
+
+		vb_sc = gv.visbrain_plot(mesh)
+		visb_sc_shape = gv.get_visb_sc_shape(vb_sc)
+
 
 		if 'media' in method:
 			label_attribute = 'label_media'
@@ -150,33 +152,26 @@ if __name__ == '__main__':
 
 		centroid_dict = gca.get_centroid_clusters(labeled_graphs, cluster_dict, coords_attribute="sphere_3dcoords")
 
-		
+		t_stats_method = calculate_tstats_and_pvalues(gender_corresp, label_attribute)
 
-		## Change tstat according to method
-
-		t_stat,centroid_dict =  drop_nan_get_tstats(tstats_kerGM, centroid_dict)
-
-
-
-
+		t_stat,centroid_dict =  drop_nan_get_tstats(t_stats_method, centroid_dict) # drop nan value obtained for labels that contain only 1 group from t-stats.
 
 		centroids_3Dpos = gca.get_centroids_coords(centroid_dict, labeled_graphs, mesh, attribute_vertex_index='ico100_7_vertex_index')
 
-		vmin = np.min(t_stat[:,0])
+		# vmin = np.min(t_stat[:,0])
 
-		vmax = np.max(t_stat[:,0])
-
-		print(len(centroids_3Dpos))
-
-		print(len(t_stat[:,0]))
-
+		# vmax = np.max(t_stat[:,0])
 
 		s_obj, nodes_cb_obj = gv.graph_nodes_to_sources(centroids_3Dpos, node_data= t_stat[:,0],
-														nodes_size=30, nodes_mask=None, c_map='gist_heat',vmin=vmin, vmax=vmax)
+														nodes_size=30, nodes_mask=None, c_map='afmhot',vmin=-4.5, vmax=3)
 		vb_sc.add_to_subplot(s_obj)
 
-	vb_sc.add_to_subplot(nodes_cb_obj, row=visb_sc_shape[0] - 1, col=visb_sc_shape[0] + 0, width_max=300)
-	vb_sc.preview()
+		vb_sc.add_to_subplot(nodes_cb_obj, row=visb_sc_shape[0] - 1, col=visb_sc_shape[0] + 0, width_max=300)
+
+		vb_sc.preview()
+
+
+
 
 
 
