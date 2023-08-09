@@ -1,14 +1,14 @@
 import os
 import sys
 sys.path.append("/home/rohit/PhD_Work/GM_my_version/Graph_matching/")
-from sklearn.cluster import KMeans
+#from sklearn.cluster import KMeans
 import networkx as nx
 import numpy as np
-from graph_generation.load_graphs_and_create_metadata import dataset_metadata
-from graph_matching_tools.metrics import matching
-import matplotlib.pyplot as plt
+#from graph_generation.load_graphs_and_create_metadata import dataset_metadata
+#from graph_matching_tools.metrics import matching
+#import matplotlib.pyplot as plt
 import slam.io as sio
-import scipy.io as sco
+#import scipy.io as sco
 import tools.graph_processing as gp
 import scipy.stats as stats
 import tools.graph_visu as gv
@@ -64,8 +64,7 @@ def seperate_groups_by_label(label_gender,label_depths):
 			else:
 				M.append(label_depths[key][i])
 				
-		 # 1st list M, 2nd F
-		
+		# 1st list M, 2nd F
 		label_gen_sep.append([M,F])
 		
 	return label_gen_sep
@@ -114,6 +113,9 @@ if __name__ == '__main__':
 
 	labeled_graphs = gp.load_graphs_in_list(path_to_labelled_graphs)
 	gender_corresp = np.array(nx.read_gpickle(path_ro_correspondence))[:,2] # gender correp list
+	# we have 69 F and 68 M in this dataset so the degree of freedom is 137-2 = 135
+	# p<0.01 ~ t>2.6127
+	# p<0.05 ~ t>1.9777
 
 	# tstats_mALS = calculate_tstats_and_pvalues(gender_corresp, 'labelling_mALS')
 	# tstats_mSync = calculate_tstats_and_pvalues(gender_corresp, 'labelling_mSync')
@@ -128,9 +130,9 @@ if __name__ == '__main__':
 
 	simbs = ['cross','ring','disc','square']
 
-	#methods = ['mALS','mSync','CAO','kerGM','MatchEig','media','neuroimage']
+	methods = ['mALS','mSync','CAO','kerGM','MatchEig','media','neuroimage']
 
-	methods = ['mSync','CAO','media','mALS']
+	#methods = ['mSync','CAO','media','mALS']
 
 	for ind, method in enumerate(methods):
 
@@ -154,16 +156,33 @@ if __name__ == '__main__':
 
 		t_stats_method = calculate_tstats_and_pvalues(gender_corresp, label_attribute)
 
-		t_stat,centroid_dict =  drop_nan_get_tstats(t_stats_method, centroid_dict) # drop nan value obtained for labels that contain only 1 group from t-stats.
+		t_stat, centroid_dict =  drop_nan_get_tstats(t_stats_method, centroid_dict) # drop nan value obtained for labels that contain only 1 group from t-stats.
 
 		centroids_3Dpos = gca.get_centroids_coords(centroid_dict, labeled_graphs, mesh, attribute_vertex_index='ico100_7_vertex_index')
+
+		plotted_val = np.zeros_like(t_stat[:, 0])
+		inds_sup = t_stat[:, 0] > 1.9777#2.6127
+		if sum(inds_sup) > 0:
+			plotted_val[inds_sup] = 2
+		inds_inf = t_stat[:, 0] < -1.9777#2.6127
+		if sum(inds_inf) > 0:
+			plotted_val[inds_inf] = -2
+
+		inds_sup = t_stat[:, 0] > 2.6127
+		if sum(inds_sup) > 0:
+			plotted_val[inds_sup] = 4.5#t_stat[inds_sup, 0]
+		inds_inf = t_stat[:, 0] < -2.6127
+		if sum(inds_inf) > 0:
+			plotted_val[inds_inf] = -4.5#t_stat[inds_inf, 0]
+
+
 
 		# vmin = np.min(t_stat[:,0])
 
 		# vmax = np.max(t_stat[:,0])
 
-		s_obj, nodes_cb_obj = gv.graph_nodes_to_sources(centroids_3Dpos, node_data= t_stat[:,0],
-														nodes_size=30, nodes_mask=None, c_map='afmhot',vmin=-4.5, vmax=3)
+		s_obj, nodes_cb_obj = gv.graph_nodes_to_sources(centroids_3Dpos, node_data= plotted_val,
+														nodes_size=30, nodes_mask=None, c_map='bwr',vmin=-5, vmax=5)
 		vb_sc.add_to_subplot(s_obj)
 
 		vb_sc.add_to_subplot(nodes_cb_obj, row=visb_sc_shape[0] - 1, col=visb_sc_shape[0] + 0, width_max=300)
