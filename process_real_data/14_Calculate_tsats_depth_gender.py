@@ -116,6 +116,7 @@ if __name__ == '__main__':
 	# we have 69 F and 68 M in this dataset so the degree of freedom is 137-2 = 135
 	# p<0.01 ~ t>2.6127
 	# p<0.05 ~ t>1.9777
+	# t>0 ~ M>F
 
 	# tstats_mALS = calculate_tstats_and_pvalues(gender_corresp, 'labelling_mALS')
 	# tstats_mSync = calculate_tstats_and_pvalues(gender_corresp, 'labelling_mSync')
