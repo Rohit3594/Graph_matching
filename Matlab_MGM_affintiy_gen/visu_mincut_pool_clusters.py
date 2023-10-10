@@ -35,14 +35,13 @@ from torch_geometric.data import Data
 
 
 
-file_template_mesh = '../data/template_mesh/OASIS_avg.lh.white.talairach.reg.ico7.inflated.gii' #updated new avg template
+file_template_mesh = '../data/HCP/Q1-Q6_RelatedValidation210.L.inflated_MSMAll_2_d41_WRN_DeDrift.32k_fs_LR.surf.gii' 
 
-file_mesh = '../data/example_individual_OASIS_0061/lh.white.gii'
+#file_template_mesh = '../data/template_mesh/OASIS_avg.lh.white.talairach.reg.ico7.inflated.gii'
 
-path_to_labelled_graphs = '../data/Oasis_original_new_with_dummy/modified_graphs/'
+path_to_labelled_graphs =  '../data/HCP/modified_graphs_left/'
 
 template_mesh = gv.reg_mesh(sio.load_mesh(file_template_mesh))
-
 
 list_graphs = gp.load_graphs_in_list(path_to_labelled_graphs)
 
@@ -50,7 +49,7 @@ list_graphs = gp.load_graphs_in_list(path_to_labelled_graphs)
 # fold = 7
 # model.load_state_dict(torch.load('OASIS_MINcut_gender_cross_val_'+str(fold)+'.model'))
 
-clusters_numpy  = pickle.load(open( "./mincut_clusters_with_3Dcoords/clusters_numpy_fold_2.pickle", "rb" ))
+clusters_numpy  = pickle.load(open( "./mincut_clusters_with_3Dcoords/HCP/clusters_numpy_fold_HCP7.pickle", "rb" ))
 
 
 
@@ -81,8 +80,9 @@ for i,g in enumerate(list_graphs):
 	print('graph_num: ',i)
 
 	#gp.sphere_nearest_neighbor_interpolation(g, template_mesh)
-	nodes_coords = gp.graph_nodes_to_coords(g, 'ico100_7_vertex_index', template_mesh)
-	s_obj, c_obj, node_cb_obj = gv.show_graph(g, nodes_coords,node_color_attribute='mincut_label', nodes_size=10, c_map='tab10')
+	nodes_coords = gp.graph_nodes_to_coords(g, 'Glasser2016_vertex_index', template_mesh)
+	# nodes_coords = gp.graph_nodes_to_coords(g, 'ico100_7_vertex_index', template_mesh)
+	s_obj, c_obj, node_cb_obj = gv.show_graph(g, nodes_coords,node_color_attribute='mincut_label', nodes_size=5, c_map='tab10')
 	#vb_sc1.add_to_subplot(s_obj, row=visb_sc_shape[0] - 1, col=visb_sc_shape[1]- 1)
 	vb_sc.add_to_subplot(s_obj)
 

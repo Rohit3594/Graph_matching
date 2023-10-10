@@ -49,6 +49,33 @@ def nodes_density_map(list_graphs, mesh, nb_iter=10, dt=0.5):
     return smoothed_texture
 
 
+
+def attention_density_map(list_graphs, mesh, nb_iter=10, dt=0.5):
+    """
+    Return the smoothed texture of all non labeled points
+    """
+
+    mesh_size = mesh.vertices.shape[0]
+
+    # initialise texture
+    non_smoothed_texture = np.zeros(mesh_size)
+
+    for graph in list_graphs:
+        for node in graph.nodes:
+            non_smoothed_texture[graph.nodes[node]["Glasser2016_vertex_index"]] += graph.nodes[node]["average_attn"]
+
+    # normalization with respect to the number of graphs
+    non_smoothed_texture = non_smoothed_texture/len(list_graphs)
+
+    # smooth the texture
+    smoothed_texture = sdg.laplacian_texture_smoothing(mesh,
+                                                       non_smoothed_texture,
+                                                       nb_iter,
+                                                       dt)
+
+    return smoothed_texture    
+
+
 def get_visb_sc_shape(visb_sc):
     """
     get the subplot shape in a visbrain scene
@@ -59,7 +86,7 @@ def get_visb_sc_shape(visb_sc):
     return k[-1]
 
 
-def graph_nodes_to_sources(nodes_coords, node_data=None, nodes_size=None, nodes_mask=None, c_map=None, symbol='disc', vmin=-1, vmax=101): # vmin = -1 or 0 vmax = 101 or 1
+def graph_nodes_to_sources(nodes_coords, node_data=None, nodes_size=None, nodes_mask=None, c_map=None, symbol='disc', vmin=0, vmax=1): # vmin = -1 or 0 vmax = 101 or 1
     if nodes_size is None:
         nodes_size = 15.
 
@@ -94,7 +121,6 @@ def graph_nodes_to_sources(nodes_coords, node_data=None, nodes_size=None, nodes_
         #print(len(node_data[nodes_mask]))
         #print(len(nodes_coords[nodes_mask]))
 
-        print(node_data[nodes_mask])
 
         s_obj.color_sources(data=node_data[nodes_mask], cmap=c_map, vmin=vmin, vmax=vmax, clim=(vmin,vmax), under='gray', over='red')
         # Get the colorbar of the source object
@@ -192,9 +218,9 @@ def visbrain_plot(mesh, tex=None, caption=None, cblabel=None, visb_sc=None,
             b_obj.add_activation(data=tex, cmap=cmap,
                              clim=(np.min(tex), np.max(tex)))
 
-        # cbar = ColorbarObj(b_obj, cblabel=cblabel, **CBAR_STATE)
-        # visb_sc.add_to_subplot(cbar, row=visb_sc_shape[0] - 1,
-        #                        col=visb_sc_shape[1] + 1, width_max=200)
+        cbar = ColorbarObj(b_obj, cblabel=cblabel, **CBAR_STATE)
+        visb_sc.add_to_subplot(cbar, row=visb_sc_shape[0] - 1,
+                               col=visb_sc_shape[1] + 0, width_max=200)
     return visb_sc
 
 

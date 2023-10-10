@@ -11,9 +11,10 @@ if __name__ == "__main__":
 
     #path_to_graphs = '../data/OASIS_full_batch/modified_graphs'
     #path_to_graphs = '../data/simu_graph/' #simulated graphs
-    path_to_graphs = '../data/Oasis_original_new/'  # non registered graphs
+    #path_to_graphs = '../data/Oasis_original_new/'  # non registered graphs
+    path_to_graphs = '../data/HCP/modified_graphs_left/'
 
-    file_sphere_mesh = '../data/template_mesh/ico100_7.gii'
+    file_sphere_mesh = '../data/HCP/Q1-Q6_RelatedValidation210.L.sphere.32k_fs_LR.surf.gii'
     sphere_mesh = sio.load_mesh(file_sphere_mesh)
 
 
@@ -32,9 +33,8 @@ if __name__ == "__main__":
     print('sum across subjects=', np.sum(graphs_nodes_number))
 
     # using an average mesh as template
-    template_mesh = '../data/template_mesh/OASIS_avg.lh.white.talairach.unreg.ico7.gii'
+    template_mesh = '../data/HCP/Q1-Q6_RelatedValidation210.L.inflated_MSMAll_2_d41_WRN_DeDrift.32k_fs_LR.surf.gii'
     mesh = gv.reg_mesh(sio.load_mesh(template_mesh))
-
 
 
     density_map = gv.nodes_density_map(list_graphs, mesh, nb_iter=3, dt=0.5)
